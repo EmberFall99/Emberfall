@@ -85,25 +85,26 @@ def friend_frames():
 
 # ---------------------------------------------------------------- the veiled merchant (behind her counter)
 def merchant():
+    """the merchant, unveiled now, and fast asleep on her feet: head bowed, eyes shut"""
     g = G(22, 32, 11, 31)
     # long dark robe
     g.poly([(-4, -20), (4, -20), (7, 0), (-7, 0)], 'c')
     g.line((0, -18), (0, 0), 'f')
-    # face behind the veil
-    g.rect(-2, -26, 2, -21, 'd'); g.set(0, -24, 'f'); g.set(2, -24, 'f')
-    # a translucent blue veil, from crown to waist: every other pixel, so she shows through
-    for y in range(-30, -12):
-        half = 4 if y < -20 else 5 + (y + 20) // 3
-        for x in range(-half, half + 1):
-            over_face = -2 <= x <= 2 and -26 <= y <= -21
-            if (x + y) % 2 == 0 and not (over_face and (x + y) % 4 != 0): g.set(x, y, '9')
-    g.line((-4, -30), (4, -30), '8'); g.line((-3, -31), (3, -31), '8')
+    # long dark hair falling either side of a bowed head
+    g.rect(-3, -28, 3, -19, 'f')
+    g.rect(-2, -26, 3, -21, 'd')                     # her face, tipped forward
+    g.line((0, -24), (1, -24), 'c'); g.line((2, -24), (3, -24), 'c')    # eyes shut
+    g.set(2, -22, 'e')
+    g.line((-3, -29), (2, -29), 'f')
     # many amulets, strung across her chest
-    for i, (x, y, c) in enumerate(((-3, -17, '5'), (-1, -16, '4'), (1, -16, '6'), (3, -17, '2'), (0, -14, '7'),
-                                   (-2, -13, '3'), (2, -13, 'a'), (-4, -15, '5'), (4, -15, '4'))):
+    for (x, y, c) in ((-3, -17, '5'), (-1, -16, '4'), (1, -16, '6'), (3, -17, '2'), (0, -14, '7'),
+                      (-2, -13, '3'), (2, -13, 'a'), (-4, -15, '5'), (4, -15, '4')):
         g.set(x, y, c)
     g.line((-4, -19), (0, -17), 'b'); g.line((0, -17), (4, -19), 'b')
-    g.outline(skip=('9',))
+    g.outline()
+    # z z z
+    for (x, y) in ((6, -30), (7, -30), (7, -29), (6, -28), (7, -28), (9, -27), (10, -27), (9, -25), (10, -25), (10, -26)):
+        g.set(x, y, '1')
     return g
 
 # ---------------------------------------------------------------- Farsight Amulet
@@ -465,13 +466,23 @@ def bg_shop_inside():
         for x in range(26, 68, 4):
             c = '6879a5'[(x // 4 + sy) % 6]
             g.p[sy - 1][x] = c; g.p[sy - 2][x] = c; g.p[sy - 3][x + 1 if x % 8 else x] = 'b'
-    # amulets hanging on strings from the rafters
-    r = random.Random(142)
-    for x in range(78, 156, 7):
-        ln = r.randint(8, 22)
-        for y in range(11, 11 + ln): g.p[y][x] = 'b'
-        c = '54627a3'[(x // 7) % 7]
-        g.p[11 + ln][x] = c; g.p[12 + ln][x] = c; g.p[11 + ln][x + 1] = c; g.p[12 + ln][x - 1] = 'f'
+    # her wares: amulets pegged to a board on the wall, hidden behind a translucent blue veil
+    for y in range(20, 56):
+        for x in range(80, 154):
+            g.p[y][x] = 'c' if (x in (80, 153) or y in (20, 55)) else 'e'
+    for row, y in enumerate((26, 36, 46)):
+        for x in range(86, 150, 9):
+            c = '54627a3'[(x // 9 + row) % 7]
+            g.p[y - 2][x] = 'b'; g.p[y - 1][x - 1] = 'b'; g.p[y - 1][x + 1] = 'b'
+            for yy in range(y, y + 3):
+                for xx in range(x - 1, x + 2): g.p[yy][xx] = c
+            g.p[y + 1][x] = '1'
+    for x in range(78, 156): g.p[17][x] = 'b'; g.p[18][x] = '8'          # the veil's rail
+    for y in range(19, 60):
+        sway = int(1.5 * math.sin(y / 5))
+        for x in range(78 + sway, 156 + sway):
+            if 0 <= x < 160 and (x + y) % 2 == 0 and y % 2 == 0: g.p[y][x] = '9'
+        if 0 <= 77 + sway < 160: g.p[y][77 + sway] = '9'
     # a counter she stands behind
     for y in range(GROUND - 14, GROUND):
         for x in range(96, 150): g.p[y][x] = 'd' if y == GROUND - 14 else ('e' if (x - 96) % 9 else 'f')

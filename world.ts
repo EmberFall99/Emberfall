@@ -138,8 +138,8 @@ function setupEnemy(i: number) {
         eLast[i] = atkID
         eKb[i] = 0
         eSprites[i].setFlag(SpriteFlag.Invisible, false)
-        if (eType[i] == "bandit") {
-            // the bandits wait in the shadows until you're halfway into the house
+        if (eType[i] == "bandit" && eArea[i] == 10) {
+            // the bandits in the house wait in the shadows until you're halfway in
             eState[i] = "hidden"
             eSprites[i].setFlag(SpriteFlag.Invisible, true)
         }

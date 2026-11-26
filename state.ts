@@ -97,23 +97,24 @@ let platX1 = [96]
 let platX2 = [140]
 let platH = [44]
 // enemies: one slot in each list per enemy
-// (the last two are the corrupted bandits who ambush you inside the first house in Ashen Forde)
-let eType = ["skel", "skel", "skel", "knight", "archer", "archer", "bandit", "bandit"]
-let eArea = [1, 2, 2, 3, 3, 4, 10, 10]
-let eHome = [117, 55, 88, 70, 138, 126, 30, 142]
-let eH = [0, 0, 0, 0, 0, 44, 0, 0]
-let eMaxHP = [40, 40, 40, 70, 30, 30, 75, 75]
-let eSouls = [50, 50, 50, 120, 80, 80, 150, 150]
-let eAlive = [1, 1, 1, 1, 1, 1, 1, 1]
-let eX = [0, 0, 0, 0, 0, 0, 0, 0]
-let eHP = [0, 0, 0, 0, 0, 0, 0, 0]
-let eState = ["idle", "idle", "idle", "idle", "idle", "idle", "idle", "idle"]
-let eFrame = [0, 0, 0, 0, 0, 0, 0, 0]
-let eDir = [-1, -1, -1, -1, -1, -1, -1, -1]
-let eLast = [0, 0, 0, 0, 0, 0, 0, 0]
-let eKb = [0, 0, 0, 0, 0, 0, 0, 0]
+// (slots 6-7: the corrupted bandits who ambush you inside the first house in Ashen Forde;
+//  slots 8-9: the two waiting under the great tree)
+let eType = ["skel", "skel", "skel", "knight", "archer", "archer", "bandit", "bandit", "bandit", "bandit"]
+let eArea = [1, 2, 2, 3, 3, 4, 10, 10, 15, 15]
+let eHome = [117, 55, 88, 70, 138, 126, 30, 142, 92, 146]
+let eH = [0, 0, 0, 0, 0, 44, 0, 0, 0, 0]
+let eMaxHP = [40, 40, 40, 70, 30, 30, 120, 120, 120, 120]
+let eSouls = [50, 50, 50, 120, 80, 80, 150, 150, 150, 150]
+let eAlive = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+let eX = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+let eHP = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+let eState = ["idle", "idle", "idle", "idle", "idle", "idle", "idle", "idle", "idle", "idle"]
+let eFrame = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+let eDir = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
+let eLast = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+let eKb = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 // how long each bandit waits before its next attack (re-rolled after every attack)
-let eWait = [0, 0, 0, 0, 0, 0, 40, 55]
+let eWait = [0, 0, 0, 0, 0, 0, 40, 55, 30, 50]
 let eSprites: Sprite[] = []
 // the boss
 let bossActive = false
@@ -139,6 +140,8 @@ let farsightDropped = false
 let farsightArea = 0
 // the uncorrupted bandit: met in the church, waits later in the treehouse
 let banditMet = false
+// ...and after his words in the treehouse he's gone from there too
+let banditGone = false
 // the d6 the corrupted bandits roll when your hit would land. Tests set forceRoll to pick the result.
 let forceRoll = 0
 // riposte: which enemy you're running through

@@ -109,12 +109,17 @@ G.set('px', 80); G.run(3); tapA(); G.run(2);
 check('inside, the veiled merchant waits behind her counter', G.get('area') == 14 && !G.get('merchant').flags.inv);
 edge('left'); edge('right');
 check('out past the village to the great tree', G.get('area') == 15);
+check('two corrupted bandits wait under the tree (120 HP)', G.get('eAlive')[8] == 1 && G.get('eAlive')[9] == 1 && G.get('eState')[8] != 'hidden' && G.get('eMaxHP')[8] == 120);
+G.set('invuln', 1e9); G.set('px', 40); G.set('pState', 'idle'); G.run(20);
+check('...and come for you when you get close', G.get('eState')[8] != 'idle');
 edge('right');
 check('...and no further east for now', G.get('area') == 15);
 G.set('px', 120); G.set('pState', 'idle'); G.run(2, ['up']); G.run(120, ['up']);
 check('climbing the tree into the treehouse', G.get('area') == 16);
 G.set('px', G.get('FRIEND_TREE_X') - 6); G.set('pState', 'idle'); G.run(3);
 check('the bandit is waiting in the treehouse', G.get('talkTarget') == 'friend' && !G.get('friend').flags.inv);
+tapA(); G.run(5);
+check('he talks about Folkewood, then fades away', G.printed.some(t => t.indexOf('Folkewood') >= 0) && G.get('banditGone') && G.get('gameState') == 'play' && G.get('friend').flags.inv);
 G.set('px', 50); G.set('pState', 'idle'); G.run(3); G.run(2, ['down']);
 check('resting at the treehouse bonfire', G.paused() && G.get('spawnArea') == 16);
 G.press('B'); G.run(2);
@@ -125,7 +130,7 @@ G.run(120, ['down']);
 // ---- saving and Continue
 const saved = JSON.parse(JSON.stringify(G.store));
 const H = load(saved);
-check('Continue loads back at the treehouse with progress kept', H.get('area') == 16 && H.get('bossDead') && H.get('glargonFreed') && H.get('maxHP') == 112 && H.get('hasFarsight') && H.get('banditMet') && H.get('amulet') == 1);
+check('Continue loads back at the treehouse with progress kept', H.get('area') == 16 && H.get('bossDead') && H.get('glargonFreed') && H.get('maxHP') == 112 && H.get('hasFarsight') && H.get('banditMet') && H.get('banditGone') && H.get('amulet') == 1);
 // a save from before this update (shorter lists) still loads
 const old = JSON.parse(JSON.stringify(G.store));
 old.ef_stats = old.ef_stats.slice(0, 13); old.ef_flags = old.ef_flags.slice(0, 11); old.ef_visited = old.ef_visited.slice(0, 8); old.ef_stats[6] = 7; old.ef_stats[7] = 40;

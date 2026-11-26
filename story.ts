@@ -2,8 +2,7 @@
 let G1 = "Good heavens. Is that - a kindling? No, something else. Where did you get those embers? Surely you didn't slay the Warden? No matter. Let me out will you, old chap? I dread to think how long it's been."
 let G2 = "Much better. What a state it is around here. You know, for the longest time there was a horrible smell. Anyway, you wouldn't want to stay much longer around here. Come. We'll go together."
 let BANDIT1 = "You're late. I'd tell you how long I've been waiting here for you, but I can't remember. Did you find Glargon? Good. It's best we make our way there. My legs feel a little numb. We're not Kindlings, brother. We are destined for more. Our adventure finally begins. I will stick to the shadows. You brave the beaten path."
-// placeholder until Charlie writes what he says in the treehouse
-let BANDIT2 = "..."
+let BANDIT2 = "You've got the farsight amulet I see. Amulets are rare. There's a woman selling them in the church, but she's asleep on the job. No idea how to wake her. Down the road from here is another village, Folkewood. Crawling with my fallen brothers. I'm going to press on. See you there."
 let NOTE_TEXT = "Fancy a glass of wine? Find me at the top of that mountain. I owe you a drink at least, friend.\n- Glargon Jones"
 // split text into lines that fit the dialogue box ("\n" forces a new line)
 function wrapText(text: string, maxChars: number): string[] {
@@ -124,10 +123,7 @@ function startScene(target: string) {
         } else if (target == "bandit") {
             banditScene()
         } else if (target == "friend") {
-            pDir = sign(FRIEND_TREE_X - px)
-            say("???", BANDIT2)
-            gameState = "play"
-            waitRelease = true
+            banditTreeScene()
         } else {
             say("A note", NOTE_TEXT)
             gameState = "play"
@@ -195,6 +191,18 @@ function banditScene() {
     say("???", BANDIT1)
     fadeOut(false)
     banditMet = true
+    pause(900)
+    saveGame()
+    gameState = "play"
+    waitRelease = true
+    fadeIn(false)
+}
+// ...and in the treehouse: his news, then he's gone again
+function banditTreeScene() {
+    pDir = sign(FRIEND_TREE_X - px)
+    say("???", BANDIT2)
+    fadeOut(false)
+    banditGone = true
     pause(900)
     saveGame()
     gameState = "play"

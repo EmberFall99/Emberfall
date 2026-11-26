@@ -59,7 +59,7 @@ function updateScenery() {
     // the lake: Glargon's note
     note.setFlag(SpriteFlag.Invisible, area != 7)
     // Ashen Forde: the uncorrupted bandit (church, then the treehouse) and the veiled merchant
-    friend.setFlag(SpriteFlag.Invisible, !(area == 12 && !(banditMet) || area == 16 && banditMet))
+    friend.setFlag(SpriteFlag.Invisible, !(area == 12 && !(banditMet) || area == 16 && banditMet && !(banditGone)))
     if (area == 12) {
         if (gameState != "cutscene") {
             friend.setImage(friendLeanL)
@@ -83,7 +83,7 @@ function updateScenery() {
             talkTarget = "enter"
         } else if (area == 12 && !(banditMet) && Math.abs(px - FRIEND_CHURCH_X) < 18) {
             talkTarget = "bandit"
-        } else if (area == 16 && banditMet && Math.abs(px - FRIEND_TREE_X) < 18) {
+        } else if (area == 16 && banditMet && !(banditGone) && Math.abs(px - FRIEND_TREE_X) < 18) {
             talkTarget = "friend"
         }
     }

@@ -3,7 +3,7 @@
 Everything needed to pick this project up again, including in a fresh Claude conversation.
 **If you're a new session: read this whole file before changing anything.**
 
-Current version: **v0.6.3** (shown bottom-left of the title screen; the `VERSION` constant in `main.ts`).
+Current version: **v0.6.4** (shown bottom-left of the title screen; the `VERSION` constant in `main.ts`).
 
 ---
 
@@ -93,9 +93,9 @@ Neither tool can show what the game *looks* like or how it *feels* – Charlie p
   Types: `skel`, `knight` (blocks front hits in idle/chase/windup; heavies break it), `archer`, `bandit`.
   Bandits also use `eWait` (ticks before their next attack).
 - **Corrupted bandits** (slots 6 and 7, area 10): state `hidden` until the player passes x 70, then they appear
-  on both sides (the ambush). States: stalk (circle at ~22–44px, fast), windup → lunge (20 dmg), slashUp → slash
+  on both sides (the ambush). Slots 8 and 9 wait under the great tree (area 15): `idle` until you're within 90px. States: stalk (circle at ~22–44px, fast), windup → lunge (20 dmg), slashUp → slash
   (16 dmg), recover (the opening), dodge, hurt, parry → riposte (34 dmg), stunned, parried, riposted, dying.
-  75 HP, 150 souls. Every non-heavy hit that would land rolls `d6()`: **1** parries (melee: you go into `pState`
+  120 HP, 150 souls. Every non-heavy hit that would land rolls `d6()`: **1** parries (melee: you go into `pState`
   `parried` for 30 ticks and it ripostes; arrows: batted away), **2** dodges (the hit misses), **3–6** lands.
   Heavies (sword heavy, power shot) skip the roll and stun it. Hits on a stunned/parried bandit skip the roll.
   Tests set `forceRoll` to choose the d6. The first bandit killed drops the Farsight Amulet.
@@ -121,7 +121,7 @@ Neither tool can show what the game *looks* like or how it *feels* – Charlie p
   lvAtt, souls, spawnArea, spawnX, loadout, stainSouls, stainArea, stainX, stainH]`, `ef_flags` `[hasShield,
   hasBow, hasKey, doorOpen, hasCellKey, cellOpen, bossDead, hasKeyRing, gateOpen, glargonFreed, teleported]`,
   `ef_visited` (per area). **Only ever append to these arrays** so old saves keep loading.
-  Since v0.6.3: `ef_stats` += `amulet`; `ef_flags` += `hasFarsight, banditMet`; `loadGame()` checks the lengths.
+  Since v0.6.3: `ef_stats` += `amulet`; `ef_flags` += `hasFarsight, banditMet`, then (v0.6.4) `banditGone`; `loadGame()` checks the lengths.
   Saves happen on rest, respawn, pickups, doors and story moments.
 
 ## 5. Story so far (exact text)
@@ -140,7 +140,10 @@ Then a key falls; you wake in a cell.
 
 **The uncorrupted bandit** (???), in the church (area 12) – after this he fades out and `banditMet` is set:
 "You're late. I'd tell you how long I've been waiting here for you, but I can't remember. Did you find Glargon? Good. It's best we make our way there. My legs feel a little numb. We're not Kindlings, brother. We are destined for more. Our adventure finally begins. I will stick to the shadows. You brave the beaten path."
-He then waits in the treehouse (area 16). His treehouse dialogue is **still to come from Charlie** – placeholder `BANDIT2 = "..."` in `story.ts`.
+He then waits in the treehouse (area 16) – only if you spoke to him in the church. There he says (then fades out; `banditGone`):
+"You've got the farsight amulet I see. Amulets are rare. There's a woman selling them in the church, but she's asleep on the job. No idea how to wake her. Down the road from here is another village, Folkewood. Crawling with my fallen brothers. I'm going to press on. See you there."
+
+**The merchant** (area 14): unveiled, asleep on her feet behind the counter. Her amulets hang on the wall behind a translucent veil (in the background art). Waking her is still to be designed.
 
 Lore thread: the player is mistaken for a "kindling" – but is "something else". The uncorrupted bandit echoes it.
 
@@ -149,10 +152,11 @@ Lore thread: the player is mistaken for a "kindling" – but is "something else"
 ### Chunk 2 – Ashen Forde *(done, v0.6.3)*
 The road and signpost, three village streets (ambush house, church, merchant's house), the great tree and the
 treehouse; corrupted bandits with the d6; the uncorrupted bandit; the amulet slot, Farsight parrying and the
-riposte. The merchant is a placeholder (stands behind her counter, no interaction yet).
+riposte. The merchant is a placeholder (asleep behind her counter, no interaction yet).
+v0.6.4: two more bandits under the great tree, bandit HP 75 → 120, the treehouse speech + fade.
 
 ### Next – waiting on details from Charlie
-- The uncorrupted bandit's treehouse dialogue (`BANDIT2`), and what lies east of the great tree.
+- What lies east of the great tree (the road to **Folkewood**), and how to wake the merchant.
 
 ### Chunk 3 – the remaining amulets, the shop
 - **Stalwart Amulet:** when an enemy parries you, you're not stunned; you take the damage of a normal hit,

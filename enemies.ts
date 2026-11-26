@@ -398,7 +398,14 @@ function banditThink(i: number, dist: number): Image {
         }
         return im
     }
-    if (st == "stalk") {
+    if (st == "idle") {
+        // the ones under the tree: they come for you once you're close
+        im = bdIdle
+        if (Math.abs(dist) < 90 && Math.abs(py - eH[i]) < 20) {
+            eState[i] = "stalk"
+            eFrame[i] = 0
+        }
+    } else if (st == "stalk") {
         eDir[i] = sign(dist)
         let d = Math.abs(dist)
         if (d > 44) {
