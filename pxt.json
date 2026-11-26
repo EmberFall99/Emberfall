@@ -1,0 +1,29 @@
+{
+    "name": "Emberfall",
+    "description": "A souls-like made in MakeCode Arcade",
+    "dependencies": {
+        "device": "*"
+    },
+    "files": [
+        "kinds.ts",
+        "images.g.jres",
+        "images.g.ts",
+        "art.ts",
+        "state.ts",
+        "helpers.ts",
+        "world.ts",
+        "player.ts",
+        "enemies.ts",
+        "boss.ts",
+        "scenery.ts",
+        "menus.ts",
+        "levelling.ts",
+        "main.ts",
+        "README.md"
+    ],
+    "testFiles": [],
+    "supportedTargets": [
+        "arcade"
+    ],
+    "preferredEditor": "tsprj"
+}
