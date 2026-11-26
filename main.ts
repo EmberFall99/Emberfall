@@ -124,10 +124,6 @@ let cellDoor = sprites.create(cellDoorClosedImg, SpriteKind.Scenery)
 cellDoor.x = 150
 cellDoor.bottom = GROUND
 cellDoor.setFlag(SpriteFlag.Invisible, true)
-let hint = sprites.create(image.create(160, 10), SpriteKind.Scenery)
-hint.setPosition(80, 30)
-hint.z = 150
-hint.setFlag(SpriteFlag.Invisible, true)
 // title screen: A to begin, B for the controls
 while (!(controller.A.isPressed())) {
     if (controller.B.isPressed()) {
