@@ -3,7 +3,7 @@
 Everything needed to pick this project up again, including in a fresh Claude conversation.
 **If you're a new session: read this whole file before changing anything.**
 
-Current version: **v0.6.2** (shown bottom-left of the title screen; the `VERSION` constant in `main.ts`).
+Current version: **v0.6.3** (shown bottom-left of the title screen; the `VERSION` constant in `main.ts`).
 
 ---
 
@@ -33,7 +33,7 @@ playing; no tutorials. Dark Souls is the reference point throughout.
 ### Before every push
 ```
 (cd tools && npm install)          # first time only
-bash tools/compile_check.sh        # Microsoft's Arcade compiler: must say "Compiled OK"
+bash tools/compile_check.sh        # Microsoft's Arcade compiler: must say "Compiled OK" (runs pxt-core from tools/node_modules; no global `pxt` needed)
 node tools/test/smoke_test.js      # simulated play-through: must say "All checks passed"
 ```
 Add checks to `smoke_test.js` for every new feature. The harness (`tools/test/harness.js` + `stubs.js`)
@@ -47,16 +47,17 @@ Neither tool can show what the game *looks* like or how it *feels* – Charlie p
 | `kinds.ts` | Header comment + custom `SpriteKind`s |
 | `images.g.jres`, `images.g.ts`, `art.ts` | Art (generated – see above) |
 | `state.ts` | Every global variable: player, input, combat, souls/bloodstain, world, ladders/ledges, enemy tables, boss, levelling, story flags |
+| `tools/art/pixrig4.py` | Chunk 2 art: Ashen Forde backgrounds, bandits, the uncorrupted bandit, the merchant, the Farsight Amulet |
 | `helpers.ts` | `faced()`, `queueAction()`, `showBanner()`, `isFree()`, `supportAt()`, `sign()` |
 | `world.ts` | `respawn()`, `resetWorld()`, `goToArea()`, `setupEnemy()`, `rest()`, `die()`, `hasBonfire()` |
-| `player.ts` | Damage intake, input, combo, heavy, shield block, bow, roll, heal, climbing, physics/area edges, animation |
-| `enemies.ts` | `hitEnemy()`, `enemyThink()`, `meleeThink()` (skeleton + skeleton knight), `archerThink()`, arrows |
+| `player.ts` | Damage intake, input, combo, heavy, shield block, bow, roll, heal, climbing, physics/area edges, animation, doors (`enterBuilding`/`leaveBuilding`), the riposte |
+| `enemies.ts` | `hitEnemy()` (incl. the bandit d6), `enemyThink()`, `meleeThink()` (skeleton + skeleton knight), `archerThink()`, `banditThink()`, arrows, Farsight parrying (`inParryWindow`, `parryEnemy`, `reelingThink`) |
 | `boss.ts` | The Hollow Warden: stalk/slam/sweep/charge/roar, phase 2 (enrage glow + fire waves), death + key ring |
-| `scenery.ts` | Bonfires, items, doors/gates, flags, stocks, note, talk prompts, bloodstain, HUD |
-| `menus.ts` | Equipment (loadout) menu – uses `game.pushScene()` to freeze the world |
+| `scenery.ts` | Bonfires, items, doors/gates, flags, stocks, note, the bandit + merchant NPCs, talk/enter prompts, Farsight pickup, bloodstain, HUD |
+| `menus.ts` | Equipment menu: 3 weapon rows + the amulet slot – uses `game.pushScene()` to freeze the world |
 | `levelling.ts` | Stats, costs, bonfire level-up menu, ember particles and the ember glow buff |
 | `prologue.ts` | Intro text, falling key, `startNewGame()` |
-| `story.ts` | Dialogue box (`say()`), fades, `startScene()`, Glargon's scene, the note |
+| `story.ts` | Dialogue box (`say()`), fades, `startScene()`, Glargon's scene, the note, `banditScene()` |
 | `saving.ts` | `saveGame()`, `loadGame()`, `hasSave()` |
 | `main.ts` | `VERSION`, the main tick loop, sprite creation, title screen |
 | `tools/` | Art generators, asset builder, compile check, play-test harness (Arcade ignores this folder) |
@@ -73,6 +74,11 @@ Neither tool can show what the game *looks* like or how it *feels* – Charlie p
   0 Cell → 1 Ashen Gate (bonfire) → 2 Sunken Hall (ladder up to 3) → 4 Archers' Rampart (ledge, locked door)
   → 5 Warden's arena (prison gate) → 6 Frostbitten Field (Glargon) → *teleport* → 7 Still Lake (bonfire, note).
   3 Whispering Woods (bonfire, key, skeleton knight, archer) sits above 2 via ladder/hatch.
+  **Ashen Forde** (chunk 2), east of the lake: 7 → 8 the road (signpost, palisade gate) → 9 street 1 → 11 street 2
+  → 13 street 3 → 15 the great tree (ladder up to 16, the treehouse: bonfire). East of 15 is closed for now.
+  Buildings: each street has a doorway at `DOOR_X` (80); A enters area+1 (10 the ambush house, 12 the church,
+  14 the merchant's house). Walking off the left edge of an interior goes back out of the door.
+  The treehouse is reached like the Whispering Woods: climb ladder slot 2 in area 15; down the hatch at x 120.
   Area edges are handled in `physics()`; only walking/rolling towards an edge changes area.
 - **Player states** (`pState`): idle, walk, light (with `combo` 1–3), heavy, block, aim, shoot, loose, roll,
   heal, hurt, climb, waking, dead. `isFree()` = idle/walk. Inputs are buffered for 8 ticks (`buf`).
@@ -84,7 +90,22 @@ Neither tool can show what the game *looks* like or how it *feels* – Charlie p
   Bow arrows are sprites (`PlayerArrow`/`PowerArrow`) checked in `arrowHits()`.
 - **Enemies** are parallel lists indexed by slot (`eType, eArea, eHome, eH, eMaxHP, eSouls, eAlive, eX, eHP,
   eState, eFrame, eDir, eLast, eKb, eSprites`). To add one: append to every list in `state.ts`.
-  Types: `skel`, `knight` (blocks front hits in idle/chase/windup; heavies break it), `archer`.
+  Types: `skel`, `knight` (blocks front hits in idle/chase/windup; heavies break it), `archer`, `bandit`.
+  Bandits also use `eWait` (ticks before their next attack).
+- **Corrupted bandits** (slots 6 and 7, area 10): state `hidden` until the player passes x 70, then they appear
+  on both sides (the ambush). States: stalk (circle at ~22–44px, fast), windup → lunge (20 dmg), slashUp → slash
+  (16 dmg), recover (the opening), dodge, hurt, parry → riposte (34 dmg), stunned, parried, riposted, dying.
+  75 HP, 150 souls. Every non-heavy hit that would land rolls `d6()`: **1** parries (melee: you go into `pState`
+  `parried` for 30 ticks and it ripostes; arrows: batted away), **2** dodges (the hit misses), **3–6** lands.
+  Heavies (sword heavy, power shot) skip the roll and stun it. Hits on a stunned/parried bandit skip the roll.
+  Tests set `forceRoll` to choose the d6. The first bandit killed drops the Farsight Amulet.
+- **Amulets** (`amulet`: 0 none, 1 Farsight; one at a time, chosen in the menu's 4th row).
+  **Farsight:** if your sword hits an enemy inside `inParryWindow()` (the last frames of a skeleton/knight/bandit
+  wind-up, or the start of its strike/lunge), you parry instead: the enemy goes `parried` for 55 ticks.
+  **Riposte:** attacking (light or heavy, sword loadouts only) within 26px of a `parried` enemy starts
+  `pState = "riposte"`: lunge (0–7), blade through at frame 8 for 54 × melee multiplier, hold, pull free, done at 36.
+  You're untouchable during it. A riposte also cuts into the end of a combo/heavy. Heavy-stunned enemies can't be
+  riposted. The boss can't be parried.
 - **Loadouts** (`loadout`): 0 sword (tap = 3-hit combo, hold = heavy), 1 sword & shield (hold = block;
   dropped by the skeleton knight), 2 bow (tap = arrow, hold = power shot; dropped by the first archer killed).
   Knight art lists are indexed by loadout (walk frames: `loadout * 4 + n`).
@@ -100,6 +121,7 @@ Neither tool can show what the game *looks* like or how it *feels* – Charlie p
   lvAtt, souls, spawnArea, spawnX, loadout, stainSouls, stainArea, stainX, stainH]`, `ef_flags` `[hasShield,
   hasBow, hasKey, doorOpen, hasCellKey, cellOpen, bossDead, hasKeyRing, gateOpen, glargonFreed, teleported]`,
   `ef_visited` (per area). **Only ever append to these arrays** so old saves keep loading.
+  Since v0.6.3: `ef_stats` += `amulet`; `ef_flags` += `hasFarsight, banditMet`; `loadGame()` checks the lengths.
   Saves happen on rest, respawn, pickups, doors and story moments.
 
 ## 5. Story so far (exact text)
@@ -116,29 +138,27 @@ Then a key falls; you wake in a cell.
 
 **Note** (re-readable): "Fancy a glass of wine? Find me at the top of that mountain. I owe you a drink at least, friend. - Glargon Jones"
 
+**The uncorrupted bandit** (???), in the church (area 12) – after this he fades out and `banditMet` is set:
+"You're late. I'd tell you how long I've been waiting here for you, but I can't remember. Did you find Glargon? Good. It's best we make our way there. My legs feel a little numb. We're not Kindlings, brother. We are destined for more. Our adventure finally begins. I will stick to the shadows. You brave the beaten path."
+He then waits in the treehouse (area 16). His treehouse dialogue is **still to come from Charlie** – placeholder `BANDIT2 = "..."` in `story.ts`.
+
 Lore thread: the player is mistaken for a "kindling" – but is "something else". The uncorrupted bandit echoes it.
 
 ## 6. Roadmap (agreed with Charlie)
 
-### Chunk 2 – the village and the corrupted bandits *(next)*
-- East of the Still Lake: a ramshackle village of a few buildings. Doors lead into interior rooms (separate screens).
-- **Building 1:** empty until you reach the middle, then **2 corrupted bandits** spawn (an ambush).
-- **Building 2:** the **uncorrupted bandit** (speaks as ???). Brief dialogue, then fade to black → he's gone → fade back. His words:
-  "You're late. I'd tell you how long I've been waiting here for you, but I can't remember. Did you find Glargon? Good. It's best we make our way there. My legs feel a little numb. We're not Kindlings, brother. We are destined for more. Our adventure finally begins. I will stick to the shadows. You brave the beaten path."
-- **Corrupted bandit** (new mob, assassin type): high mobility. On each of your hits that would land, roll a d6:
-  **1 = it parries you, 2 = it dashes away and dodges, 3–6 = the hit lands.** Any heavy attack (sword heavy,
-  bow power shot) stuns it. ~150 souls each. **The first bandit killed drops the Farsight Amulet.**
-- Being parried (until Stalwart exists): you're stunned ~1s and the bandit ripostes for heavy damage.
+### Chunk 2 – Ashen Forde *(done, v0.6.3)*
+The road and signpost, three village streets (ambush house, church, merchant's house), the great tree and the
+treehouse; corrupted bandits with the d6; the uncorrupted bandit; the amulet slot, Farsight parrying and the
+riposte. The merchant is a placeholder (stands behind her counter, no interaction yet).
 
-### Chunk 3 – parrying, amulets, the shop
-- **Amulet slot:** one amulet equipped at a time; add it to the equipment menu.
-- **Farsight Amulet** (bandit drop): lets you parry – if your attack lands during an enemy attack's
-  about-to-hit window, you parry instead of trading blows and the enemy is stunned.
-- **Riposte:** only after a *parry* (not heavy-stuns). Your next melee attack on the stunned enemy becomes a
-  unique run-through animation (lunge, blade through, pause, pull free), about 3× damage. Not possible with the bow.
-- **Stalwart Amulet:** when an enemy parries you, no stun; the riposte becomes a normal hit at 50% damage.
+### Next – waiting on details from Charlie
+- The uncorrupted bandit's treehouse dialogue (`BANDIT2`), and what lies east of the great tree.
+
+### Chunk 3 – the remaining amulets, the shop
+- **Stalwart Amulet:** when an enemy parries you, you're not stunned; you take the damage of a normal hit,
+  reduced by 50%, instead of the stun + riposte.
 - **Focus Amulet:** the roll becomes a much faster dash, same invincibility window.
-- **Shop:** past the village. A silent merchant – a woman behind a translucent blue veil, wearing many amulets.
+- **Shop:** the merchant's house in Ashen Forde (area 14, already placed). A silent merchant – a woman behind a translucent blue veil, wearing many amulets.
   Press A to open her menu. Stalwart and Focus cost **1,500 souls** each.
 
 ### Later

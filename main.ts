@@ -1,6 +1,6 @@
 // ---------------------------------------------------------------- version
 // shown on the title screen; bump it with every update
-let VERSION = "v0.6.2"
+let VERSION = "v0.6.3"
 
 // ---------------------------------------------------------------- the main loop
 game.onUpdateInterval(33, function () {
@@ -97,9 +97,23 @@ let weaponIcon = sprites.create(icons[0], SpriteKind.Scenery)
 weaponIcon.setPosition(40, 19)
 weaponIcon.z = 100
 let keyIcon = sprites.create(keyImg, SpriteKind.Scenery)
-keyIcon.setPosition(56, 19)
+keyIcon.setPosition(68, 19)
 keyIcon.z = 100
 keyIcon.setFlag(SpriteFlag.Invisible, true)
+let amuletIcon = sprites.create(icons[4], SpriteKind.Scenery)
+amuletIcon.setPosition(54, 19)
+amuletIcon.z = 100
+amuletIcon.setFlag(SpriteFlag.Invisible, true)
+let farsightItem = sprites.create(farsightImg, SpriteKind.Scenery)
+farsightItem.setFlag(SpriteFlag.Invisible, true)
+let friend = sprites.create(friendLeanImg, SpriteKind.Scenery)
+friend.z = 4
+friend.setFlag(SpriteFlag.Invisible, true)
+let merchant = sprites.create(faced(merchantImg, -1), SpriteKind.Scenery)
+merchant.x = 124
+merchant.bottom = GROUND - 14
+merchant.z = 4
+merchant.setFlag(SpriteFlag.Invisible, true)
 let bossBar = sprites.create(image.create(104, 5), SpriteKind.Scenery)
 bossBar.setPosition(80, 114)
 bossBar.z = 100

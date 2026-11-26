@@ -8,7 +8,8 @@ function takeDamage() {
             dmgIn = Math.round(dmgIn * 0.8)
         }
         // the first 12 ticks of a roll are invincible ("i-frames")
-        if (!((pState == "roll" && pFrame < 13) || invuln > 0)) {
+        // (and you can't be touched mid-riposte)
+        if (!((pState == "roll" && pFrame < 13) || invuln > 0 || pState == "riposte")) {
             if (pState == "block" && dmgDir == 0 - pDir) {
                 // blocked by the shield: costs stamina instead of health
                 stamina += 0 - dmgIn * 1.3 * (1 - 0.05 * lvStr)
@@ -60,7 +61,11 @@ function canClimbDown(): number {
 }
 function readInput() {
     if (talkTarget != "" && controller.A.isPressed() && aHeld == 0 && !(waitRelease)) {
-        startScene(talkTarget)
+        if (talkTarget == "enter") {
+            enterBuilding()
+        } else {
+            startScene(talkTarget)
+        }
         return
     }
     // A: tap = attack. Holding A does something different with each loadout.
@@ -136,6 +141,13 @@ function readInput() {
                 px = 120
                 py = 88
                 pState = "climb"
+            } else if (area == 16 && Math.abs(px - 120) < 5 && py == 0) {
+                // down the hatch, back down the tree
+                goToArea(15)
+                ladder = 2
+                px = 120
+                py = 84
+                pState = "climb"
             } else if (canClimbDown() >= 0) {
                 ladder = canClimbDown()
                 pState = "climb"
@@ -195,8 +207,26 @@ function startLight(step: number) {
     stamDelay = 30
     buf = ""
 }
+// attacking an enemy you've just parried runs it through instead (sword only, not the bow)
+function tryRiposte(): boolean {
+    if ((buf == "light" || buf == "heavy") && loadout <= 1 && stamina > 0 && riposteFoe() >= 0) {
+        riposteOn = riposteFoe()
+        pState = "riposte"
+        pFrame = 0
+        pDir = sign(eX[riposteOn] - px)
+        eState[riposteOn] = "riposted"
+        eFrame[riposteOn] = 0
+        atkActive = false
+        stamina += -12
+        stamDelay = 30
+        buf = ""
+        return true
+    }
+    return false
+}
 // every action costs stamina - with none left, the action waits in the buffer
 function startAction() {
+    tryRiposte()
     if (buf == "roll" && stamina > 0) {
         pState = "roll"
         pFrame = 0
@@ -274,6 +304,10 @@ function fireArrow(power: boolean) {
 // attacks have a wind-up, a few active frames, then recovery
 function doAction() {
     pFrame += 1
+    // a parried enemy takes priority over the next swing of a combo
+    if ((pState == "light" && pFrame >= 8 || pState == "heavy" && pFrame >= 19) && tryRiposte()) {
+        pFrame = 1
+    }
     if (pState == "light") {
         // the 3-hit combo: tap A again during the recovery to chain the next swing
         if (combo == 1) {
@@ -378,6 +412,17 @@ function doAction() {
             pState = "idle"
         }
     }
+    if (pState == "parried") {
+        // a bandit turned your blade aside: you reel, wide open
+        px += kb
+        kb = kb * 0.8
+        if (pFrame > 30) {
+            pState = "idle"
+        }
+    }
+    if (pState == "riposte") {
+        doRiposte()
+    }
     if (pState == "waking") {
         if (pFrame > 54) {
             pState = "idle"
@@ -395,6 +440,11 @@ function doAction() {
             if (area == 2) {
                 // up through the ceiling into the woods
                 goToArea(3)
+                px = 128
+                py = 0
+            } else if (area == 15) {
+                // up the great tree, into the treehouse
+                goToArea(16)
                 px = 128
                 py = 0
             } else {
@@ -448,6 +498,20 @@ function physics() {
         } else if (walkingRight && area == 5 && gateOpen) {
             px = 6
             goToArea(6)
+        } else if (walkingRight && (area == 7 || area == 8 || area == 9 || area == 11 || area == 13)) {
+            // east from the lake: the road, through the gate, down the village street, out to the great tree
+            px = 6
+            if (area == 7) {
+                goToArea(8)
+            } else if (area == 8) {
+                goToArea(9)
+            } else if (area == 9) {
+                goToArea(11)
+            } else if (area == 11) {
+                goToArea(13)
+            } else {
+                goToArea(15)
+            }
         } else {
             px = 156
         }
@@ -468,6 +532,22 @@ function physics() {
         } else if (walkingLeft && area == 6 && !(teleported)) {
             px = 136
             goToArea(5)
+        } else if (walkingLeft && (area == 8 || area == 9 || area == 11 || area == 13 || area == 15)) {
+            px = 154
+            if (area == 8) {
+                goToArea(7)
+            } else if (area == 9) {
+                goToArea(8)
+            } else if (area == 11) {
+                goToArea(9)
+            } else if (area == 13) {
+                goToArea(11)
+            } else {
+                goToArea(13)
+            }
+        } else if (walkingLeft && (area == 10 || area == 12 || area == 14)) {
+            // out of the door you came in by
+            leaveBuilding()
         } else {
             px = 4
         }
@@ -522,8 +602,16 @@ function animateKnight() {
         im = kClimb[Math.idiv(Math.round(py), 4) % 2]
     } else if (pState == "heal") {
         im = kDrink[loadout]
-    } else if (pState == "hurt") {
+    } else if (pState == "hurt" || pState == "parried") {
         im = kHurt[loadout]
+    } else if (pState == "riposte") {
+        if (pFrame < 8) {
+            im = kWindup3[loadout]
+        } else if (pFrame < 26) {
+            im = kThrust[loadout]
+        } else {
+            im = kWindup2[loadout]
+        }
     } else if (pState == "dead") {
         im = kDead
     } else if (pState == "waking") {
@@ -538,4 +626,66 @@ function animateKnight() {
     knight.bottom = GROUND - py
     // flicker while invincible after a hit
     knight.setFlag(SpriteFlag.Invisible, gameState == "title" || (invuln > 8 && pState != "roll" && invuln % 6 < 3))
+}
+
+// ---------------------------------------------------------------- doors (Ashen Forde)
+function enterBuilding() {
+    waitRelease = true
+    music.play(music.melodyPlayable(music.footstep), music.PlaybackMode.InBackground)
+    goToArea(area + 1)
+    px = 22
+    py = 0
+    pDir = 1
+    pState = "idle"
+}
+function leaveBuilding() {
+    goToArea(area - 1)
+    px = DOOR_X
+    py = 0
+    pDir = -1
+    pState = "idle"
+}
+// ---------------------------------------------------------------- the riposte
+// an enemy you've parried, close enough and in front of you
+function riposteFoe(): number {
+    for (let r = 0; r <= eType.length - 1; r++) {
+        if (eArea[r] == area && eAlive[r] == 1 && eState[r] == "parried" && Math.abs(eX[r] - px) < 26 && Math.abs(py - eH[r]) < 10) {
+            return r
+        }
+    }
+    return -1
+}
+// lunge, blade through, hold, pull free
+function doRiposte() {
+    let t = riposteOn
+    if (t < 0) {
+        pState = "idle"
+        return
+    }
+    if (pFrame < 8) {
+        let stand = eX[t] - pDir * 11
+        px += Math.max(-2.5, Math.min(2.5, stand - px))
+    }
+    if (pFrame == 8) {
+        music.play(music.melodyPlayable(music.bigCrash), music.PlaybackMode.InBackground)
+        scene.cameraShake(3, 250)
+        eLast[t] = atkID
+        hitEnemy(t, Math.round(54 * meleeMul()), false, px)
+        eKb[t] = 0
+        if (eState[t] != "dying") {
+            eState[t] = "riposted"
+        }
+    }
+    if (pFrame > 25 && pFrame < 34) {
+        px += 0 - pDir * 0.6
+    }
+    if (pFrame > 36) {
+        pState = "idle"
+        if (eState[t] == "riposted") {
+            // it staggers back to its feet
+            eState[t] = "stunned"
+            eFrame[t] = 25
+        }
+        riposteOn = -1
+    }
 }

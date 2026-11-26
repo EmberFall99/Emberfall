@@ -8,8 +8,9 @@ function bit(b: boolean): number {
 }
 function saveGame() {
     settings.writeNumber("ef_saved", 1)
-    settings.writeNumberArray("ef_stats", [lvSta, lvCon, lvStr, lvDex, lvAtt, souls, spawnArea, spawnX, loadout, stainSouls, stainArea, stainX, stainH])
-    settings.writeNumberArray("ef_flags", [bit(hasShield), bit(hasBow), bit(hasKey), bit(doorOpen), bit(hasCellKey), bit(cellOpen), bit(bossDead), bit(hasKeyRing), bit(gateOpen), bit(glargonFreed), bit(teleported)])
+    // only ever add to the END of these lists, so older saves still load
+    settings.writeNumberArray("ef_stats", [lvSta, lvCon, lvStr, lvDex, lvAtt, souls, spawnArea, spawnX, loadout, stainSouls, stainArea, stainX, stainH, amulet])
+    settings.writeNumberArray("ef_flags", [bit(hasShield), bit(hasBow), bit(hasKey), bit(doorOpen), bit(hasCellKey), bit(cellOpen), bit(bossDead), bit(hasKeyRing), bit(gateOpen), bit(glargonFreed), bit(teleported), bit(hasFarsight), bit(banditMet)])
     let vis: number[] = []
     for (let v of visited) {
         vis.push(bit(v))
@@ -34,6 +35,9 @@ function loadGame() {
     stainArea = st[10]
     stainX = st[11]
     stainH = st[12]
+    if (st.length > 13) {
+        amulet = st[13]
+    }
     totalLv = lvSta + lvCon + lvStr + lvDex + lvAtt
     maxSta = 100 + 10 * lvSta
     maxHP = 100 + 12 * lvCon
@@ -50,6 +54,10 @@ function loadGame() {
     gateOpen = fl2[8] == 1
     glargonFreed = fl2[9] == 1
     teleported = fl2[10] == 1
+    if (fl2.length > 12) {
+        hasFarsight = fl2[11] == 1
+        banditMet = fl2[12] == 1
+    }
     let vis2 = settings.readNumberArray("ef_visited")
     for (let vi = 0; vi <= vis2.length - 1; vi++) {
         visited[vi] = vis2[vi] == 1

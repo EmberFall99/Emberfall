@@ -1,6 +1,9 @@
 // ---------------------------------------------------------------- story: dialogue, cutscenes, fades
 let G1 = "Good heavens. Is that - a kindling? No, something else. Where did you get those embers? Surely you didn't slay the Warden? No matter. Let me out will you, old chap? I dread to think how long it's been."
 let G2 = "Much better. What a state it is around here. You know, for the longest time there was a horrible smell. Anyway, you wouldn't want to stay much longer around here. Come. We'll go together."
+let BANDIT1 = "You're late. I'd tell you how long I've been waiting here for you, but I can't remember. Did you find Glargon? Good. It's best we make our way there. My legs feel a little numb. We're not Kindlings, brother. We are destined for more. Our adventure finally begins. I will stick to the shadows. You brave the beaten path."
+// placeholder until Charlie writes what he says in the treehouse
+let BANDIT2 = "..."
 let NOTE_TEXT = "Fancy a glass of wine? Find me at the top of that mountain. I owe you a drink at least, friend.\n- Glargon Jones"
 // split text into lines that fit the dialogue box ("\n" forces a new line)
 function wrapText(text: string, maxChars: number): string[] {
@@ -118,6 +121,13 @@ function startScene(target: string) {
     control.runInParallel(function () {
         if (target == "glargon") {
             glargonScene()
+        } else if (target == "bandit") {
+            banditScene()
+        } else if (target == "friend") {
+            pDir = sign(FRIEND_TREE_X - px)
+            say("???", BANDIT2)
+            gameState = "play"
+            waitRelease = true
         } else {
             say("A note", NOTE_TEXT)
             gameState = "play"
@@ -176,5 +186,18 @@ function glargonScene() {
     saveGame()
     gameState = "play"
     pause(500)
+    fadeIn(false)
+}
+// the uncorrupted bandit, waiting in the church: a few words, then he's gone
+function banditScene() {
+    pDir = sign(FRIEND_CHURCH_X - px)
+    friend.setImage(friendTalkL)
+    say("???", BANDIT1)
+    fadeOut(false)
+    banditMet = true
+    pause(900)
+    saveGame()
+    gameState = "play"
+    waitRelease = true
     fadeIn(false)
 }

@@ -9,7 +9,7 @@ import json, os, sys, subprocess, tempfile
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.dirname(HERE)
 sys.path.insert(0, os.path.join(HERE, 'art'))
-import pixrig as R, pixrig2 as Q, pixrig3 as Z, textart as T
+import pixrig as R, pixrig2 as Q, pixrig3 as Z, pixrig4 as W, textart as T
 
 def grid(g): return g.p if hasattr(g, 'p') else g
 def banner(t, col, big=False, sub=None):
@@ -79,6 +79,18 @@ anim('knWalk', 'skeletonKnightWalk', [KN['k_walk1'], KN['k_walk2']], 300)
 for var, name, key in [('arIdle', 'archerIdle', 'a_idle'), ('arDraw', 'archerDraw', 'a_draw'), ('arLoose', 'archerLoose', 'a_loose'), ('arHurt', 'archerHurt', 'a_hurt')]:
     single(var, name, AR[key])
 anim('arWalk', 'archerWalk', [AR['a_walk1'], AR['a_walk2']], 260)
+# ---- chunk 2: corrupted bandits, the uncorrupted bandit, the merchant, the Farsight Amulet
+BD = W.bandit_frames()
+for var, name, key in [('bdIdle', 'banditIdle', 'idle'), ('bdWindup', 'banditWindup', 'windup'), ('bdLunge', 'banditLunge', 'lunge'),
+                       ('bdSlash', 'banditSlash', 'slash'), ('bdParry', 'banditParry', 'parry'), ('bdDodge', 'banditDodge', 'dodge'),
+                       ('bdHurt', 'banditHurt', 'hurt'), ('bdStun', 'banditStunned', 'stunned'), ('bdDead', 'banditDead', 'dead')]:
+    single(var, name, BD[key])
+anim('bdWalk', 'banditWalk', [BD['walk1'], BD['walk2']], 200)
+FL, FT = W.friend_frames()
+single('friendLeanImg', 'uncorruptedBandit', FL)
+single('friendTalkImg', 'uncorruptedBanditTalking', FT)
+single('merchantImg', 'veiledMerchant', W.merchant_behind_counter())
+single('farsightImg', 'farsightAmulet', W.amulet_pickup())
 # ---- boss: [normal, enraged dim, enraged bright]
 for var, base, key in [('bIdle', 'wardenIdle', 'b_idle'), ('bRaise', 'wardenSlamWindup', 'b_raise'), ('bSlam', 'wardenSlam', 'b_slam'),
                        ('bSweepUp', 'wardenSweepWindup', 'b_sweepup'), ('bSweep', 'wardenSweep', 'b_sweep'), ('bCrouch', 'wardenChargeWindup', 'b_crouch'),
@@ -100,10 +112,15 @@ for var, name, g in [('arrowFlat', 'arrow', fl), ('arrowDiag', 'arrowDiagonal', 
                      ('manGlowImg', 'prisonerTransforming', Z.man_glow()), ('wizardImg', 'glargon', Z.wizard()),
                      ('wizardCastImg', 'glargonCasting', Z.wizard(cast=True, glow=True)), ('noteImg', 'glargonsNote', Z.note_img())]:
     single(var, name, g)
-array('icons', [('iconSword', Q.icon('sword')), ('iconSwordShield', Q.icon('shield')), ('iconBow', Q.icon('bow')), ('iconLocked', Q.icon('lock'))])
+array('icons', [('iconSword', Q.icon('sword')), ('iconSwordShield', Q.icon('shield')), ('iconBow', Q.icon('bow')), ('iconLocked', Q.icon('lock')), ('iconAmulet', W.amulet_icon())])
 # ---- backgrounds
 for var, name, g in [('bgField', 'bgFrostbittenField', Z.bg_battlefield()), ('bgLake', 'bgStillLake', Z.bg_lake()), ('bgCell', 'bgCell', Q.bg_cell()), ('bgTitle', 'bgTitle', R.bg_title()), ('bgGate', 'bgAshenGate', R.bg_gate()), ('bgHall', 'bgSunkenHall', Q.bg_hall2()),
-                     ('bgWoods', 'bgWhisperingWoods', Q.bg_forest()), ('bgRampart', 'bgArchersRampart', Q.bg_rampart()), ('bgArena', 'bgWardenArena', R.bg_arena())]:
+                     ('bgWoods', 'bgWhisperingWoods', Q.bg_forest()), ('bgRampart', 'bgArchersRampart', Q.bg_rampart()), ('bgArena', 'bgWardenArena', R.bg_arena()),
+                     ('bgRoad', 'bgFordeRoad', W.bg_road()), ('bgForde1', 'bgFordeStreetHouse', W.bg_village1()),
+                     ('bgForde2', 'bgFordeStreetChurch', W.bg_village2()), ('bgForde3', 'bgFordeStreetShop', W.bg_village3()),
+                     ('bgHouseIn', 'bgFordeHouseInside', W.bg_house_inside()), ('bgChurchIn', 'bgFordeChurchInside', W.bg_church_inside()),
+                     ('bgShopIn', 'bgFordeShopInside', W.bg_shop_inside()), ('bgTree', 'bgGreatTree', W.bg_tree()),
+                     ('bgTreehouse', 'bgTreehouse', W.bg_treehouse())]:
     single(var, name, g)
 # ---- text
 for var, name, g in [
@@ -130,7 +147,10 @@ for var, name, g in [
     ('bnKey', 'bannerKey', banner('KEY ACQUIRED', '5', sub='It must open something...')),
     ('bnBow', 'bannerBow', banner('BOW ACQUIRED', '5', sub='Press MENU to equip it')),
     ('bnShield', 'bannerShield', banner('SHIELD ACQUIRED', '5', sub='Press MENU to equip it')),
-    ('bnDoor', 'bannerDoorUnlocked', banner('DOOR UNLOCKED', '5'))]:
+    ('bnDoor', 'bannerDoorUnlocked', banner('DOOR UNLOCKED', '5')),
+    ('bnForde', 'bannerAshenForde', banner('ASHEN FORDE', 'd')),
+    ('bnFarsight', 'bannerFarsight', banner('FARSIGHT AMULET', '5', sub='Press MENU to equip it')),
+    ('txtEnter', 'textEnter', T.text_grid('A: Enter', 8, '5', font=T.SANS))]:
     single(var, name, g)
 
 # ================================================================ encode with pxt's own functions

@@ -85,32 +85,35 @@ let spawnArea = 1
 let spawnX = 40
 let nearFire = false
 let fireX = 22
-let visited = [false, false, false, false, false, false, false, false]
+let visited = [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false]
 let bannerT = 0
 let deadT = 0
 // ladders and ledges, one slot per ladder / ledge
-let ladArea = [2, 4]
-let ladX = [120, 92]
-let ladTop = [96, 44]
+let ladArea = [2, 4, 15]
+let ladX = [120, 92, 120]
+let ladTop = [96, 44, 86]
 let platArea = [4]
 let platX1 = [96]
 let platX2 = [140]
 let platH = [44]
 // enemies: one slot in each list per enemy
-let eType = ["skel", "skel", "skel", "knight", "archer", "archer"]
-let eArea = [1, 2, 2, 3, 3, 4]
-let eHome = [117, 55, 88, 70, 138, 126]
-let eH = [0, 0, 0, 0, 0, 44]
-let eMaxHP = [40, 40, 40, 70, 30, 30]
-let eSouls = [50, 50, 50, 120, 80, 80]
-let eAlive = [1, 1, 1, 1, 1, 1]
-let eX = [0, 0, 0, 0, 0, 0]
-let eHP = [0, 0, 0, 0, 0, 0]
-let eState = ["idle", "idle", "idle", "idle", "idle", "idle"]
-let eFrame = [0, 0, 0, 0, 0, 0]
-let eDir = [-1, -1, -1, -1, -1, -1]
-let eLast = [0, 0, 0, 0, 0, 0]
-let eKb = [0, 0, 0, 0, 0, 0]
+// (the last two are the corrupted bandits who ambush you inside the first house in Ashen Forde)
+let eType = ["skel", "skel", "skel", "knight", "archer", "archer", "bandit", "bandit"]
+let eArea = [1, 2, 2, 3, 3, 4, 10, 10]
+let eHome = [117, 55, 88, 70, 138, 126, 30, 142]
+let eH = [0, 0, 0, 0, 0, 44, 0, 0]
+let eMaxHP = [40, 40, 40, 70, 30, 30, 75, 75]
+let eSouls = [50, 50, 50, 120, 80, 80, 150, 150]
+let eAlive = [1, 1, 1, 1, 1, 1, 1, 1]
+let eX = [0, 0, 0, 0, 0, 0, 0, 0]
+let eHP = [0, 0, 0, 0, 0, 0, 0, 0]
+let eState = ["idle", "idle", "idle", "idle", "idle", "idle", "idle", "idle"]
+let eFrame = [0, 0, 0, 0, 0, 0, 0, 0]
+let eDir = [-1, -1, -1, -1, -1, -1, -1, -1]
+let eLast = [0, 0, 0, 0, 0, 0, 0, 0]
+let eKb = [0, 0, 0, 0, 0, 0, 0, 0]
+// how long each bandit waits before its next attack (re-rolled after every attack)
+let eWait = [0, 0, 0, 0, 0, 0, 40, 55]
 let eSprites: Sprite[] = []
 // the boss
 let bossActive = false
@@ -125,4 +128,19 @@ let bPhase = 1
 let bDashHit = false
 let bPick = 0
 let wUp = 0
+// ---------------- Ashen Forde (chunk 2)
+// areas: 8 the road, 9-13 the village streets (10, 12, 14 are the insides of their buildings),
+// 15 the great tree, 16 the treehouse
+let DOOR_X = 80
+// amulets: 0 = none, 1 = Farsight (lets you parry). Only one can be worn at a time.
+let amulet = 0
+let hasFarsight = false
+let farsightDropped = false
+let farsightArea = 0
+// the uncorrupted bandit: met in the church, waits later in the treehouse
+let banditMet = false
+// the d6 the corrupted bandits roll when your hit would land. Tests set forceRoll to pick the result.
+let forceRoll = 0
+// riposte: which enemy you're running through
+let riposteOn = -1
 let bossTune = music.stringPlayable("D4 D4 F4 D4 A4 G4 F4 E4 ", 260)

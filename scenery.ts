@@ -58,12 +58,33 @@ function updateScenery() {
     glargon.setFlag(SpriteFlag.Invisible, area != 6 || gameState != "cutscene")
     // the lake: Glargon's note
     note.setFlag(SpriteFlag.Invisible, area != 7)
+    // Ashen Forde: the uncorrupted bandit (church, then the treehouse) and the veiled merchant
+    friend.setFlag(SpriteFlag.Invisible, !(area == 12 && !(banditMet) || area == 16 && banditMet))
+    if (area == 12) {
+        if (gameState != "cutscene") {
+            friend.setImage(friendLeanL)
+        }
+        friend.x = FRIEND_CHURCH_X
+    } else {
+        if (gameState != "cutscene") {
+            friend.setImage(friendTalkL)
+        }
+        friend.x = FRIEND_TREE_X
+    }
+    friend.bottom = GROUND
+    merchant.setFlag(SpriteFlag.Invisible, area != 14)
     talkTarget = ""
     if (gameState == "play" && isFree() && py == 0) {
         if (area == 6 && !(glargonFreed) && Math.abs(px - 112) < 18) {
             talkTarget = "glargon"
         } else if (area == 7 && Math.abs(px - note.x) < 10) {
             talkTarget = "note"
+        } else if ((area == 9 || area == 11 || area == 13) && Math.abs(px - DOOR_X) < 8) {
+            talkTarget = "enter"
+        } else if (area == 12 && !(banditMet) && Math.abs(px - FRIEND_CHURCH_X) < 18) {
+            talkTarget = "bandit"
+        } else if (area == 16 && banditMet && Math.abs(px - FRIEND_TREE_X) < 18) {
+            talkTarget = "friend"
         }
     }
     talkPrompt.setFlag(SpriteFlag.Invisible, talkTarget == "")
@@ -73,6 +94,15 @@ function updateScenery() {
     } else if (talkTarget == "note") {
         talkPrompt.setImage(txtRead)
         talkPrompt.setPosition(note.x, 86)
+    } else if (talkTarget == "enter") {
+        talkPrompt.setImage(txtEnter)
+        talkPrompt.setPosition(DOOR_X, GROUND - 36)
+    } else if (talkTarget == "bandit") {
+        talkPrompt.setImage(txtTalk)
+        talkPrompt.setPosition(FRIEND_CHURCH_X, GROUND - 32)
+    } else if (talkTarget == "friend") {
+        talkPrompt.setImage(txtTalk)
+        talkPrompt.setPosition(FRIEND_TREE_X, GROUND - 32)
     }
     // the key, the door and the dropped bow
     keyItem.setFlag(SpriteFlag.Invisible, !(area == 3 && !(hasKey)))
@@ -111,6 +141,13 @@ function updateScenery() {
         hasBow = true
         music.play(music.melodyPlayable(music.powerUp), music.PlaybackMode.InBackground)
         showBanner(bnBow, 70)
+        saveGame()
+    }
+    farsightItem.setFlag(SpriteFlag.Invisible, !(farsightDropped && !(hasFarsight) && area == farsightArea))
+    if (farsightDropped && !(hasFarsight) && area == farsightArea && Math.abs(px - farsightItem.x) < 8 && Math.abs(GROUND - py - farsightItem.bottom) < 10 && gameState == "play") {
+        hasFarsight = true
+        music.play(music.melodyPlayable(music.powerUp), music.PlaybackMode.InBackground)
+        showBanner(bnFarsight, 80)
         saveGame()
     }
     // your lost souls wait where you died
@@ -155,6 +192,7 @@ function drawHud() {
     weaponIcon.setImage(icons[loadout])
     weaponIcon.setFlag(SpriteFlag.Invisible, gameState == "title")
     keyIcon.setFlag(SpriteFlag.Invisible, !(hasKey) || gameState == "title")
+    amuletIcon.setFlag(SpriteFlag.Invisible, amulet == 0 || gameState == "title")
     let bb = bossBar.image
     bb.fill(0)
     bb.fillRect(0, 0, 104, 5, 15)
@@ -163,3 +201,7 @@ function drawHud() {
     bossBar.setFlag(SpriteFlag.Invisible, !(bossActive))
     bossName.setFlag(SpriteFlag.Invisible, !(bossActive))
 }
+let FRIEND_CHURCH_X = 120
+let friendLeanL = faced(friendLeanImg, -1)
+let friendTalkL = faced(friendTalkImg, -1)
+let FRIEND_TREE_X = 142

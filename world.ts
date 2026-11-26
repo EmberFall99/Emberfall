@@ -13,6 +13,7 @@ function respawn() {
     dmgIn = 0
     invuln = 30
     atkActive = false
+    riposteOn = -1
     bossActive = false
     sprites.destroyAllSpritesOfKind(SpriteKind.FireWave)
     sprites.destroyAllSpritesOfKind(SpriteKind.EnemyArrow)
@@ -61,8 +62,26 @@ function goToArea(n: number) {
         scene.setBackgroundImage(bgArena)
     } else if (area == 6) {
         scene.setBackgroundImage(bgField)
-    } else {
+    } else if (area == 7) {
         scene.setBackgroundImage(bgLake)
+    } else if (area == 8) {
+        scene.setBackgroundImage(bgRoad)
+    } else if (area == 9) {
+        scene.setBackgroundImage(bgForde1)
+    } else if (area == 10) {
+        scene.setBackgroundImage(bgHouseIn)
+    } else if (area == 11) {
+        scene.setBackgroundImage(bgForde2)
+    } else if (area == 12) {
+        scene.setBackgroundImage(bgChurchIn)
+    } else if (area == 13) {
+        scene.setBackgroundImage(bgForde3)
+    } else if (area == 14) {
+        scene.setBackgroundImage(bgShopIn)
+    } else if (area == 15) {
+        scene.setBackgroundImage(bgTree)
+    } else {
+        scene.setBackgroundImage(bgTreehouse)
     }
     // snow only falls on the frozen field
     if (area == 6) {
@@ -74,6 +93,8 @@ function goToArea(n: number) {
         fireX = 22
     } else if (area == 7) {
         fireX = 40
+    } else if (area == 16) {
+        fireX = 50
     } else {
         fireX = 30
     }
@@ -94,6 +115,8 @@ function goToArea(n: number) {
             showBanner(bnField, 45)
         } else if (area == 7) {
             showBanner(bnLake, 60)
+        } else if (area == 9) {
+            showBanner(bnForde, 60)
         }
     }
     if (area == 5 && !(bossDead) && !(bossActive)) {
@@ -115,12 +138,17 @@ function setupEnemy(i: number) {
         eLast[i] = atkID
         eKb[i] = 0
         eSprites[i].setFlag(SpriteFlag.Invisible, false)
+        if (eType[i] == "bandit") {
+            // the bandits wait in the shadows until you're halfway into the house
+            eState[i] = "hidden"
+            eSprites[i].setFlag(SpriteFlag.Invisible, true)
+        }
     } else {
         eSprites[i].setFlag(SpriteFlag.Invisible, true)
     }
 }
 function hasBonfire(): boolean {
-    return area == 1 || area == 3 || area == 7
+    return area == 1 || area == 3 || area == 7 || area == 16
 }
 function rest() {
     hp = maxHP
