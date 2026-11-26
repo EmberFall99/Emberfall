@@ -1,6 +1,6 @@
 // ---------------------------------------------------------------- version
 // shown on the title screen; bump it with every update
-let VERSION = "v0.6.1"
+let VERSION = "v0.6.2"
 
 // ---------------------------------------------------------------- the main loop
 game.onUpdateInterval(33, function () {
