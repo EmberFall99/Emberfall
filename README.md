@@ -41,3 +41,7 @@ Wake in a cell. Fight through the Ashen Gate, the Sunken Hall, the Whispering Wo
 | `story.ts` | Dialogue box, fades, Glargon's scene, the note |
 | `saving.ts` | Saving at bonfires and story moments, loading on Continue |
 | `main.ts` | The main loop and game start |
+
+## For developers
+
+See [DEVNOTES.md](DEVNOTES.md) for how the project fits together, the tools in `tools/` (art generator, compile check, play-tests) and the roadmap.

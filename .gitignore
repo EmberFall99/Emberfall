@@ -3,3 +3,7 @@ node_modules
 pxt_modules
 .pxt
 *.db
+tools/node_modules
+tools/.build
+tools/package-lock.json
+__pycache__

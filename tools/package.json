@@ -1,0 +1,9 @@
+{
+    "name": "emberfall-tools",
+    "private": true,
+    "description": "Art generator, compile check and play-tests for Emberfall. Not part of the game itself.",
+    "devDependencies": {
+        "pxt-arcade": "4.2.1",
+        "esbuild": "0.28.2"
+    }
+}
