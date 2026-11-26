@@ -14,6 +14,7 @@ function damageBoss(dmg: number) {
         souls += 2000
         info.setScore(souls)
         showBanner(bnFelled, 150)
+        saveGame()
     } else if (bPhase == 1 && bossHP <= 140) {
         // phase 2: faster attacks, and the slam sends out fire waves
         bPhase = 2
@@ -141,6 +142,12 @@ function bossThink() {
         im = bDead[0]
         if (bFrame == 55) {
             spawnEmbers(bx, GROUND - 30, 30)
+        }
+        if (bFrame == 62) {
+            // he leaves behind his keys
+            keyRingDropped = true
+            keyRingItem.x = bx
+            keyRingItem.bottom = GROUND
         }
     }
     bx = Math.min(Math.max(bx, 12), 148)

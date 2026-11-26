@@ -59,6 +59,10 @@ function canClimbDown(): number {
     return -1
 }
 function readInput() {
+    if (talkTarget != "" && controller.A.isPressed() && aHeld == 0 && !(waitRelease)) {
+        startScene(talkTarget)
+        return
+    }
     // A: tap = attack. Holding A does something different with each loadout.
     if (waitRelease) {
         if (!(controller.A.isPressed())) {
@@ -425,6 +429,9 @@ function physics() {
     if (area == 0 && !(cellOpen) && px > 141) {
         px = 141
     }
+    if (area == 5 && !(gateOpen) && px > 141) {
+        px = 141
+    }
     if (px > 156) {
         if (walkingRight && area == 0) {
             px = 6
@@ -438,6 +445,9 @@ function physics() {
         } else if (walkingRight && area == 4 && py < 10) {
             px = 6
             goToArea(5)
+        } else if (walkingRight && area == 5 && gateOpen) {
+            px = 6
+            goToArea(6)
         } else {
             px = 156
         }
@@ -455,6 +465,9 @@ function physics() {
         } else if (walkingLeft && area == 5 && !(bossActive)) {
             px = 150
             goToArea(4)
+        } else if (walkingLeft && area == 6 && !(teleported)) {
+            px = 136
+            goToArea(5)
         } else {
             px = 4
         }

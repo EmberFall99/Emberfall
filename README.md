@@ -2,7 +2,7 @@
 
 A low-budget souls-like built in [Microsoft MakeCode Arcade](https://arcade.makecode.com).
 
-Fight through the Ashen Gate, the Sunken Hall, the Whispering Woods and the Archers' Rampart, then face the Hollow Warden.
+Wake in a cell. Fight through the Ashen Gate, the Sunken Hall, the Whispering Woods and the Archers' Rampart, face the Hollow Warden, and find what lies beyond the prison gate.
 
 ## Open it in MakeCode Arcade
 
@@ -20,6 +20,7 @@ Fight through the Ashen Gate, the Sunken Hall, the Whispering Woods and the Arch
 | B | Roll (invincible for a moment) |
 | A (tap) | Attack. Tap A A A for the sword combo |
 | A (hold) | Heavy attack / raise shield / power shot, depending on loadout |
+| A (near someone) | Talk / read |
 | Menu | Equipment |
 
 ## Where things are
@@ -36,4 +37,7 @@ Fight through the Ashen Gate, the Sunken Hall, the Whispering Woods and the Arch
 | `scenery.ts` | Bonfires, key, door, item drops, bloodstain, HUD |
 | `menus.ts` | Equipment menu |
 | `levelling.ts` | Stats, bonfire level-up menu, embers |
+| `prologue.ts` | The opening text, the falling key, starting in the cell |
+| `story.ts` | Dialogue box, fades, Glargon's scene, the note |
+| `saving.ts` | Saving at bonfires and story moments, loading on Continue |
 | `main.ts` | The main loop and game start |

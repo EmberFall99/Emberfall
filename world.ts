@@ -22,6 +22,7 @@ function respawn() {
     goToArea(spawnArea)
     gameState = "play"
     knight.setFlag(SpriteFlag.Invisible, false)
+    saveGame()
 }
 // Resting or dying brings every enemy back - the souls-like rule
 function resetWorld() {
@@ -56,11 +57,23 @@ function goToArea(n: number) {
         scene.setBackgroundImage(bgWoods)
     } else if (area == 4) {
         scene.setBackgroundImage(bgRampart)
-    } else {
+    } else if (area == 5) {
         scene.setBackgroundImage(bgArena)
+    } else if (area == 6) {
+        scene.setBackgroundImage(bgField)
+    } else {
+        scene.setBackgroundImage(bgLake)
+    }
+    // snow only falls on the frozen field
+    if (area == 6) {
+        effects.blizzard.startScreenEffect()
+    } else {
+        effects.blizzard.endScreenEffect()
     }
     if (area == 1) {
         fireX = 22
+    } else if (area == 7) {
+        fireX = 40
     } else {
         fireX = 30
     }
@@ -77,6 +90,10 @@ function goToArea(n: number) {
             showBanner(bnWoods, 45)
         } else if (area == 4) {
             showBanner(bnRampart, 45)
+        } else if (area == 6) {
+            showBanner(bnField, 45)
+        } else if (area == 7) {
+            showBanner(bnLake, 60)
         }
     }
     if (area == 5 && !(bossDead) && !(bossActive)) {
@@ -102,6 +119,9 @@ function setupEnemy(i: number) {
         eSprites[i].setFlag(SpriteFlag.Invisible, true)
     }
 }
+function hasBonfire(): boolean {
+    return area == 1 || area == 3 || area == 7
+}
 function rest() {
     hp = maxHP
     estus = maxEstus
@@ -111,6 +131,7 @@ function rest() {
     music.play(music.melodyPlayable(music.magicWand), music.PlaybackMode.InBackground)
     resetWorld()
     showBanner(bnRest, 50)
+    saveGame()
 }
 function die() {
     pState = "dead"

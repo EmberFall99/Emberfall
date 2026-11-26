@@ -19,6 +19,8 @@
         "menus.ts",
         "levelling.ts",
         "prologue.ts",
+        "story.ts",
+        "saving.ts",
         "main.ts",
         "README.md"
     ],

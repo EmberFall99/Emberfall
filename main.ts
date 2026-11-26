@@ -19,6 +19,8 @@ game.onUpdateInterval(33, function () {
             updateEmbers()
         }
         animateKnight()
+    } else if (gameState == "cutscene") {
+        animateKnight()
     } else if (gameState == "dead") {
         deadT += 1
         if (deadT == 20) {
@@ -114,9 +116,46 @@ pressText.setPosition(80, 104)
 let controlsText = sprites.create(image.create(160, 8), SpriteKind.Scenery)
 controlsText.image.printCenter("B: controls", 0, 11)
 controlsText.setPosition(80, 115)
+let titleMenu = sprites.create(image.create(160, 20), SpriteKind.Scenery)
+titleMenu.setPosition(80, 100)
 let introText = sprites.create(image.create(160, 24), SpriteKind.Scenery)
 introText.setPosition(80, 56)
 introText.z = 300
+let keyRingItem = sprites.create(keyRingImg, SpriteKind.Scenery)
+keyRingItem.setFlag(SpriteFlag.Invisible, true)
+let prisonGate = sprites.create(gateClosedImg, SpriteKind.Scenery)
+prisonGate.x = 150
+prisonGate.bottom = GROUND
+prisonGate.setFlag(SpriteFlag.Invisible, true)
+let flags: Sprite[] = []
+for (let fx2 of [34, 92, 146]) {
+    let flg = sprites.create(flagImgs[0], SpriteKind.Scenery)
+    flg.x = fx2
+    flg.bottom = GROUND
+    flg.setFlag(SpriteFlag.Invisible, true)
+    flags.push(flg)
+}
+let stocksSprite = sprites.create(stocksClosedImg, SpriteKind.Scenery)
+stocksSprite.x = 112
+stocksSprite.bottom = GROUND
+stocksSprite.setFlag(SpriteFlag.Invisible, true)
+let glargon = sprites.create(image.create(1, 1), SpriteKind.Scenery)
+glargon.setFlag(SpriteFlag.Invisible, true)
+let note = sprites.create(noteImg, SpriteKind.Scenery)
+note.x = 66
+note.bottom = GROUND
+note.setFlag(SpriteFlag.Invisible, true)
+let talkPrompt = sprites.create(txtTalk, SpriteKind.Scenery)
+talkPrompt.z = 150
+talkPrompt.setFlag(SpriteFlag.Invisible, true)
+let dialogue = sprites.create(image.create(156, 50), SpriteKind.Scenery)
+dialogue.setPosition(80, 52)
+dialogue.z = 260
+dialogue.setFlag(SpriteFlag.Invisible, true)
+let overlay = sprites.create(image.create(160, 120), SpriteKind.Scenery)
+overlay.setPosition(80, 60)
+overlay.z = 280
+overlay.setFlag(SpriteFlag.Invisible, true)
 let cellKey = sprites.create(keyImg, SpriteKind.Scenery)
 cellKey.setPosition(80, 100)
 cellKey.setFlag(SpriteFlag.Invisible, true)
@@ -124,10 +163,34 @@ let cellDoor = sprites.create(cellDoorClosedImg, SpriteKind.Scenery)
 cellDoor.x = 150
 cellDoor.bottom = GROUND
 cellDoor.setFlag(SpriteFlag.Invisible, true)
-// title screen: A to begin, B for the controls
+// title screen: Continue / New Game (if there's a save), B for the controls
+let titleSel = 0
+let saved = hasSave()
+if (saved) {
+    pressText.setFlag(SpriteFlag.Invisible, true)
+}
+function drawTitleMenu() {
+    let tm = titleMenu.image
+    tm.fill(0)
+    if (saved) {
+        if (titleSel == 0) {
+            tm.printCenter("> Continue <", 0, 5)
+            tm.printCenter("New Game", 10, 11)
+        } else {
+            tm.printCenter("Continue", 0, 11)
+            tm.printCenter("> New Game <", 10, 5)
+        }
+    }
+}
+drawTitleMenu()
 while (!(controller.A.isPressed())) {
+    if (saved && (controller.up.isPressed() || controller.down.isPressed())) {
+        titleSel = 1 - titleSel
+        drawTitleMenu()
+        pauseUntil(() => !(controller.up.isPressed()) && !(controller.down.isPressed()))
+    }
     if (controller.B.isPressed()) {
-        game.showLongText("CONTROLS\nLeft/Right: move\nUp: jump, climb\nDown: climb, flask\nDown at bonfire: rest\nB: roll (dodge)\nTap A: attack / combo\nHold A: heavy/block/aim\nMENU: equipment", DialogLayout.Full)
+        game.showLongText("CONTROLS\nLeft/Right: move\nUp: jump, climb\nDown: climb, flask\nDown at bonfire: rest\nB: roll (dodge)\nTap A: attack / combo\nHold A: heavy/block/aim\nA near someone: talk\nMENU: equipment", DialogLayout.Full)
         pauseUntil(() => !(controller.A.isPressed()) && !(controller.B.isPressed()))
     }
     pause(20)
@@ -137,8 +200,19 @@ titleText.destroy()
 subText.destroy()
 pressText.destroy()
 controlsText.destroy()
-playIntro()
-pauseUntil(() => !(controller.A.isPressed()))
+titleMenu.destroy()
+for (let fl3 = 1; fl3 <= 4; fl3++) {
+    fadeBlack.push(makeFade(fl3, 15))
+    fadeWhite.push(makeFade(fl3, 1))
+}
 controller.menu.onEvent(ControllerButtonEvent.Pressed, openMenu)
-info.setScore(0)
-startNewGame()
+if (saved && titleSel == 0) {
+    loadGame()
+    respawn()
+} else {
+    settings.writeNumber("ef_saved", 0)
+    playIntro()
+    pauseUntil(() => !(controller.A.isPressed()))
+    info.setScore(0)
+    startNewGame()
+}

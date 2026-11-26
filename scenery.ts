@@ -1,8 +1,8 @@
 // ---------------------------------------------------------------- scenery, items + HUD
 let bowArea = 0
 function updateScenery() {
-    nearFire = (area == 1 || area == 3) && gameState == "play" && Math.abs(px - fireX) < 12 && py == 0 && isFree()
-    bonfire.setFlag(SpriteFlag.Invisible, !(area == 1 || area == 3) || gameState == "title")
+    nearFire = hasBonfire() && gameState == "play" && Math.abs(px - fireX) < 12 && py == 0 && isFree()
+    bonfire.setFlag(SpriteFlag.Invisible, !(hasBonfire()) || gameState == "title")
     bonfire.setImage(fireImgs[Math.idiv(animT, 4) % 3])
     bonfire.x = fireX
     bonfire.bottom = GROUND
@@ -29,12 +29,58 @@ function updateScenery() {
         cellOpen = true
         music.play(music.melodyPlayable(music.beamUp), music.PlaybackMode.InBackground)
     }
+    // the Warden's key ring and the prison gate behind him
+    keyRingItem.setFlag(SpriteFlag.Invisible, !(area == 5 && keyRingDropped && !(hasKeyRing)))
+    if (area == 5 && keyRingDropped && !(hasKeyRing) && Math.abs(px - keyRingItem.x) < 8 && py < 10 && gameState == "play") {
+        hasKeyRing = true
+        music.play(music.melodyPlayable(music.baDing), music.PlaybackMode.InBackground)
+        showBanner(bnKeyRing, 70)
+        saveGame()
+    }
+    prisonGate.setFlag(SpriteFlag.Invisible, area != 5)
+    if (gateOpen) {
+        prisonGate.setImage(gateOpenImg)
+    } else {
+        prisonGate.setImage(gateClosedImg)
+    }
+    if (area == 5 && hasKeyRing && !(gateOpen) && px > 128 && gameState == "play") {
+        gateOpen = true
+        music.play(music.melodyPlayable(music.beamUp), music.PlaybackMode.InBackground)
+        scene.cameraShake(2, 400)
+        saveGame()
+    }
+    // the frozen field: tattered flags, and a man in the stocks
+    for (let fl = 0; fl <= flags.length - 1; fl++) {
+        flags[fl].setFlag(SpriteFlag.Invisible, area != 6)
+        flags[fl].setImage(flagImgs[(Math.idiv(animT, 5) + fl) % 3])
+    }
+    stocksSprite.setFlag(SpriteFlag.Invisible, area != 6)
+    glargon.setFlag(SpriteFlag.Invisible, area != 6 || gameState != "cutscene")
+    // the lake: Glargon's note
+    note.setFlag(SpriteFlag.Invisible, area != 7)
+    talkTarget = ""
+    if (gameState == "play" && isFree() && py == 0) {
+        if (area == 6 && !(glargonFreed) && Math.abs(px - 112) < 18) {
+            talkTarget = "glargon"
+        } else if (area == 7 && Math.abs(px - note.x) < 10) {
+            talkTarget = "note"
+        }
+    }
+    talkPrompt.setFlag(SpriteFlag.Invisible, talkTarget == "")
+    if (talkTarget == "glargon") {
+        talkPrompt.setImage(txtTalk)
+        talkPrompt.setPosition(112, 64)
+    } else if (talkTarget == "note") {
+        talkPrompt.setImage(txtRead)
+        talkPrompt.setPosition(note.x, 86)
+    }
     // the key, the door and the dropped bow
     keyItem.setFlag(SpriteFlag.Invisible, !(area == 3 && !(hasKey)))
     if (area == 3 && !(hasKey) && Math.abs(px - keyItem.x) < 8 && py < 10 && gameState == "play") {
         hasKey = true
         music.play(music.melodyPlayable(music.baDing), music.PlaybackMode.InBackground)
         showBanner(bnKey, 50)
+        saveGame()
     }
     door.setFlag(SpriteFlag.Invisible, area != 4)
     if (doorOpen) {
@@ -48,6 +94,7 @@ function updateScenery() {
             doorOpen = true
             music.play(music.melodyPlayable(music.beamUp), music.PlaybackMode.InBackground)
             showBanner(bnDoor, 50)
+            saveGame()
         } else {
             lockedPrompt.setFlag(SpriteFlag.Invisible, false)
         }
@@ -57,12 +104,14 @@ function updateScenery() {
         hasShield = true
         music.play(music.melodyPlayable(music.powerUp), music.PlaybackMode.InBackground)
         showBanner(bnShield, 70)
+        saveGame()
     }
     bowItem.setFlag(SpriteFlag.Invisible, !(bowDropped && !(hasBow) && area == bowArea))
     if (bowDropped && !(hasBow) && area == bowArea && Math.abs(px - bowItem.x) < 8 && Math.abs(GROUND - py - bowItem.bottom) < 10) {
         hasBow = true
         music.play(music.melodyPlayable(music.powerUp), music.PlaybackMode.InBackground)
         showBanner(bnBow, 70)
+        saveGame()
     }
     // your lost souls wait where you died
     stain.setFlag(SpriteFlag.Invisible, !(stainSouls > 0 && area == stainArea && gameState != "title"))

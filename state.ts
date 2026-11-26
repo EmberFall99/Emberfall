@@ -45,6 +45,14 @@ let hasKey = false
 // the prologue: you wake in a cell, and a key has fallen from somewhere above
 let hasCellKey = false
 let cellOpen = false
+// after the Warden: his key ring opens the prison gate behind him
+let hasKeyRing = false
+let keyRingDropped = false
+let gateOpen = false
+let glargonFreed = false
+let teleported = false
+// "glargon" or "note" when you're close enough to press A
+let talkTarget = ""
 let doorOpen = false
 let menuSel = 0
 let menuPanel: Sprite = null
@@ -77,7 +85,7 @@ let spawnArea = 1
 let spawnX = 40
 let nearFire = false
 let fireX = 22
-let visited = [false, false, false, false, false, false]
+let visited = [false, false, false, false, false, false, false, false]
 let bannerT = 0
 let deadT = 0
 // ladders and ledges, one slot per ladder / ledge
