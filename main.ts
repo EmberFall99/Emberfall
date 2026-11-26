@@ -1,3 +1,7 @@
+// ---------------------------------------------------------------- version
+// shown on the title screen; bump it with every update
+let VERSION = "v0.6.1"
+
 // ---------------------------------------------------------------- the main loop
 game.onUpdateInterval(33, function () {
     if (gameState == "title") {
@@ -116,6 +120,10 @@ pressText.setPosition(80, 104)
 let controlsText = sprites.create(image.create(160, 8), SpriteKind.Scenery)
 controlsText.image.printCenter("B: controls", 0, 11)
 controlsText.setPosition(80, 115)
+let versionText = sprites.create(image.create(40, 8), SpriteKind.Scenery)
+versionText.image.print(VERSION, 0, 0, 11)
+versionText.left = 2
+versionText.bottom = 119
 let titleMenu = sprites.create(image.create(160, 20), SpriteKind.Scenery)
 titleMenu.setPosition(80, 100)
 let introText = sprites.create(image.create(160, 24), SpriteKind.Scenery)
@@ -201,6 +209,7 @@ subText.destroy()
 pressText.destroy()
 controlsText.destroy()
 titleMenu.destroy()
+versionText.destroy()
 for (let fl3 = 1; fl3 <= 4; fl3++) {
     fadeBlack.push(makeFade(fl3, 15))
     fadeWhite.push(makeFade(fl3, 1))
