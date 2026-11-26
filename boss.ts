@@ -9,6 +9,7 @@ function damageBoss(dmg: number) {
         bossDead = true
         bossActive = false
         music.stopAllSounds()
+        curMusic = ""
         music.play(music.melodyPlayable(music.bigCrash), music.PlaybackMode.InBackground)
         boss.startEffect(effects.ashes, 2500)
         souls += 2000

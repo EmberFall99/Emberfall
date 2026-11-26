@@ -3,7 +3,7 @@
 Everything needed to pick this project up again, including in a fresh Claude conversation.
 **If you're a new session: read this whole file before changing anything.**
 
-Current version: **v0.6.4** (shown bottom-left of the title screen; the `VERSION` constant in `main.ts`).
+Current version: **v0.6.5** (shown bottom-left of the title screen; the `VERSION` constant in `main.ts`).
 
 ---
 
@@ -24,6 +24,12 @@ playing; no tutorials. Dark Souls is the reference point throughout.
   by `python3 tools/build_assets.py`. Never hand-edit `images.g.ts` (Arcade regenerates it) or `art.ts`.
   Charlie can also edit any image in Arcade's Assets tab; if he does, those edits live only in
   `images.g.jres` – re-running `build_assets.py` would overwrite them, so check with him first.
+- **Music is generated from code too**: `node tools/make_music.js` composes the background tracks and writes
+  `music.ts` (songs in the Music editor's own format, encoded with pxt-core's encoder). Four loops:
+  `songDark` (title, cell → Warden's arena), `songWind` (Frostbitten Field: wind only), `songLake` (Still Lake:
+  mystical) and `songTown` (Ashen Forde onwards). `updateMusic()` in `world.ts` picks one each tick via
+  `musicFor()`; the boss fight swaps in `bossTune`; death is silent until you respawn. If Charlie edits a song
+  in Arcade's Music editor, that edit lives in `music.ts` – re-running the script would overwrite it.
 - **Use the JavaScript view.** The project is too large and multi-file for Blocks, and the Python view's
   automatic conversion breaks on globals shared across files (it shows "cannot find variables" errors).
   `pxt.json` sets `preferredEditor: tsprj`.

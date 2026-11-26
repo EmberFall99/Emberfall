@@ -25,8 +25,10 @@ var ControllerButtonEvent = { Pressed: 1 };
 var controller = { A: __btn('A'), B: __btn('B'), up: __btn('up'), down: __btn('down'), left: __btn('left'), right: __btn('right'), menu: __btn('menu') };
 var scene = { setBackgroundImage(b) { __bg = b; }, setBackgroundColor() {}, cameraShake() {} };
 var music = { PlaybackMode: { InBackground: 0, LoopingInBackground: 1 }, play(p, m) { __log.push('sound ' + p); },
-  melodyPlayable: m => m, stringPlayable: (s) => 'tune', stopAllSounds() { __log.push('stop'); } };
+  melodyPlayable: m => m, stringPlayable: (s) => 'tune', stopAllSounds() { __log.push('stop'); },
+  createSong: (b) => 'song', sequencer: { _stopAllSongs() { __log.push('stop songs'); } } };
 ['pewPew','beamUp','buzzer','sonar','jumpDown','powerDown','siren','baDing','wawawawaa','jumpUp','powerUp','magicWand','knock','footstep','thump','smallCrash','bigCrash','zapped','spooky'].forEach(n => music[n] = n);
+var hex = (s) => s.raw.join('');
 var info = { score: 0, setScore(v) { this.score = v; } };
 var __snow = false; var effects = { disintegrate: 'disintegrate', ashes: 'ashes', halo: 'halo', coolRadial: 'coolRadial', blizzard: { startScreenEffect() { __snow = true; }, endScreenEffect() { __snow = false; } } };
 var animation = { runImageAnimation() {} };

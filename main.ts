@@ -1,6 +1,6 @@
 // ---------------------------------------------------------------- version
 // shown on the title screen; bump it with every update
-let VERSION = "v0.6.4"
+let VERSION = "v0.6.5"
 
 // ---------------------------------------------------------------- the main loop
 game.onUpdateInterval(33, function () {
@@ -38,6 +38,7 @@ game.onUpdateInterval(33, function () {
     if (gameState != "title") {
         updateScenery()
     }
+    updateMusic()
     updateEmbered()
     drawHud()
     if (bannerT > 0) {

@@ -125,7 +125,6 @@ function goToArea(n: number) {
         bFrame = 0
         bDir = -1
         showBanner(bnBoss, 75)
-        music.play(bossTune, music.PlaybackMode.LoopingInBackground)
     }
 }
 function setupEnemy(i: number) {
@@ -173,5 +172,47 @@ function die() {
     souls = 0
     info.setScore(0)
     music.stopAllSounds()
+    curMusic = ""
     music.play(music.melodyPlayable(music.wawawawaa), music.PlaybackMode.InBackground)
+}
+
+// ---------------------------------------------------------------- background music
+// dark and moody from the title to the prison gate; only wind on the Frostbitten Field;
+// something mystical at the Still Lake; dark and moody again in Ashen Forde
+function musicFor(): string {
+    if (gameState == "dead") {
+        return ""
+    } else if (bossActive) {
+        return "boss"
+    } else if (gameState == "title" || area <= 5) {
+        return "dark"
+    } else if (area == 6) {
+        return "wind"
+    } else if (area == 7) {
+        return "lake"
+    }
+    return "town"
+}
+function updateMusic() {
+    let want = musicFor()
+    if (want == curMusic) {
+        return
+    }
+    if (curMusic == "boss") {
+        music.stopAllSounds()
+    } else {
+        music.sequencer._stopAllSongs()
+    }
+    curMusic = want
+    if (want == "boss") {
+        music.play(bossTune, music.PlaybackMode.LoopingInBackground)
+    } else if (want == "dark") {
+        music.play(songDark, music.PlaybackMode.LoopingInBackground)
+    } else if (want == "wind") {
+        music.play(songWind, music.PlaybackMode.LoopingInBackground)
+    } else if (want == "lake") {
+        music.play(songLake, music.PlaybackMode.LoopingInBackground)
+    } else if (want == "town") {
+        music.play(songTown, music.PlaybackMode.LoopingInBackground)
+    }
 }

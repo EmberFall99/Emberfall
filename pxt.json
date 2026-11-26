@@ -9,6 +9,7 @@
         "images.g.jres",
         "images.g.ts",
         "art.ts",
+        "music.ts",
         "state.ts",
         "helpers.ts",
         "world.ts",

@@ -146,4 +146,6 @@ let banditGone = false
 let forceRoll = 0
 // riposte: which enemy you're running through
 let riposteOn = -1
+// which background track is playing ("" = none)
+let curMusic = ""
 let bossTune = music.stringPlayable("D4 D4 F4 D4 A4 G4 F4 E4 ", 260)
