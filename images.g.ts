@@ -3534,6 +3534,80 @@ ceeffffffffffffc
 . . 2 2 2 2 2 2 2 2 2 2 . . 
 `;
             case "image90":
+            case "cellDoorClosed":return img`
+fbffbffbffbffb
+fbffbffbffbffb
+fccccccccccccc
+fbffbffbffbffb
+fbffbffbffbffb
+fbffbffbffbffb
+fbffbffbffbffb
+fbffbffbffbffb
+fbffbffbffbffb
+fbffbffbffbffb
+fbffbffbffbffb
+fbffbffbffbffb
+fbffbffbffbffb
+fbffbffbffbffb
+fbffbffbffbffb
+fbffbffbffbffb
+fbffbffbffbffb
+fccccccccccc5c
+fbffbffbffbf5b
+fbffbffbffbffb
+fbffbffbffbffb
+fbffbffbffbffb
+fbffbffbffbffb
+fbffbffbffbffb
+fbffbffbffbffb
+fbffbffbffbffb
+fbffbffbffbffb
+fbffbffbffbffb
+fbffbffbffbffb
+fbffbffbffbffb
+fbffbffbffbffb
+fccccccccccccc
+fbffbffbffbffb
+fbffbffbffbffb
+`;
+            case "image91":
+            case "cellDoorOpen":return img`
+fbcf..........
+fbcf..........
+fbcf..........
+fbcf..........
+fbcf..........
+fbcf..........
+fbcf..........
+fbcf..........
+fbcf..........
+fbcf..........
+fbcf..........
+fbcf..........
+fbcf..........
+fbcf..........
+fbcf..........
+fbcf..........
+fbcf..........
+fbcf..........
+fbcf..........
+fbcf..........
+fbcf..........
+fbcf..........
+fbcf..........
+fbcf..........
+fbcf..........
+fbcf..........
+fbcf..........
+fbcf..........
+fbcf..........
+fbcf..........
+fbcf..........
+fbcf..........
+fbcf..........
+fbcf..........
+`;
+            case "image92":
             case "iconSword":return img`
 . . . . . . . . . . . . 
 . . . . . . . . . . . . 
@@ -3548,7 +3622,7 @@ ceeffffffffffffc
 . e . 5 . . . . . . . . 
 e . . . . . . . . . . . 
 `;
-            case "image91":
+            case "image93":
             case "iconSwordShield":return img`
 . . . . . . . . . . . . 
 . . . . . . . . . . . . 
@@ -3563,7 +3637,7 @@ e . . . . . . . . . . .
 . e . 5 . . . e e e e b 
 e . . . . . . e e e e . 
 `;
-            case "image92":
+            case "image94":
             case "iconBow":return img`
 . . . e . . . . . . . . 
 . . . 1 e . . . . . . . 
@@ -3578,7 +3652,7 @@ e . . . . . . e e e e .
 . . . 1 e . . . . . . . 
 . . . e . . . . . . . . 
 `;
-            case "image93":
+            case "image95":
             case "iconLocked":return img`
 . . . . . . . . . . . . 
 . . . . b b b b . . . . 
@@ -3593,7 +3667,130 @@ e . . . . . . e e e e .
 . . c c c c c c c c . . 
 . . . . . . . . . . . . 
 `;
-            case "image94":
+            case "image96":
+            case "bgCell":return img`
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fccccccbccccccfcccfcfcccccfcffffccfbccfbfffcfccffffcffccfcffcfcbffffffffffcfffffccfffffffffffffffffffffffffffffffffffffffccfcffffcfffffffcfffccffccffcccffffffff
+fcfcccccccccfcfcccccccbcccccfffccffcccfcfcfbfffccccccccfffcbfffcffffffffffcfffffffccfffffffffffcffffffffffbffffffcffffffffcffffffffcffffcffbffcfffffffcffcfffffc
+ffccccccccccccfccccccccccccffccbcccfcfcfccffffcffffcccfffcfccffffffffffffffffffffbfffffcffffcffffffffcfffccffffffffcffcffffffffffcffffffffffffffffffffcfcffffccc
+fccbccccccccccfcbcccccccfcccfbccfcfcccfcccffffccccccfffffffcffcccffcfffffffcffcfffffffffcfbfffffffffffffcffcfccfffcfffbfffffffffcfccffffcffcfffffffffffffffccfff
+fccccbcfccccccfcccfccccfccccffcbfcbcfcfffffffcffccfccffffcfffccbfcffffffffbcfffffffffffffbfcfffcfffffffffcffccfffccfffffccffffffcffffffffcffffffffbfffffbfffccff
+fcfcccccbcccccfccccccccfcfccfcffccfccccfccfcffffcfcbffcfffccffccffffffffffcffcfffffffcfffffcffffffffffffffcfffffffffccffbcfffffffffccffcffffffcffcffffffffffffff
+fcccccfcccccfcfccccccccccccffcccccfcbcccfcfcfffffffcfffffccfcccfffccfffffffffffffccffffffffffffffcffffffffffffffffffffffffcffffffffcfffccfcffffffcffffffffffffff
+fcccbcccccfcccfcccccccccccfcffcfcffcccccccfcccccccccfbfcfcffffccbffffffcffffcfffffffffffffccfcffccfffffffffffcffffffffffffffccffffffffcffffffffcffcffffffcffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+cfcccccfcccccccccccccfccccccccfcfccfcfccccfcccffbfcffcfffffccfcfffffcfcfcfffcfcfffffffffffffffcffffcffffffffcffcfffffcffffffffbcffcfffcfffffffffffffffffffbffffc
+ccfccfcfccbccccbcccccffccccccccccfcfccccfcfccccfcffffffffccfffcffffffcfffcfffffffcffcffcfcfffffffffffffffffffffffffffffffffffffccfcffffcfcfcffcfffffffffffffffff
+fcfccccffcfbccffcccccfcccfccfccccfcfcbfcbccffcccfffffccfffcfcffffffffcfffcfffffffcfffffcfffffcfcfffffffffffccfffffffcfffffffffffffffffffffffffffffffffffffffffff
+fccccccfbcbfcccccccccfcccbbbbbbbbbbbbbbbbbbbbcfcffcfcffcffcfffcffccfcffcffffcffffffffffffffffcfcffffccffffffffffffbfffffffcffffffffcfffcffffffffcffffffffcffffcf
+ffcffbcfcccfcfcccfcccfcccc8888b898b888b88889cfffcfffcfffffffccfffccfffffcfffcfffffffffffffffffcffffcfffffffffcfffcffffffccfffffffffffffffffffcffffffffffffffffff
+cccffcffccfcccbccccccfccfc8898b888b888b98888cffcffffcffcffcccfcffffcffffffffffffcfffffffffffffcfffffffffffffffffffffffcffcfcfffffcfcffffffffffffffbfcfffffffffff
+fffcfccffcfcccccccccffcccc8888b888b988b88888fccccfffffbfcffffcffffcffffffffffffbffcffccfcffffffcffffcfffffffffcffffffffffcfcfffcfffcfffcfffffffcfffffffcffffffcf
+ffcffcfffffcfccccccccfcccc8888b988b888b88898fccfffffffcfcffccccfffffcfcfffcfcfffffcfffffffffffcfcffffffffffbffffffffffffffcfcffffffffffffffffffffffffffffffcfcff
+ffffffffffffffffffffffffff8988b888b888b88888ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fccccccbfcccfffcccccccfccc8888b888b888b88888fcfcfccccccffcccfccfcfcffcfcfcbfffffffffffcfccffcfffffffffcffffffffffffffffffffffffffcfffcffcfffffffffffcfcfffffffff
+ffcffcffccfcbcfcccccbcccfc8888b888b888b88988fcfcccfffcfcffcfccffcccffffccfffcfcfffcfffffccfffffffffffffccffffffcffffffcfffffffffffffffcffffffffcffffffffffffffff
+ffcbfccfccfccbffbfcccccccc9888b888b889b88888cffcfcccccccfccfccfccfcccffcffffffcfffcffffffccfffffbffffffffffcfffffffffffffffffffffffcfffffffcffffffffffffccffffff
+fcccbffcfccfcbfcccfccccccc8888b889b888b88888cccccfcfccccfcfccffcfcfffffffcffffcfffcffffffffffffccffffcfccffffcfffcffcffcffffcfffffffffffcfffffffcfffffffffffffff
+ffccbcfcbcccccfccfcccccccc8889b888b888b89888cffccfcccfffffcccffccfccffffffffcffffffffffffffffffffffffbfffcffffffffffccffffffffffcfcffffcffffffffcfffffcfffffbfcf
+fccccfcbfcccbcffffcccccccc8888b888b898b88888cccfcccfcfccfcfcfccffcffcffffcccffffcffcffcfffffffffffffcfffccfbffffffffffffffbffffcffcfcffffffffcfffffffcfffcffffff
+fcbcccbcffccccffccccccccff8888b898b888b88889cfccccffcffffcfccfcfcffcfffcfbfffffbfcfcffcfffcfcfcfffffffffffffffffffcffffffcffffffcffffbfffffcffcffffffcffcfffffff
+ffbcfcfcfccfccfccfcfcccccf8898b888b888b98888cfbffffcccccfcccfffffcfccffccffffffcfcffffcffcfcffffffffffffffccffffffffcfffffcfffffffcffcfffcfcfffffffffffffffffffc
+ffffffffffffffffffffffffff8888b888b988b88888ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffcccfffcccbcfcccffffccc8888b988b888b88898ccffcffbcccfffcfbccffffffccfffffffcccccfcffffcffffffffffffffcffffffcffffffffffffffffffffffffcfffcfffcfffffffffffffff
+fccffcffccfbcfcfccccffcccc8988b888b888b88888cccccfcccbfcfffcffcfffccccfffcfffffcfffffffffffffffcfffccfbfffffffffffffffffffffffffffffffffffffffffffcfccffffffffff
+fccfccffcccffcfccffccffccbbbbbbbbbbbbbbbbbbbbcfccfcccfcccfcccccfcffffcffffcfffffbccfcffbcfffffffffffffbfcffffffcfffffffffffcfcffffcffffffffbfcfffcffcffcfcfffffc
+fffcfccffcfffcfbfccccfcccfcccbfccbcfcbbccbccfccfcfcfcfcfcfbbffcffcffccffffccffcffffffcfffccfccccfffffffffffffcffffffcfffffffffffcfffcffccffffffcffffcfffffffffff
+cfcfffffcfffffccfcfbffcffcccbcccbcffccfcbcfccccccfccfbffccfccfbfcfcffcccfccfffffccffffcffffffcffcffcfffffffcfffffffffcfffcffffcffffffffcfcfffffffccfffffcfffffff
+ffcffcffffcfbffcffcccfccccfbcfccccccbcfbfcfccfcccfccccfcfccffcffcfffcfccfccfcffffcfffffcfffffccffcffffffffffffffffffffcfcffffcfbffffcfffffffcfffffffffffffffcfff
+cffcfbffcffccfcfcfcfcfccccccccbcccbfcfbcccbccccbcfccccfcbcccffffcfffcfbfccccffcffcfcfffffcffffffffcfffffffffffffcffffcffccfcffccffffffffffcffffffcfffccfffffcffc
+fcccfccfcffbfcfcffcccfcccccccbcfcccfcccccbcccbcccfccbfccccfccccffcbccbcffcffffcffffffffffffffccfffffffcfffffcffffffffffffffffffccffffffffffffffffbfffcfffffccffc
+ffffffffffffffffffffffffffffffffcfffcfffcfffcfffffffffffffffffffffffffffffffffffffffffffbfffffffffffbfffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffccfffbcffcfffffffcfcfcccccfccbcbfbccfbccfcbcfbccfcccccffccffcfffffccffffffcfccfccffcfcffcffffffffffffcffffffcfffffffffccbffffcfffffffffffffcfccfffffffffffffff
+fffcccccfcffccfcccffcfcfcccfffccffbcccbccccfcccccfcccfccfffcccfcccbccffffcffcfcfbffcfcfcbffcffffffffbffffffffffffcfffcfffffffffccffffbfffffffffffffffcfcfffcffff
+fffcfcfffffffffccfbbccccccfbffcfcbcccbfccbfccbfffcccccbffccbcffcfccccfffffccfcffffffffffffffcffccfffffffffffffffffffffffffffffffffcfcfcffffcfffffffcffffffffffff
+ffccccffcfffffffffcffccfccfffcccbccfbcccccfcbcccbcfcccccfccfccfccfcfccfffcfbcfcfffffffffbffffffcffffbffffffffcffffcfffcfffffffffffffffffcfffffccfffffcfcffffffcf
+ffcfcfffffccbffcfcffccccffbffccfcccbffcbcffbfccbffcbfcfcffcffcfcfffccbfcfccbfccfffccffcfffcfccfffffffcffffffffffffffcfccffffffffffffffffffcfffffffffccfffffcffff
+fffffcffcffcfcfcfffcbcfcffffffffccbffcccbcccccbcccbcccccfcfccccfccccffffcfffffffcfffffffbbfcffffcfffbfffcffcfffffccffffffcffffffffffcfffffffffffffcfffffffffcffb
+ffffcccfffcffcfcbffffccfccccfccccbccccffbbfffcbfcbcffcccffcffccfccfcfcffcfcffccfffccffcffffccfffffffffffffcfffffffffccffffffcffffccffccffffffffffffffffcffffffff
+fcfcffffcfcffffccffccfcfcfcffffcccccbffcbcffbbcfbfccbffcffcfcccffcccbffcbfffcfcffccfffffbffcfcbfffffbffffffffffffcfccfffffffffffcfcffffffffffffffffffffffcfffcfc
+fffffffffffffffffffffffffffffffffffcfffcfffcfffcfffcffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fcffcfffcfcfffccffcccfcfcccffcfccccfcfcccbbfccbfcfbcccbfcccfbccfccfcfcffffcfcfcfccfccffbbffffffffffcbcfffffffffffffffffffffffffffffffffcffffffcfffffffcffffffcff
+ffffffcfcccffcfcfccccffccccfcfcccccfcbcffcfccbfcccccfbfcbccfcccfcffccfffcffccfccccfffcfbfffffcffffbbffffffffffffffffffffffffffffccfcfffffbfffcffffffffbffffcffcf
+cfffffffffcffffffccfcffcfbccccccccffbcfcbccfbccfbfccbcccbfcccfcfffcfcfcfcffccfcfccffccccbcffffffffffbffffffffffcffffccffffffffffcffffffffffffffffcfffffffccfcffc
+ffcfffffffffffcffccfcfccfbffcfcfffffcccbbccccbcbcfcbccccccccccbfbcfffcfbccfffffccffffcccfffffffcffcffcffffffffffffffffffffffffcfffffffffffffffffcffffffffcfcfffc
+ffffffffffffccfffffcffffcfffffccccffffcfccbcffbbffbcfcbccccccccfcbcfbcffcfcccfcffbfccfffbfffffffbfcfbfffffffffffffffffffffffffcfffffffffcfcfffffffcffffcffffffff
+fffffcffffcffccfffffcfffcfffcfcccccfffcfcbcfbbcccccccbcccbccccfffcffcffccccccffcfcffcfffffffffffffffccfffffcffffcffffffffffffffcffffffffffffffffffcffcffffcfffff
+cfffcccfccfffccccfffffcffffcfbcffccfffccccccbfccbfccbccfbccccfcfffcfccccfcfcffffffbcfcfbfbcfffffcffbfbcffffffffcfffffccffffffffffffcffcfffffffcfffffffffffffcfff
+fccffffffcffbfffccffcffccfcffcccffbffbfbcfccfccbcfcbfbcbcffbcfcfffcfcccccfcfcfccccffcbcfbccfbccfcfcfbccfcfcfffffffffffffcfccffffcffffffffffffffcfffffffcfffffccf
+ffffffffffffffffffffffffffffffffffffffffffcfffcfffcfffcfffcfffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+fffcfcfffcfcfffffccffffcfffffcfffcffffcfcbfcfbbfbbcfccccfcfccccccfcfbffcfcffffcffffcffccbcfcffcccfffffffcfffffffffffffbfccffcfffffffffffcfffffffccfffffffcffffff
+ffcffffffffffffffffcfffcfccffcfcfffcfccfcfffbffcccbfbccfccccccbfcccfccffcfccccfcccfcfcfcfbfffccfffffffffffccffffffffffffffffffffffffffffffffffffcfffcfffffffcfff
+fffcfffffffffffcfcfcfcbfffccfcffcffccfcfcffcfcccffcbfccbfccbffccbcccccfccfcbffccfbccfcfcfffffffccfffffffccfffffffffffcffffcfffffffcfcffccffcffffffffffffffffffff
+fffffffffffffcfccffcccbffffbffbfbfcfcfffcfffcfbcffbfcfbcfcccccccccbcccfccbffcccfccccfcccccfffccffcfffcfffcfbfffffcfffffffcffffffffcfffffffffffffffffffffffffffff
+fffffffcffffffffffffbcffffcffcffffccfccfcbfffccfcbcccbfcfbccfccffccbccffffcffcfbffccfccffbfcffffffffcffcfffffcffffccfffbffffcfffffcfcffcffffffffffffffffffffffff
+ffffffcfffcfccffffffcffffccffffcffcffcfffcfcbccccccccfffccccbcfccfccffffccfccffcbccffcccccfffcffccfffcffffffcffcffffffcfffffcffffffffffffffffffcfffffffffffffcff
+ffffffcffbfffffffffcffcffffffffffccfcfcccffcfcfbcffbccccfccbfccbccccfcffcccbfcfcffffffccbfcfccffcffcccffccffffffffcfffffcffffffffffcffffffffffffffffcfcfffffffff
+ffffffcfffffffffffffffffffffffffffcfffcfcffcfccfcccffbbcffbccfbfccccccfcfffcfcfccffcffcffcfccffcfffcfbcccfffbffcffcffbffccffffffffcfffcffffffffffcffffffffffcfff
+fffffffffffffffffffffffffffffffffffffffffffffffffcfffcfffcfffcfffcfffcffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+cffffffffffcfffffffcffffcfffcfffcffffcfbffffffffcfffbfffbfccccbfccfccccfccccfffccfcbffccbfcfcffffffcffcfcfffffcfcfffffcfcfffffffffffffffffcffffffffffcffffcffffb
+fcffffffffffffffcfffffccffcfffffcfcfffffcffcfcccfffbccfbcccbbffcccfcffcbcfffffbccccbccffccffccfffcbfbcfcfffffffffffffcfffcffffcfffffffffffffffffffffffffffffffff
+fffffccffffffffcffcfcfffffffffffffcfcfccccbfffffcfccccccccccccbffcbcffbfcfcccfccccfcccfcffffffffccffccfffffffffbfffcffffffffffcffffffffcfffffbcbbbcbbbcbbbcbbbcb
+fffffffffffffffcffffffcffffffcccfcfffcffbfcffbfcfccccbcfcbccfccfccffcbcfccbfcfcfcffcfccccccfcfccfcfcfffccffffffcfffcfcffffffffcfffffffcfffffccbbbcbbbcbbbcbbbcbb
+ffffffffffcfffffffcfffcfffcfcffffccfcfccccfffcfcffcccccfbccccfcfcfffbcfccffccffcccfbffccccffffccffcfffcffffffcfcffffffcffffffbfffffffffcfffffbbbcbbbcbbbcbbbcbbb
+ffffcfffffffffffcfffffffcffffcfffccffbccfcfccfcccffcfcccfffbfffcccfccccccfcccfccccffcffcfccfccffcfccccffcfffcffffccfcffffffffffffcfcffffcffffbbcbbbcbbbcbbbcbbbc
+ffffffcfbffffffffffffffffccffcfcffffcffcffcfffffcfccbfccfccfcccfffcccbccffbccffcffcffbfcffcfcfffffccfccffffcfcfcffffffcffcffffcffffffffffcfcfbcfffffffbfffcfffff
+ffffffffcfcfffffcffffffcfffffffcffffffcfffcfcfffcfffcbccfbcffbcffcbcfbbccbcccfcbccfcfffccfcfcfcccffcccfcfffffffcffffbfffcfcfffcfffffffffcffffcbfffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffcfffcfffcfffcfffcfffcfffcffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffbbfffffffffffffffff
+ffcffffbffffffffffffffffcffcfffffffffffffffccfcfbfccbcfbfffbcffbfcfbfcfcfccbccccccccffcffccffffcfcfccfcfffffffffffffffcbffffffffbccffbfffffffbbffcffcffcffffcfff
+ffffffffffffffffffffcfffffcffffffcfccfffccfcccfccfccccbffcbfbfbcfccfcccffccfccbccfccffcccfccccffcffbffcfcfccfcfcffffffcfffffcffcfcfffffffffcfbcffffcfffffbffffff
+ffffffffffbffffffffffffffffcffffcfffcffcfcfccffffccffbfcfbfbfccffbfccbfcccccfccfccffffccffccfcffccfcccfcfccccfffffccfccccffffffffcfcfffffffffcbfffffccffffffffff
+fffffcfffffffffffffffffffffcffffcffffffccfffffffcffcfccfcffccfffbccfccffbcfbcfcbffccfcccfcccfcffccfcfcfccfffffcfffbfffcffccffcfffffffffffffffbbffcffffffffffffff
+ffffffffcfffffffcffffcfffffffcffcfffffcfffffcfffffffffccfcccfcfccffbfcfcffccfccbfcfcfbfccccfccfcccfcfbffffcffffffcfcfffcffffffffffcffffffffffbbffffffffffffccfff
+ffcffffffffffffffffffffcfffffffffffcfffccffffccfffffffffffcfcccccfcfcccccfcbccbffcccffcfcfccccfcccffcfcfcfccffcfffcffcfcffcffcfffffffcfffffffbcfcffffffffffccfcf
+fffffffffcffffffcfcffffffffffffccfffcffffffcfbfcfcfffffcfcfffcfffbccfcfbfcccbccbcbccffcfcbccccccccfcfcbffccffcfcfffcffffffcfcfffcffffffffffffcbffffffffffffffcff
+fffcffbffffffffcffffffffffffffffcffffffffcfffcffffccffcccfcfcfffccfcccfbcfcccccfbfcffffcfccfcbfffcffcfcfcfccffcfffcffffffffccffcfffcfffcfffffbbfffffffffffffcfff
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffcfffcfffcfffcfffcfffcfffcfffffffffffffffffffffffffffffffffffffffffffffffffffffffffbbfffffffffffffffff
+fffffffffffffffffffffffffffcfffcffffffcffffffffffffcbcffcfbfbfcffbbccfbcccbfffcfccbcfcccccffcfcfcfcccccfffcfffffccffffffffcccfffffffcfcffffffbcffffffffcffffffff
+cfcfffffcfcfffffffcffffcffffcfffffffffffffcffcffcffffcfcfcfffbcfcccfccfcfbcccccccbcfcbcccccfcfcfcccfcfffcffffcbffccfffffffcffccffffcffffffffccbffffffffffbcfffff
+fffcfffffffffffffcfffffffffffffffffffffcfffcfcfcffccfffffccfbbcfcfccbfcfccfcbfcfccfccfccccffccfccfcfbccccfccfffcffcffffffcfcffffffffffbfffcffbbfffffffffffffffff
+ffffffffffffffffcfffcfffffffffffcffffccfcffccfffffcfffcfffffccccfcfcfccbcccbfffbfffbcccbfccfffffffcccccffffffcffcffffcfffcfffcfffbffffffffffcbbcfffffffffffffcff
+ffffffffffffcfffffffffbfffffffffffcfffcfffcfffffcfffcccffffcccbffccfcfcccfccffcfffcbccbffcffcccffcffcffcffcfffffcccfcccfccfffffcfffffffffffffbcffffffffffcffffff
+fffffffffffcfffcfffffffcffffcffcfffffffffcfffcfffffcfffffffffcffcccffbfbfbccccffcccffbffcbcfffcfffcfcfcffffcfccffffffcffcffffffffcffffccffcffcbfffffffffffffffff
+fffffffffffffffffffffffffffffffffffffcffffcffcffcfccffffcffcccffcfcccfcfccffbfcfbfffbbcfccffcffffcffcffccffcffffffffffcfccfffcffffffffccfcfffbbfffcffcfffffcfbff
+fcfffcffffffcffffffffffffffcccffffffffffffcfccfcffcfcffcffcffcccfffcfcfcfcfbcfccfccbcccbfccfcfccfffcfcfffffcccfffffcfcffbffffffffcffbfcfffffcbbffcffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffcfffcfffcfffcfffcfffcfffcffffffffffffffffffffffffffffffffffffffffffffffffffbcfffffffffffffffff
+fcfffffffffffffffffffffffffffffffffffbffffffcfbcfffcfffffffffcccfccbfbfffccffbfccbfcfbfffbccfcbfccffffffffccccfffccfffffcfcffcfccffffffffcfffcbfffcffffcffffffff
+fffffffffffbfffffffffffffffcffcfffcffffffcffffffffcfcfcffccfffffcfffcfffcfffcfccccfccffcbcccbccccffffffcccbffcfbffcfbffffffffcffffffcffcfcfffbbfcfffcfffffffffff
+fcfffffffffffffffcfffffffffffccffffffffffcffffffcffffcffffffcffccfccfcfcfccbcffbbcbbffcccffbfccfcbfcffccfcccfcfffcfcfcfcfcbffffcfffccffffffcfbbffffffffffcffffff
+ffffffffffffcfffffffffffcfffffffffcfffcfcfffcccffccffffcfcfffcfffcccfcccfcbfffcfcfbfffbcccbfccccccffccfcffffcfbcfcfcfcfcfffcffffcffccfffcffffbccfffffccfcfffffff
+fffffffffcfffffffffffbfffffcfffffcfffcffffffffffffcffcccfcfccbcbfffffbfffcfcfcfccbccfbfcccffccfffffcccfcfffcfcfcfccccffcfccfccffbcffffffffcffcbfffffcfcfffffffff
+fffffcffffffcfffbffffffffffcffffcffffbffffffffcffffffffffcbfbcfffffcccffbcfcbffccfcccffccfcfbfcbcffcfffcffffffcffcffffcccffcccffffcccffcfffffbbffffcffffffffffff
+fffffffffffffffffffcfffffffffffffffffffffffffffffffffffcfcfcffffcccccffcfffbffcbcccbffcccfbccccbccffccfcffcfcffcfccfcffeeeeeefffcffffcfccffffbbffcffffccffffffff
+fffffffffffffffcfffffffbfffbffffcfffffffffffffffcfffffcfffcfffcffffcfccfffbfffbffcbcffbccfcffcbccbcfffcfcfccffcffffffffeeeeeeffffcfcfcfffffffbcffcffffffffffffbf
+fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffcfffcfffcfffcfffcfffcfffcfffcfffffffffffffffffffffeeeeeeffffffffffffffffcbfffffffffffffffff
+fffc554ff45fffffffff5f4ff5cffffffffff5fffffffffffffcfcffcccfffcfcfcffccfcccccfffcccfccffbbffbfcfcffcfbffffbfcfcfccffcbfeeeeeeffcfffffffcffcfcbbfffcfcfffffffffff
+fcfffff5454f54ffff45fff45ff4f4ff5f5f54fffffffffffffffccfffffcffffffcfffbffccffbbfffbccbbccccffcbffccfcfcffcccccffcffcffeeeeeefffcffcfffffcfffbbffffffcffffffffff
+ffcfff5ffff554fff4ffff4fffff5f4fffff4f4c4ccfffcffffcffffcbfffffffbffffccffcfcfcfffbfffbcffbfcfbccfbbccfbcfccccfcffffcbfeeeeeeffffcffffffffffcbcffffffffffcfffcff
+fcff4f4ff55f5cff4f4fff44f5ff54ff45ff4f4fffffffffcfffffffcfbfcffffffffffffbcccccbcbffcccfccfffcfccbfffbffffcccffcccfffcfeeeeeefffffcccfffbffffcbcffcffcffffffffff
+bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+cccccccfcccccccccccccccfcccccccccccccccccccfcccccccccfccccccccccfcccccccccccccccccfccccccccccfccccccccccccccfccccccccccccccccccfcccccccccfcccccccccccccccccfcccc
+cccccccfcccccccccccccccfcccccccccccccccccccfcccccccccfccccccccccfcccccccccccccccccfccccccccccfccccccccccccccfccccccccccccccccccfcccccccccfcccccccccccccccccfcccc
+cccccccfcccccccccccccccfcccccccccccccccccccfcccccccccfccccccccccfcccccccccccccccccfccccccccccfccccccccccccccfccccccccccccccccccfcccccccccfcccccccccccccccccfcccc
+cccccccfcccccccccccccccfcccccccccccccccccccfcccccccccfccccccccccfcccccccccccccccccfccccccccccfccccccccccccccfccccccccccccccccccfcccccccccfcccccccccccccccccfcccc
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+cccccccccccfcccccccccccccccfcccccccccccccccfccccccccccfccccccccccccfccccccccccfcccccccccccccccccfcccccccccccccccfcccccccccfccccccccccccccccccfccccccccccfccccccc
+cccccccccccfcccccccccccccccfcccccccccccccccfccccccccccfccccccccccccfccccccccccfcccccccccccccccccfcccccccccccccccfcccccccccfccccccccccccccccccfccccccccccfccccccc
+cccccccccccfcccccccccccccccfcccccccccccccccfccccccccccfccccccccccccfccccccccccfcccccccccccccccccfcccccccccccccccfcccccccccfccccccccccccccccccfccccccccccfccccccc
+cccccccccccfcccccccccccccccfcccccccccccccccfccccccccccfccccccccccccfccccccccccfcccccccccccccccccfcccccccccccccccfcccccccccfccccccccccccccccccfccccccccccfccccccc
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ccccccccccfccccccccccccccccccfcccccccccfccccccccccccccccccfccccccccccccccccccfcccccccccccccccfcccccccccfccccccccccccfcccccccccfcccccccccccccccccfcccccccccccfccc
+ccccccccccfccccccccccccccccccfcccccccccfccccccccccccccccccfccccccccccccccccccfcccccccccccccccfcccccccccfccccccccccccfcccccccccfcccccccccccccccccfcccccccccccfccc
+ccccccccccfccccccccccccccccccfcccccccccfccccccccccccccccccfccccccccccccccccccfcccccccccccccccfcccccccccfccccccccccccfcccccccccfcccccccccccccccccfcccccccccccfccc
+ccccccccccfccccccccccccccccccfcccccccccfccccccccccccccccccfccccccccccccccccccfcccccccccccccccfcccccccccfccccccccccccfcccccccccfcccccccccccccccccfcccccccccccfccc
+ccccccccccfccccccccccccccccccfcccccccccfccccccccccccccccccfccccccccccccccccccfcccccccccccccccfcccccccccfccccccccccccfcccccccccfcccccccccccccccccfcccccccccccfccc
+`;
+            case "image97":
             case "bgTitle":return img`
 ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
 ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
@@ -3716,7 +3913,7 @@ ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
 ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
 ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
 `;
-            case "image95":
+            case "image98":
             case "bgAshenGate":return img`
 fffffffffffffffffffffffffffffffffffffffffffffffffffffffff1fffffffffffffffffdffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
 ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
@@ -3839,7 +4036,7 @@ ccccccccccfcccccccccccccccccccfcccccccccccccccccfcccccccccfcccccccccccccccfccccc
 ccccccccccfcccccccccccccccccccfcccccccccccccccccfcccccccccfcccccccccccccccfcccccccccccccccccccfccccccccccccfcccccccccccccccfcccccccccfcccccccccccccccccfcccccccc
 ccccccccccfcccccccccccccccccccfcccccccccccccccccfcccccccccfcccccccccccccccfcccccccccccccccccccfccccccccccccfcccccccccccccccfcccccccccfcccccccccccccccccfcccccccc
 `;
-            case "image96":
+            case "image99":
             case "bgSunkenHall":return img`
 ffccbbcbbbbbbccfffffffffffffffffffffffffffffffffffffffffffffffffffffffccbbcbbbbbbccfffffffffffffffffffffffffffff6676fedddddef6766fffffffffffccbbcbbbbbbccfffffff
 ffccbbcbbbbbbccfffffffffffffffffffffffffffffffffffffffffffbfffffffffffccbbcbbbbbbccfffffffffffffffffbfffbfffffff6766fe67667ef7667fffffffffffccbbcbbbbbbccfffffff
@@ -3962,7 +4159,7 @@ fffffffffffffffcffffffffffffffffcffffffffffffffcfffffffffffffffcfffffffffffffffc
 fffffffffffffffcffffffffffffffffcffffffffffffffcfffffffffffffffcfffffffffffffffcfffffffffffffffffcfffffffffffcfffffffffffffffffcfffffffffffcffffffffffffcfffffff
 fffffffffffffffcffffffffffffffffcffffffffffffffcfffffffffffffffcfffffffffffffffcfffffffffffffffffcfffffffffffcfffffffffffffffffcfffffffffffcffffffffffffcfffffff
 `;
-            case "image97":
+            case "image100":
             case "bgWhisperingWoods":return img`
 88866666886f7666e7f686677688888888888888888888868666777f666e66f88667678888888888888887886666f7fe66e7666666768888888888888888888888888888666666f767666f7887667688
 88666666786666e677f67667666888888888888888888867666867667e6666766666766888888888888868666668667eee76f67677886888888888888888888888888876776686676e6676f668788768
@@ -4085,7 +4282,7 @@ eeeeeeeeeeeeeeeeeeeeeeeeeeeeeceeeeeeeeeeeeeeeeeeeeeeeeceeeeeeeeeeeeeeeeeeeeeecee
 eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeceeeeeeeeeeeeefffefffffefffceeeeeeeeeeeeeeeeeeeeceeeeeeeeeee
 eceeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeceeeeeeeeeeeeeeeeeeeeeeceeeeeeeefffefffffefffeeeeeeeeceeeeeeeeeeeeeeeeeeeeeeee
 `;
-            case "image98":
+            case "image101":
             case "bgArchersRampart":return img`
 ccccccc1ccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc1cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
 cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
@@ -4208,7 +4405,7 @@ cccccccccfcccccccccccfccccccccccccccccccfccccccccccccccccccfccccccccccccccccfccc
 cccccccccfcccccccccccfccccccccccccccccccfccccccccccccccccccfccccccccccccccccfcccccccccccfcccccccccccfcccccccccfcccccccccfccccccccccccfccccccccccccfcccccccccccfc
 cccccccccfcccccccccccfccccccccccccccccccfccccccccccccccccccfccccccccccccccccfcccccccccccfcccccccccccfcccccccccfcccccccccfccccccccccccfccccccccccccfcccccccccccfc
 `;
-            case "image99":
+            case "image102":
             case "bgWardenArena":return img`
 ffffffffffffffffffffffffffffff2ee2ee2ee2ee2ee2ee2ee2ee2ee2ee2ee2ee2ee2ee2ee2ee2ee2ee2ee2ee2ee2ee2ee2ee2ee2ee2ee2ee2ee2ee2ee2ee2ee2ffffffffffffffffffffffffffffff
 ffffffffffffffffffffffffffffffee2ee2ee2ee2ee2ee2ee2ee2ee2ee2ee2ee2ee2ee2ee2ee2ee2ee2ee2ee2ee2ee2ee2ee2ee2ee2ee2ee2ee2ee2ee2ee2ee2effffffffffffffffffffffffffffff
@@ -4331,7 +4528,7 @@ ccfccccccccccccfcccccccccccccccccccfcccccccccccfcccccccccccccccccfcccccccccccccc
 ccfccccccccccccfcccccccccccccccccccfcccccccccccfcccccccccccccccccfcccccccccccccccfcccccccccfcccccccccccccccccccfccccccccccfcccccccccccfccccccccccccccccccfcccccc
 ccfccccccccccccfcccccccccccccccccccfcccccccccccfcccccccccccccccccfcccccccccccccccfcccccccccfcccccccccccccccccccfccccccccccfcccccccccccfccccccccccccccccccfcccccc
 `;
-            case "image100":
+            case "image103":
             case "textTitle":return img`
 ............................................................................................................................................................
 ..ffffffffffffff..fffffff......fffffff..ffffffffffff....ffffffffffffff..fffffffffff.......ffffffffffffff......ffff.......fffffffff.......fffffffff..........
@@ -4352,7 +4549,7 @@ ccfccccccccccccfcccccccccccccccccccfcccccccccccfcccccccccccccccccfcccccccccccccc
 ...ffffffffffffff..fffff...f...fffffff...ffffffffffff....ffffffffffffff..fffffff...fffff....fffffff......fffff...fffffff..ffffffffffffff..ffffffffffffff....
 ............................................................................................................................................................
 `;
-            case "image101":
+            case "image104":
             case "textSubtitle":return img`
 ............................................................................................................................................................
 ...........................ff.........ff.ff.ff............ff......................ff..........................ff.................................ff.........
@@ -4366,7 +4563,7 @@ ccfccccccccccccfcccccccccccccccccccfcccccccccccfcccccccccccccccccfcccccccccccccc
 ....ffff...ffff..fff..ffff..f..ffff....f..f..f.ff...fff....f..f..f....f....f..ffff.f.ff...fff...ffff..fff...ffff..fff...ff..ff..f....fff.ffff..ffff..fff....
 ............................................................................................................................................................
 `;
-            case "image102":
+            case "image105":
             case "textPressA":return img`
 ................................................................................................................
 ..........................................................................fff.....................fff...........
@@ -4383,7 +4580,7 @@ ccfccccccccccccfcccccccccccccccccccfcccccccccccfcccccccccccccccccfcccccccccccccc
 ............................................................................................ffff................
 ................................................................................................................
 `;
-            case "image103":
+            case "image106":
             case "textRest":return img`
 ................................
 ...fffff..fffff..fffffffffff....
@@ -4396,7 +4593,7 @@ ccfccccccccccccfcccccccccccccccccccfcccccccccccfcccccccccccccccccfcccccccccccccc
 ....f..fff.ffff..ffff....f......
 ................................
 `;
-            case "image104":
+            case "image107":
             case "textLocked":return img`
 ................................................
 ...ff.....fffff...fffff.ff.fff..fffff.fffff.....
@@ -4409,7 +4606,7 @@ ccfccccccccccccfcccccccccccccccccccfcccccccccccfcccccccccccccccccfcccccccccccccc
 ....ffff...ffff....ffff..f..ff...ffff..ffff.....
 ................................................
 `;
-            case "image105":
+            case "image108":
             case "textBossName":return img`
 .............................................................................................................
 ..ffffff.ff..ff.fffff..ff..ff..fffff.ff...ff....ffffffffffffff..fffffffff..fff...fffff.fffff..ffffffff.ff....
@@ -4422,7 +4619,7 @@ ccfccccccccccccfcccccccccccccccccccfcccccccccccfcccccccccccccccccfcccccccccccccc
 .....f....f...f..ffff...f...f...ffff..ffff.ffff..ffff..ff..ff.....ff..ff..ff..ff..f..fffffff...ffff.f..ff....
 .............................................................................................................
 `;
-            case "image106":
+            case "image109":
             case "bannerYouDied":return img`
 ......f.f.f.f.fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff.f.f.f.f.f.....
 .....f.f.f.f.f.fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff.f.f.f.f......
@@ -4442,7 +4639,7 @@ ccfccccccccccccfcccccccccccccccccccfcccccccccccfcccccccccccccccccfcccccccccccccc
 .....f.f.f.f.f.fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff.f.f.f.f......
 ......f.f.f.f.fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff.f.f.f.f.f.....
 `;
-            case "image107":
+            case "image110":
             case "bannerRest":return img`
 ......f.f.f.f.fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff.f.f.f.f.f.....
 .....f.f.f.f.f.fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff.f.f.f.f......
@@ -4456,7 +4653,7 @@ ccfccccccccccccfcccccccccccccccccccfcccccccccccfcccccccccccccccccfcccccccccccccc
 .....f.f.f.f.f.fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff.f.f.f.f......
 ......f.f.f.f.fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff.f.f.f.f.f.....
 `;
-            case "image108":
+            case "image111":
             case "bannerAshenGate":return img`
 ......f.f.f.f.fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff.f.f.f.f.f.....
 .....f.f.f.f.f.fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff.f.f.f.f......
@@ -4470,7 +4667,7 @@ ccfccccccccccccfcccccccccccccccccccfcccccccccccfcccccccccccccccccfcccccccccccccc
 .....f.f.f.f.f.fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff.f.f.f.f......
 ......f.f.f.f.fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff.f.f.f.f.f.....
 `;
-            case "image109":
+            case "image112":
             case "bannerSunkenHall":return img`
 ......f.f.f.f.fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff.f.f.f.f.f.....
 .....f.f.f.f.f.fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff.f.f.f.f......
@@ -4484,7 +4681,7 @@ ccfccccccccccccfcccccccccccccccccccfcccccccccccfcccccccccccccccccfcccccccccccccc
 .....f.f.f.f.f.fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff.f.f.f.f......
 ......f.f.f.f.fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff.f.f.f.f.f.....
 `;
-            case "image110":
+            case "image113":
             case "bannerWhisperingWoods":return img`
 ......f.f.f.f.fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff.f.f.f.f.f.....
 ffffffffff.fff.fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff.f.fffff
@@ -4498,7 +4695,7 @@ f77f..f77fff77ff77777fffffffff77ff77ffff77fff77ff77fff77777fff77ffffff77777fff77
 .ff..f.fff.fff.fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff.f.fffff
 ......f.f.f.f.fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff.f.f.f.f.f.....
 `;
-            case "image111":
+            case "image114":
             case "bannerArchersRampart":return img`
 ......f.f.f.f.fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff.f.f.f.f.f.....
 ffffffffffff.fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff.ffffffff.
@@ -4512,7 +4709,7 @@ fddddddffddfffddffdddddffffffffffddffffdddddffffffddddffddfffddffdddddfffdddddff
 ...fff.f.fff.fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff.f.fff.f.ff...
 ......f.f.f.f.fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff.f.f.f.f.f.....
 `;
-            case "image112":
+            case "image115":
             case "bannerWarden":return img`
 ......f.f.f.f.fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff.f.f.f.f.f.....
 .....f.fffffff.fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff.fff.f......
@@ -4526,7 +4723,7 @@ fddddddffddfffddffdddddffffffffffddffffdddddffffffddddffddfffddffdddddfffdddddff
 .....f.f.fff.f.fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff.fff.f......
 ......f.f.f.f.fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff.f.f.f.f.f.....
 `;
-            case "image113":
+            case "image116":
             case "bannerEnraged":return img`
 ......f.f.f.f.fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff.f.f.f.f.f.....
 .....fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff.fffffff......
@@ -4540,7 +4737,7 @@ fddddddffddfffddffdddddffffffffffddffffdddddffffffddddffddfffddffdddddfffdddddff
 .....f.f.fff.f.fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff.fffffff......
 ......f.f.f.f.fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff.f.f.f.f.f.....
 `;
-            case "image114":
+            case "image117":
             case "bannerWardenFelled":return img`
 ......f.f.f.f.fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff.f.f.f.f.f.....
 ffffff.f.f.ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff...
@@ -4560,7 +4757,7 @@ f....fff55ff.fff5555fffff555ffff555ffffff555fff555ffffff555ffffff5ffff5fffffff55
 .....f.fffff.f.fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff..
 ......f.f.f.f.fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff.f.f.f.f.f.....
 `;
-            case "image115":
+            case "image118":
             case "bannerKey":return img`
 ......f.f.f.f.fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff.f.f.f.f.f.....
 .....f.f.f.f.f.fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff.f.f.f.f......
@@ -4588,7 +4785,7 @@ f....fff55ff.fff5555fffff555ffff555ffffff555fff555ffffff555ffffff5ffff5fffffff55
 .....f.f.f.f.f.fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff.f.f.f.f......
 ......f.f.f.f.fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff.f.f.f.f.f.....
 `;
-            case "image116":
+            case "image119":
             case "bannerBow":return img`
 ......f.f.f.f.fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff.f.f.f.f.f.....
 .....f.f.f.f.f.fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff.f.f.f.f......
@@ -4616,7 +4813,7 @@ f....fff55ff.fff5555fffff555ffff555ffffff555fff555ffffff555ffffff5ffff5fffffff55
 .....f.f.f.f.f.fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff.f.f.f.f......
 ......f.f.f.f.fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff.f.f.f.f.f.....
 `;
-            case "image117":
+            case "image120":
             case "bannerShield":return img`
 ......f.f.f.f.fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff.f.f.f.f.f.....
 .....f.f.f.f.f.fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff.f.f.f.f......
@@ -4644,7 +4841,7 @@ f....fff55ff.fff5555fffff555ffff555ffffff555fff555ffffff555ffffff5ffff5fffffff55
 .....f.f.f.f.f.fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff.f.f.f.f......
 ......f.f.f.f.fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff.f.f.f.f.f.....
 `;
-            case "image118":
+            case "image121":
             case "bannerDoorUnlocked":return img`
 ......f.f.f.f.fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff.f.f.f.f.f.....
 .....f.f.f.f.f.fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff.f.f.f.f......

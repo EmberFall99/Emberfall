@@ -18,6 +18,7 @@
         "scenery.ts",
         "menus.ts",
         "levelling.ts",
+        "prologue.ts",
         "main.ts",
         "README.md"
     ],

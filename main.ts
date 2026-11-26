@@ -110,16 +110,39 @@ titleText.setPosition(80, 22)
 let subText = sprites.create(txtSub, SpriteKind.Scenery)
 subText.setPosition(80, 38)
 let pressText = sprites.create(txtPress, SpriteKind.Scenery)
-pressText.setPosition(80, 112)
-pauseUntil(() => controller.A.isPressed())
+pressText.setPosition(80, 104)
+let controlsText = sprites.create(image.create(160, 8), SpriteKind.Scenery)
+controlsText.image.printCenter("B: controls", 0, 11)
+controlsText.setPosition(80, 115)
+let introText = sprites.create(image.create(160, 24), SpriteKind.Scenery)
+introText.setPosition(80, 56)
+introText.z = 300
+let cellKey = sprites.create(keyImg, SpriteKind.Scenery)
+cellKey.setPosition(80, 100)
+cellKey.setFlag(SpriteFlag.Invisible, true)
+let cellDoor = sprites.create(cellDoorClosedImg, SpriteKind.Scenery)
+cellDoor.x = 150
+cellDoor.bottom = GROUND
+cellDoor.setFlag(SpriteFlag.Invisible, true)
+let hint = sprites.create(image.create(160, 10), SpriteKind.Scenery)
+hint.setPosition(80, 30)
+hint.z = 150
+hint.setFlag(SpriteFlag.Invisible, true)
+// title screen: A to begin, B for the controls
+while (!(controller.A.isPressed())) {
+    if (controller.B.isPressed()) {
+        game.showLongText("CONTROLS\nLeft/Right: move\nUp: jump, climb\nDown: climb, flask\nDown at bonfire: rest\nB: roll (dodge)\nTap A: attack / combo\nHold A: heavy/block/aim\nMENU: equipment", DialogLayout.Full)
+        pauseUntil(() => !(controller.A.isPressed()) && !(controller.B.isPressed()))
+    }
+    pause(20)
+}
 pauseUntil(() => !(controller.A.isPressed()))
 titleText.destroy()
 subText.destroy()
 pressText.destroy()
-game.showLongText("CONTROLS\nLeft/Right: move\nUp: jump, climb\nDown: climb, flask\nDown at bonfire: rest\nB: roll (dodge)\nTap A: attack / combo\nHold A: heavy/block/aim\nMENU: equipment", DialogLayout.Full)
-pauseUntil(() => !(controller.A.isPressed()))
-game.showLongText("Every action costs stamina. Rolling makes you briefly invincible. Die, and your souls stay where you fell.", DialogLayout.Center)
+controlsText.destroy()
+playIntro()
 pauseUntil(() => !(controller.A.isPressed()))
 controller.menu.onEvent(ControllerButtonEvent.Pressed, openMenu)
 info.setScore(0)
-respawn()
+startNewGame()

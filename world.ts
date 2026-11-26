@@ -46,7 +46,9 @@ function goToArea(n: number) {
     sprites.destroyAllSpritesOfKind(SpriteKind.EnemyArrow)
     sprites.destroyAllSpritesOfKind(SpriteKind.PlayerArrow)
     sprites.destroyAllSpritesOfKind(SpriteKind.PowerArrow)
-    if (area == 1) {
+    if (area == 0) {
+        scene.setBackgroundImage(bgCell)
+    } else if (area == 1) {
         scene.setBackgroundImage(bgGate)
     } else if (area == 2) {
         scene.setBackgroundImage(bgHall)

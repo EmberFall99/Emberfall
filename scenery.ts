@@ -13,6 +13,34 @@ function updateScenery() {
     fog.x = 4
     fog.bottom = GROUND
     fog.setFlag(SpriteFlag.Invisible, !(area == 5 && bossActive))
+    // the cell: the fallen key, the cell door, and a few quiet hints
+    cellKey.setFlag(SpriteFlag.Invisible, !(area == 0 && !(hasCellKey)))
+    if (area == 0 && !(hasCellKey) && Math.abs(px - cellKey.x) < 7 && py < 8 && gameState == "play") {
+        hasCellKey = true
+        music.play(music.melodyPlayable(music.baDing), music.PlaybackMode.InBackground)
+    }
+    cellDoor.setFlag(SpriteFlag.Invisible, area != 0)
+    if (cellOpen) {
+        cellDoor.setImage(cellDoorOpenImg)
+    } else {
+        cellDoor.setImage(cellDoorClosedImg)
+    }
+    if (area == 0 && hasCellKey && !(cellOpen) && px > 128) {
+        cellOpen = true
+        music.play(music.melodyPlayable(music.beamUp), music.PlaybackMode.InBackground)
+    }
+    hint.setFlag(SpriteFlag.Invisible, area != 0 || pState == "waking" || gameState != "play")
+    if (area == 0) {
+        let hi = hint.image
+        hi.fill(0)
+        if (!(hasCellKey)) {
+            hi.printCenter("Left / Right: move", 1, 11)
+        } else if (!(cellOpen)) {
+            hi.printCenter("The key fits the cell door.", 1, 11)
+        } else {
+            hi.printCenter("B: roll   Up: jump   A: attack", 1, 11)
+        }
+    }
     // the key, the door and the dropped bow
     keyItem.setFlag(SpriteFlag.Invisible, !(area == 3 && !(hasKey)))
     if (area == 3 && !(hasKey) && Math.abs(px - keyItem.x) < 8 && py < 10 && gameState == "play") {

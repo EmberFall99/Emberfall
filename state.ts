@@ -42,6 +42,9 @@ let shieldArea = 0
 let hasBow = false
 let bowDropped = false
 let hasKey = false
+// the prologue: you wake in a cell, and a key has fallen from somewhere above
+let hasCellKey = false
+let cellOpen = false
 let doorOpen = false
 let menuSel = 0
 let menuPanel: Sprite = null

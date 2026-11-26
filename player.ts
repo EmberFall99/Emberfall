@@ -374,6 +374,11 @@ function doAction() {
             pState = "idle"
         }
     }
+    if (pState == "waking") {
+        if (pFrame > 54) {
+            pState = "idle"
+        }
+    }
     if (pState == "climb") {
         px = ladX[ladder]
         if (controller.up.isPressed()) {
@@ -413,12 +418,18 @@ function physics() {
     }
     let walkingRight = (pState == "walk" || pState == "roll") && pDir == 1
     let walkingLeft = (pState == "walk" || pState == "roll") && pDir == -1
-    // the locked door
+    // the locked doors
     if (area == 4 && !(doorOpen) && py < 30 && px > 143) {
         px = 143
     }
+    if (area == 0 && !(cellOpen) && px > 141) {
+        px = 141
+    }
     if (px > 156) {
-        if (walkingRight && area == 1) {
+        if (walkingRight && area == 0) {
+            px = 6
+            goToArea(1)
+        } else if (walkingRight && area == 1) {
             px = 6
             goToArea(2)
         } else if (walkingRight && area == 2) {
@@ -432,7 +443,10 @@ function physics() {
         }
     }
     if (px < 4) {
-        if (walkingLeft && area == 2) {
+        if (walkingLeft && area == 1) {
+            px = 154
+            goToArea(0)
+        } else if (walkingLeft && area == 2) {
             px = 154
             goToArea(1)
         } else if (walkingLeft && area == 4) {
@@ -499,6 +513,12 @@ function animateKnight() {
         im = kHurt[loadout]
     } else if (pState == "dead") {
         im = kDead
+    } else if (pState == "waking") {
+        if (pFrame < 34) {
+            im = kDead
+        } else {
+            im = kHurt[loadout]
+        }
     }
     knight.setImage(faced(im, pDir))
     knight.x = px
