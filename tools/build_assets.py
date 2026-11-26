@@ -12,10 +12,26 @@ sys.path.insert(0, os.path.join(HERE, 'art'))
 import pixrig as R, pixrig2 as Q, pixrig3 as Z, pixrig4 as W, textart as T
 
 def grid(g): return g.p if hasattr(g, 'p') else g
+def fit(t, size, font, spacing, room=152):
+    """the biggest font size (up to `size`) at which the text fits across the screen"""
+    while size > 6 and len(T.text_grid(t, size, '1', font=font, spacing=spacing)[0]) > room:
+        size -= 1
+    return size
+
 def banner(t, col, big=False, sub=None):
-    g = T.text_grid(t, 20, col, band=True, width=160) if big else T.text_grid(t, 10, col, font=T.SANS, band=True, width=160)
+    if big:
+        g = T.text_grid(t, fit(t, 20, T.SERIF, 1), col, band=True, width=160)
+    else:
+        g = T.text_grid(t, fit(t, 10, T.SANS, 1), col, font=T.SANS, band=True, width=160)
     if sub:
-        g = g + T.text_grid(sub, 8, '1', font=T.SANS, band=True, width=160, spacing=0)
+        lines = [sub]
+        if fit(sub, 8, T.SANS, 0) < 8:
+            # too long for one line at a readable size: break it in two, at the space nearest the middle
+            spaces = [i for i, c in enumerate(sub) if c == ' ']
+            cut = min(spaces, key=lambda i: abs(i - len(sub) / 2))
+            lines = [sub[:cut], sub[cut + 1:]]
+        for line in lines:
+            g = g + T.text_grid(line, fit(line, 8, T.SANS, 0), '1', font=T.SANS, band=True, width=160, spacing=0)
     return g
 
 BR = [R.boss_frames(r) for r in (0, 1, 2)]
