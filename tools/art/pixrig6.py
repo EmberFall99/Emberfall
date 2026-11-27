@@ -413,3 +413,16 @@ def smoulder_sparks():
     a, b = G(1, 2, 0, 0), G(1, 2, 0, 0)
     a.p = [['5'], ['4']]; b.p = [['4'], ['2']]
     return [a, b]
+
+def brewer_icon():
+    """the Brewer's Amulet: a little amber flask on a chain"""
+    g = G(12, 12, 0, 0)
+    for x in range(3, 9): g.p[1][x] = 'b'
+    g.p[2][2] = 'b'; g.p[2][9] = 'b'; g.p[3][2] = 'b'; g.p[3][9] = 'b'; g.p[4][3] = 'b'; g.p[4][8] = 'b'
+    g.p[4][5] = 'e'; g.p[4][6] = 'e'; g.p[5][5] = 'd'; g.p[5][6] = 'd'
+    for y in range(6, 11):
+        for x in range(3, 9):
+            if not (y == 6 and x in (3, 8)) and not (y == 10 and x in (3, 8)):
+                g.p[y][x] = '4' if y > 7 else 'd'
+    g.p[8][4] = '5'; g.p[9][4] = '5'
+    return g

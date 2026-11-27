@@ -162,7 +162,7 @@ for var, name, g in [('arrowFlat', 'arrow', fl), ('arrowDiag', 'arrowDiagonal', 
                      ('manGlowImg', 'prisonerTransforming', Z.man_glow()), ('wizardImg', 'glargon', Z.wizard()),
                      ('wizardCastImg', 'glargonCasting', Z.wizard(cast=True, glow=True)), ('noteImg', 'glargonsNote', Z.note_img())]:
     single(var, name, g)
-array('icons', [('iconSword', Q.icon('sword')), ('iconSwordShield', Q.icon('shield')), ('iconBow', Q.icon('bow')), ('iconLocked', Q.icon('lock')), ('iconAmulet', W.amulet_icon()), ('iconKatana', V.katana_icon()), ('iconDagger', X.dagger_icon()), ('iconStalwart', X.stalwart_icon()), ('iconFocus', X.focus_icon())])
+array('icons', [('iconSword', Q.icon('sword')), ('iconSwordShield', Q.icon('shield')), ('iconBow', Q.icon('bow')), ('iconLocked', Q.icon('lock')), ('iconAmulet', W.amulet_icon()), ('iconKatana', V.katana_icon()), ('iconDagger', X.dagger_icon()), ('iconStalwart', X.stalwart_icon()), ('iconFocus', X.focus_icon()), ('iconBrewer', X.brewer_icon())])
 # ---- backgrounds
 for var, name, g in [('bgField', 'bgFrostbittenField', Z.bg_battlefield()), ('bgLake', 'bgStillLake', Z.bg_lake()), ('bgCell', 'bgCell', Q.bg_cell()), ('bgTitle', 'bgTitle', R.bg_title()), ('bgGate', 'bgAshenGate', R.bg_gate()), ('bgHall', 'bgSunkenHall', Q.bg_hall2()),
                      ('bgWoods', 'bgWhisperingWoods', Q.bg_forest()), ('bgRampart', 'bgArchersRampart', Q.bg_rampart()), ('bgArena', 'bgWardenArena', R.bg_arena()),

@@ -25,6 +25,12 @@ function takeDamage() {
                     pFrame = 0
                     kb = dmgDir * 1.7
                 }
+            } else if (amulet == 2) {
+                // Stalwart: immovable. You take the hit but don't flinch or get knocked back
+                hp += 0 - dmgIn
+                invuln = 30
+                scene.cameraShake(1, 100)
+                music.play(music.melodyPlayable(music.thump), music.PlaybackMode.InBackground)
             } else {
                 hp += 0 - dmgIn
                 invuln = 30
@@ -438,7 +444,7 @@ function doAction() {
     }
     if (pState == "heal") {
         if (pFrame == 20) {
-            hp = Math.min(maxHP, hp + 45)
+            hp = Math.min(maxHP, hp + cordialHeal())
             music.play(music.melodyPlayable(music.powerUp), music.PlaybackMode.InBackground)
         }
         if (pFrame > 36) {
@@ -958,4 +964,12 @@ function ghostDagger() {
         launchKnife(-1, px + pDir * 6, GROUND - py - 12, pDir, 0, 72, 32)
         music.play(music.melodyPlayable(music.magicWand), music.PlaybackMode.InBackground)
     }
+}
+
+// how much a Cordial heals (the Brewer's Amulet spices it up: half as much again)
+function cordialHeal(): number {
+    if (amulet == 4) {
+        return 68
+    }
+    return 45
 }

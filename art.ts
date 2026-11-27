@@ -204,4 +204,4 @@ let fireImgs: Image[] = assets.animation`bonfire`
 let waveImgs: Image[] = assets.animation`fireWave`
 let flagImgs: Image[] = assets.animation`tatteredFlag`
 let fogImgs: Image[] = assets.animation`fogWall`
-let icons: Image[] = [assets.image`iconSword`, assets.image`iconSwordShield`, assets.image`iconBow`, assets.image`iconLocked`, assets.image`iconAmulet`, assets.image`iconKatana`, assets.image`iconDagger`, assets.image`iconStalwart`, assets.image`iconFocus`]
+let icons: Image[] = [assets.image`iconSword`, assets.image`iconSwordShield`, assets.image`iconBow`, assets.image`iconLocked`, assets.image`iconAmulet`, assets.image`iconKatana`, assets.image`iconDagger`, assets.image`iconStalwart`, assets.image`iconFocus`, assets.image`iconBrewer`]

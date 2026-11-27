@@ -3,7 +3,7 @@
 Everything needed to pick this project up again, including in a fresh Claude conversation.
 **If you're a new session: read this whole file before changing anything.**
 
-Current version: **v0.8.2** (shown bottom-left of the title screen; the `VERSION` constant in `main.ts`).
+Current version: **v0.8.3** (shown bottom-left of the title screen; the `VERSION` constant in `main.ts`).
 
 ---
 
@@ -157,10 +157,11 @@ Neither tool can show what the game *looks* like or how it *feels* – Charlie p
   stays dead after rests. His body is 2× size: `bodyW()`/`bodyH()` widen hit checks for him.
 - **The merchant** (area 14, `shop.ts`): asleep until you have the horn – "A: Blow the horn" (`hornScene`,
   `merchantAwake`), then "A: Trade" opens her shop: Stalwart and Focus amulets at `AMULET_PRICE` (1,500) each.
-- **Amulets** (`amulet`: 0 none, 1 Farsight, 2 Stalwart, 3 Focus; one at a time. In the menu's amulet slot, A cycles
+- **Amulets** (`amulet`: 0 none, 1 Farsight, 2 Stalwart, 3 Focus, 4 Brewer's; one at a time. In the menu's amulet slot, A cycles
   through the ones you own and then none – `nextAmulet()`).
-  **Stalwart:** being parried (bandits, the Red Hand) doesn't stun you; you take half the attacker's normal hit
-  (`stalwartHit`). **Focus:** the roll becomes a dash: 3.8px/tick for 10 ticks, done at 13 (same i-frames).
+  **Stalwart:** ordinary hits don't make you flinch or knock you back (you still take the damage), and being
+  parried doesn't stun you – you take half the attacker's normal hit (`stalwartHit`). **Brewer's:** Cordials heal
+  68 instead of 45 (`cordialHeal()`). The merchant sells Focus, Brewer's and Stalwart (1,500 each). **Focus:** the roll becomes a dash: 3.8px/tick for 10 ticks, done at 13 (same i-frames).
   **Farsight:** the parry is judged **the moment you press attack** (`pressParry()`, from `startLight`, heavy and
   the katana dash): an enemy within 30px in front of you that is inside `inParryWindow()` (the last frames of its
   wind-up, or the start of its strike/lunge) is parried and goes `parried` for 55 ticks. A swing that reaches an
@@ -225,6 +226,29 @@ He then waits in the treehouse (area 16) – only if you spoke to him in the chu
 
 Lore thread: the player is mistaken for a "kindling" – but is "something else". The uncorrupted bandit echoes it.
 
+### Item descriptions (Charlie's, exact text – in `menus.ts`; press right in the menu to read them)
+- **Sword:** A knight's sword. Well made from fine steel.
+- **Sword & Shield:** The shield bears the crest of the Ninth Order.
+- **Bow:** A wooden yeoman's bow.
+- **Katana:** Shimmers with the glow of meteorite steel. As sharp as the day it was forged.
+- **Rusted Dagger:** Once a fine dagger, embellished with engravings. The pommel still bears the symbol of the Shadowed Men.
+- **Farsight Amulet:** Bestows the wearer with the ability to see attacks coming. Plagues the wearer with confusing clairvoyant visions. *(flavour only)*
+- **Stalwart Amulet:** The wearer becomes immovable, unshakeable. They cannot be stunned, not even by a well placed parry.
+- **Focus Amulet:** Focuses the wearer's spatial awareness, boosting their speed. Makes reading at night difficult.
+- **Brewer's Amulet:** Spices the Cordial in your flask, increasing its efficacy and improving its flavour.
+- **The Red Hand's horn** (key items page): A battle horn, taken from a mountain goat. It looks dusty inside. *(never blown before – may be reused)*
+- *Not in the game yet:* **Indentured General's Armour:** Prison armour of the indentured warrior. The Justicar empowers the wearer, but they are a slave to their contract.
+  **Fine Amulet:** The wearer gains the ability to appreciate the finer things in life, increasing their handling skills and bolstering their dexterity.
+  **Granite Amulet:** The strength of igneous rock bestows the wearer with great strength and constitution. But the wearer becomes groggy, slow even.
+
+### Lore threads (Charlie's)
+- **The samurai** (the kneeling skeleton at the crypt altar): an indentured general, bound to do the bidding of another
+  faction's ruler, who wanted the Red Hand dead. Searching for him, he fell into the crypt; his katana wasn't magic, so
+  the skeletons kept rising, and he never got out. (That's *why* crypt skeletons revive.)
+- **The Justicar:** the god of contracts – empowers the indentured, and pardons them at the **Shrine of the Justicar**
+  (later in the game) once their contract is fulfilled.
+- **The Shadowed Men:** their symbol is on the Rusted Dagger's pommel. The uncorrupted bandit: "I will stick to the shadows."
+
 ## 6. Roadmap (agreed with Charlie)
 
 ### Chunk 2 – Ashen Forde *(done, v0.6.3)*
@@ -243,7 +267,21 @@ The camp gate (lift the bar) and a bonfire outside it; the Red Hand's throne roo
 in the wind); the Red Hand himself (see §4); the horn wakes the merchant; her shop (Stalwart, Focus); the Rusted
 Dagger with its ghost dagger; Estus renamed **Cordial** everywhere; his own drum-driven music.
 
-### Next – Folkewood (waiting on Charlie)
+### Next – the Indentured General's Armour (agreed, not built)
+- On the kneeling samurai at the crypt altar. "A: Equip Indentured General's Armour" → "Are you sure? This action can
+  only be undone with a pardon." Equipping binds you to **a contract**: the first time you inherit the General's – **the
+  Red Hand**. You can't take it off; the Justicar pardons you once the contract is fulfilled (shrine comes later).
+- **Re-equipping** after a pardon needs a new contract: **the uncorrupted bandit, your friend**. The contract could be
+  where his real name is first revealed. If he's dead, the armour can never be worn again.
+- **The curse:** max health always 50% of normal (Constitution still raises it); +30% walk speed (not attack speed);
+  a faster roll (still slower than Focus; Focus wins if both) and a snappier jump (same height and distance, so
+  platforming isn't broken); +20% damage below 30% health (faint red glow) – stacks with the ember glow.
+- **Blood offering:** while armoured, tap B = roll (on release), hold B = stand with arms out and drain your own health
+  (never below 1) to switch the low-health bonus on before a fight. Healing above 30% turns it off.
+- Cordials should heal a share of max health (~45%) rather than a flat 45, so half health isn't an easy mode.
+- Look: the knight recoloured at runtime (dark lacquer and gold) rather than redrawn (keeps the project small).
+
+### Then – Folkewood (waiting on Charlie)
 - The way on from the edge of the Warren (area 20) to Folkewood, "crawling with" corrupted bandits; the
   uncorrupted bandit said he'd meet you there.
 

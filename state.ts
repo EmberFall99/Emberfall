@@ -228,5 +228,6 @@ let merchantAwake = false
 // amulets you own (Farsight is hasFarsight); `amulet` is the one you wear: 0 none, 1 Farsight, 2 Stalwart, 3 Focus
 let hasStalwart = false
 let hasFocus = false
+let hasBrewer = false
 let AMULET_PRICE = 1500
 let bossTune = music.stringPlayable("D4 D4 F4 D4 A4 G4 F4 E4 ", 260)
