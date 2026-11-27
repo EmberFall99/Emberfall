@@ -20,6 +20,7 @@ function respawn() {
     sprites.destroyAllSpritesOfKind(SpriteKind.PlayerArrow)
     sprites.destroyAllSpritesOfKind(SpriteKind.PowerArrow)
     dropAllKnives()
+    frozenDeath = false
     resetWorld()
     goToArea(spawnArea)
     gameState = "play"
@@ -103,6 +104,12 @@ function goToArea(n: number) {
         scene.setBackgroundImage(bgCamp3)
     } else if (area == 24) {
         scene.setBackgroundImage(bgThrone)
+    } else if (area == 29) {
+        scene.setBackgroundImage(bgFolkeRoad)
+    } else if (area == 30 && dragonDone) {
+        scene.setBackgroundImage(bgFolkeFrozen)
+    } else if (area == 30) {
+        scene.setBackgroundImage(bgFolke)
     } else if (area == 25) {
         scene.setBackgroundImage(bgCrypt1)
     } else if (area == 26) {
@@ -156,6 +163,8 @@ function goToArea(n: number) {
             showBanner(bnCamp, 60)
         } else if (area == 25) {
             showBanner(bnCrypt, 60)
+        } else if (area == 30) {
+            showBanner(bnFolke, 60)
         }
     }
     if (area == 5 && !(bossDead) && !(bossActive)) {
@@ -181,6 +190,15 @@ function setupEnemy(i: number) {
             // the bandits in the house wait in the shadows until you're halfway in
             eState[i] = "hidden"
             eSprites[i].setFlag(SpriteFlag.Invisible, true)
+        }
+        if (eArea[i] == 30) {
+            // Folkewood's bandits: milling about until the dragon comes; ice for good after it
+            if (dragonDone) {
+                eState[i] = "frozen"
+            } else {
+                eState[i] = "milling"
+                eDir[i] = 1 - 2 * (i % 2)
+            }
         }
         if (eType[i] == "redhand") {
             // back on his throne, Cordials refilled
@@ -236,6 +254,10 @@ function musicFor(): string {
         return "boss"
     } else if (redHandActive()) {
         return "redhand"
+    } else if (dragonT >= 0) {
+        return "silence"
+    } else if ((area == 29 || area == 30) && dragonDone) {
+        return "wind"
     } else if (gameState == "title" || area <= 5) {
         return "dark"
     } else if (area == 6) {

@@ -9,7 +9,7 @@ import json, os, sys, subprocess, tempfile
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.dirname(HERE)
 sys.path.insert(0, os.path.join(HERE, 'art'))
-import pixrig as R, pixrig2 as Q, pixrig3 as Z, pixrig4 as W, pixrig5 as V, pixrig6 as X, textart as T
+import pixrig as R, pixrig2 as Q, pixrig3 as Z, pixrig4 as W, pixrig5 as V, pixrig6 as X, pixrig7 as F, textart as T
 
 def grid(g): return g.p if hasattr(g, 'p') else g
 def fit(t, size, font, spacing, room=152):
@@ -138,6 +138,12 @@ single('merchantAwakeImg', 'merchantAwake', X.merchant_awake())
 single('hornImg', 'hornPickup', X.horn_pickup())
 single('daggerImg', 'rustedDaggerPickup', X.dagger_pickup())
 anim('stainImgs', 'smoulderingEmbers', X.smoulder_frames(), 120)
+# ---- chunk 5: the ice dragon (only ever partly on screen)
+single('dragonWingImg', 'dragonWing', F.dragon_wing())
+single('dragonHeadImg', 'dragonHead', F.dragon_head(False))
+single('dragonJawImg', 'dragonHeadBreathing', F.dragon_head(True))
+single('dragonShadowImg', 'dragonShadow', F.shadow_frame())
+anim('breathImgs', 'dragonBreath', F.breath_frames(), 80)
 anim('sparkImgs', 'smoulderSpark', X.smoulder_sparks(), 120)
 single('kLeapUp', 'knightDaggerLeapWindup', LO[4]['leapUp'])
 single('kLeap', 'knightDaggerLeap', LO[4]['leap'])
@@ -176,7 +182,9 @@ for var, name, g in [('bgField', 'bgFrostbittenField', Z.bg_battlefield()), ('bg
                      ('bgCamp1', 'bgCampHuts', V.bg_camp1()), ('bgCamp2', 'bgCampBridge', V.bg_camp2()), ('bgCamp3', 'bgCampApproach', V.bg_camp3()),
                      ('bgCrypt1', 'bgCryptStair', V.bg_crypt1()), ('bgCrypt2', 'bgCryptPillars', V.bg_crypt2()),
                      ('bgCrypt3', 'bgCryptPits', V.bg_crypt3()), ('bgCrypt4', 'bgCryptAltar', V.bg_crypt4()),
-                     ('bgThrone', 'bgRedHandThrone', X.bg_throne_with_poles()), ('bgCamp3Open', 'bgCampApproachOpen', X.bg_camp3_open())]:
+                     ('bgThrone', 'bgRedHandThrone', X.bg_throne_with_poles()), ('bgCamp3Open', 'bgCampApproachOpen', X.bg_camp3_open()),
+                     ('bgFolkeRoad', 'bgFolkewoodRoad', F.bg_folke_road()), ('bgFolke', 'bgFolkewoodStreet', F.bg_folke_street()),
+                     ('bgFolkeFrozen', 'bgFolkewoodStreetFrozen', F.bg_folke_street(frozen=True))]:
     single(var, name, g)
 # ---- text
 for var, name, g in [
@@ -211,6 +219,7 @@ for var, name, g in [
     ('bnKatana', 'bannerKatana', banner('KATANA', '1', sub='Press MENU to equip it')),
     ('txtDescend', 'textDescend', T.text_grid('A: Descend', 8, '5', font=T.SANS)),
     ('bnRedHand', 'bannerRedHand', banner('THE RED HAND', '2')),
+    ('bnFolke', 'bannerFolkewood', banner('FOLKEWOOD', '9')),
     ('bnRedFelled', 'bannerRedHandFelled', banner('RED HAND FELLED', '5', big=True)),
     ('bnHorn', 'bannerHorn', banner("THE RED HAND'S HORN", '5', sub='Loud enough to wake anyone')),
     ('bnDagger', 'bannerRustedDagger', banner('RUSTED DAGGER', '4', sub='Press MENU to equip it')),

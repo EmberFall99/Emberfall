@@ -3,7 +3,7 @@
 Everything needed to pick this project up again, including in a fresh Claude conversation.
 **If you're a new session: read this whole file before changing anything.**
 
-Current version: **v0.8.3** (shown bottom-left of the title screen; the `VERSION` constant in `main.ts`).
+Current version: **v0.9.0** (shown bottom-left of the title screen; the `VERSION` constant in `main.ts`).
 
 ---
 
@@ -63,6 +63,8 @@ Neither tool can show what the game *looks* like or how it *feels* – Charlie p
 | `tools/make_music.js` | Composes the background music into `music.ts` (now with MakeCode's drum kit for the Red Hand) |
 | `redhand.ts` | The Red Hand: his AI, his hit rules, his death and drops, the camp gate, his flags |
 | `shop.ts` | The merchant: the horn scene and her amulet shop |
+| `dragon.ts` | Folkewood's ice dragon set piece, frozen bandits, `iced()` (recolour any picture to ice) |
+| `tools/art/pixrig7.py` | Chunk 5 art: the road to Folkewood, Folkewood's street (before/after), the dragon's wing, head, breath, shadow |
 | `helpers.ts` | `faced()`, `queueAction()`, `showBanner()`, `isFree()`, `supportAt()`, `sign()` |
 | `world.ts` | `respawn()`, `resetWorld()`, `goToArea()`, `setupEnemy()`, `rest()`, `die()`, `hasBonfire()` |
 | `player.ts` | Damage intake, input, combo, heavy, shield block, bow, roll, heal, climbing, physics/area edges, animation, doors (`enterBuilding`/`leaveBuilding`), the riposte |
@@ -97,6 +99,17 @@ Neither tool can show what the game *looks* like or how it *feels* – Charlie p
   **The Warren** (chunk 3), east of the great tree: 15 → 17 entrance → 18 the hollow (bonfire at x 100) → 19 deeper
   woods → 20 the edge (Folkewood signpost; east is closed, px clamped at 136).
   The hollow has no enemies (v0.8.2: Charlie removed its knife thrower – fighting it after every respawn was tedious).
+  **Folkewood** (chunk 5): 20 → 29 the road (first frost, Folkewood's palisade gate) → 30 Folkewood's street (seven
+  bandits, slots 29–35, `milling`). East of 30 is closed until part two.
+- **The dragon** (`dragon.ts`): Glargon's second note lies just inside the gate (`NOTE2_X` 24): "Dragon. – Glargon
+  Jones". Reading it, or walking past x 44, starts it (`startDragon`, `dragonT` counts ticks): the music stops, a roar,
+  the shadow races over (0–40), a wing sweeps across the top (20–78), the head dips in (78–98), then the breath – a
+  column of ice under the head – sweeps right to left down the street (98–160, `breathX`). Bandits it touches become
+  `frozen` (ice-recoloured, untouchable, no souls, for good). It kills you (`frozenDeath`: you're left as an ice
+  statue) unless you're mid-roll (i-frames) or you've gone back through the gate (leaving area 30 finishes it without
+  you). After: `dragonDone` (saved), the street is buried in frost (`bgFolkeFrozen`), and the music is just wind.
+  The dragon is only ever partly on screen. (It's the same ice that froze the Frostbitten Field; Glargon survived it
+  in the stocks because he's immune to magic.)
   Up from the hollow: ladder slot 3 (x 130) → **the abandoned camp** 21 (walled on the left) → 22 the rope bridge
   (a long pit with two plank platforms at height 0 and a gap to jump) → 23 the approach (the throne gate is barred,
   until you lift the bar – "A: Lift the bar", `campGateOpen`, saved) → **24 the Red Hand's throne room**.
@@ -200,7 +213,7 @@ Neither tool can show what the game *looks* like or how it *feels* – Charlie p
   `ef_visited` (per area). **Only ever append to these arrays** so old saves keep loading.
   Since v0.6.3: `ef_stats` += `amulet`; `ef_flags` += `hasFarsight, banditMet`, then (v0.6.4) `banditGone`,
   (v0.7.0) `hasKatana`, (v0.8.0) `campGateOpen, redHandDead, hasHorn, merchantAwake, hasDagger, hasStalwart,
-  hasFocus`; `loadGame()` checks the lengths.
+  hasFocus`, (v0.8.3) `hasBrewer`, (v0.9.0) `dragonDone`; `loadGame()` checks the lengths.
   Saves happen on rest, respawn, pickups, doors and story moments.
 
 ## 5. Story so far (exact text)
@@ -267,28 +280,58 @@ The camp gate (lift the bar) and a bonfire outside it; the Red Hand's throne roo
 in the wind); the Red Hand himself (see §4); the horn wakes the merchant; her shop (Stalwart, Focus); the Rusted
 Dagger with its ghost dagger; Estus renamed **Cordial** everywhere; his own drum-driven music.
 
-### Next – the Indentured General's Armour (agreed, not built)
+### Chunk 5 – Folkewood, part one *(done, v0.9.0)*
+The road in, the palisade gate, Glargon's note, the dragon, the frozen street.
+
+### Next – Folkewood, part two (agreed)
+- Through the frozen street: a section where **cultists on a rooftop** throw ice balls down at you, and a **cultist
+  warrior** on the ground whose successive hits freeze you (a **frost meter**, like Dark Souls' frostbite: fills with
+  frost attacks; full = frozen for a moment + extra damage). Dragon cultists wear dragon-horn helmets.
+- On the roof: **the cultist talisman** – the key to the boss fight.
+- Beyond: a **bonfire**, and **your friend**. A: talk –
+  "I told you we were more than Kindlings. That dagger was once used to slay my men. But it is rightfully ours. The
+  fingers of the red hand owe their success to the Shadowed Men, before they betrayed us. And we owe you an honorary
+  membership."  **A = Accept, B = Do not accept.**
+  - A: "Take one of our cloaks. Our men are loyal, we watch each other's backs. What's left of us anyway. I'm going to
+    keep pushing on, you rest here and I'll find you at the foot of the mountain. Glargon is waiting."
+  - B: "No? Well, no matter. You're still one of us in spirit. But you might regret not taking it when we hike that
+    mountain. It's very warm I'll have you know. I'll see you there, old friend. Glargon is waiting."
+  Then he disappears (fade, as before). He still doesn't give his name.
+- **The Shadowed Men covenant** (accepting): a hidden stat, never named in game, like Dark Souls covenants. It
+  permanently replaces your cloak until another offer is made – **your red cape changes colour** (recolour the knight
+  at runtime). Effects: no damage from ranged attacks that hit you **from behind**; **frost stun duration halved**.
+  Consequence: enemies of the Shadowed Men (not yet written) will know you later. Tied to accepting.
+
+### Then – the Indentured General's Armour (agreed, not built)
 - On the kneeling samurai at the crypt altar. "A: Equip Indentured General's Armour" → "Are you sure? This action can
   only be undone with a pardon." Equipping binds you to **a contract**: the first time you inherit the General's – **the
   Red Hand**. You can't take it off; the Justicar pardons you once the contract is fulfilled (shrine comes later).
 - **Re-equipping** after a pardon needs a new contract: **the uncorrupted bandit, your friend**. The contract could be
-  where his real name is first revealed. If he's dead, the armour can never be worn again.
+  where his real name is first revealed – Charlie wants the Justicar's shrine to be where you first see his name,
+  with a possible (optional) way to learn it earlier, so for some players the contract is a shock and for others
+  an informed choice. If he's dead, the armour can never be worn again.
 - **The curse:** max health always 50% of normal (Constitution still raises it); +30% walk speed (not attack speed);
   a faster roll (still slower than Focus; Focus wins if both) and a snappier jump (same height and distance, so
   platforming isn't broken); +20% damage below 30% health (faint red glow) – stacks with the ember glow.
 - **Blood offering:** while armoured, tap B = roll (on release), hold B = stand with arms out and drain your own health
   (never below 1) to switch the low-health bonus on before a fight. Healing above 30% turns it off.
-- Cordials should heal a share of max health (~45%) rather than a flat 45, so half health isn't an easy mode.
+- While worn, **max health and Cordial healing are both halved** (damage taken is unchanged).
 - Look: the knight recoloured at runtime (dark lacquer and gold) rather than redrawn (keeps the project small).
 
-### Then – Folkewood (waiting on Charlie)
-- The way on from the edge of the Warren (area 20) to Folkewood, "crawling with" corrupted bandits; the
-  uncorrupted bandit said he'd meet you there.
+### Then – Folkewood's cultist boss and the Dragon Tail Glaive (agreed)
+- The boss is beyond the friend's bonfire, behind the door the talisman opens. He wields the Glaive.
+- **The Dragon Tail Glaive** – the first magic weapon (so crypt skeletons killed with it stay dead). Heavy,
+  Strength-based, also scales with **Attunement**. Combo: two cleaving swings and a big thrust. Special (hold): spend a
+  Cordial to slam the ground and freeze enemies around you; roll to cancel during the wind-up (no Cordial used if
+  cancelled or interrupted). Killing an enemy with the slam gives the Cordial back (one per slam).
+- **Attunement rework:** start with 3 Cordials; levels 1–2 add a Cordial each (to 5); levels 3–10 instead make each
+  Cordial heal more – about 45 → 65 (4) → 85 (6) → 100 = a full base bar (8) → 220 = a full max-Constitution bar (10).
+  Expensive (levels 3–10 cost triple). Brewer's still adds half again; the armour halves it.
 
 ### Later
 - Glargon at the top of the mountain (the glass of wine). A way back to earlier areas later (like Dark Souls' crow).
-- An item that lifts the 5-Cordial Attunement cap.
-- Maybe reuse the horn. A magic weapon that stops crypt skeletons getting back up.
+- The Shrine of the Justicar (the pardon; your friend's name). Enemies of the Shadowed Men.
+- The foot of the mountain, and Glargon at the top (the glass of wine). Maybe reuse the horn.
 
 ## 7. Known limits / gotchas
 

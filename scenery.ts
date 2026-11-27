@@ -73,6 +73,7 @@ function updateScenery() {
     }
     friend.bottom = GROUND
     merchant.setFlag(SpriteFlag.Invisible, area != 14)
+    note2.setFlag(SpriteFlag.Invisible, area != 30)
     if (merchantAwake) {
         merchant.setImage(merchantAwakeL)
     } else {
@@ -87,6 +88,8 @@ function updateScenery() {
             talkTarget = "note"
         } else if ((area == 9 || area == 11 || area == 13) && Math.abs(px - DOOR_X) < 8) {
             talkTarget = "enter"
+        } else if (area == 30 && Math.abs(px - NOTE2_X) < 10) {
+            talkTarget = "note2"
         } else if (area == 18 && Math.abs(px - HOLE_X) < 10) {
             talkTarget = "descend"
         } else if (area == 23 && !(campGateOpen) && px > 132) {
@@ -111,6 +114,9 @@ function updateScenery() {
     } else if (talkTarget == "enter") {
         talkPrompt.setImage(txtEnter)
         talkPrompt.setPosition(DOOR_X, GROUND - 36)
+    } else if (talkTarget == "note2") {
+        talkPrompt.setImage(txtRead)
+        talkPrompt.setPosition(NOTE2_X, 86)
     } else if (talkTarget == "lift") {
         talkPrompt.setImage(txtLift)
         talkPrompt.setPosition(136, GROUND - 52)

@@ -361,5 +361,58 @@ old.ef_stats = old.ef_stats.slice(0, 13); old.ef_flags = old.ef_flags.slice(0, 1
 const O = load(old);
 check('an older save still loads', O.get('area') == 7 && O.get('amulet') == 0 && !O.get('hasFarsight'));
 
+// ---- chunk 5: Folkewood and the dragon (fresh games from the saved state, so each scenario starts clean)
+function inFolke(Gx) {
+  Gx.set('gameState', 'play'); Gx.set('pState', 'idle'); Gx.set('invuln', 0); Gx.set('hp', 112); Gx.set('py', 0); Gx.set('vy', 0);
+}
+{
+  const D = load(JSON.parse(JSON.stringify(G.store)));
+  inFolke(D); D.get('goToArea(20)'); D.set('px', 150); D.run(12, ['right']);
+  check('the edge of the Warren opens onto the road to Folkewood', D.get('area') == 29);
+  D.set('pState', 'idle'); D.set('px', 150); D.run(12, ['right']);
+  check('through the palisade gate: FOLKEWOOD, seven bandits in the street', D.get('area') == 30 && D.get('visited')[30] && D.get('eArea').filter(a => a == 30).length == 7 && D.get('eState')[29] == 'milling');
+  D.set('px', 24); D.set('pState', 'idle'); D.run(3);
+  check('Glargon\'s note lies just inside the gate', D.get('talkTarget') == 'note2');
+  D.keys.delete('A'); D.set('waitRelease', false); D.set('aHeld', 0); D.run(2);
+  D.keys.add('A'); D.tick(); D.keys.delete('A'); D.run(3);
+  check('"Dragon. - Glargon Jones"', D.printed.some(t => t.indexOf('Dragon.') >= 0));
+  check('...and the dragon comes (the music stops)', D.get('dragonT') >= 0 && D.get('curMusic') == 'silence');
+  // stay in the open: the breath gets you
+  D.set('px', 60); D.set('invuln', 0);
+  let wing = false, head = false;
+  for (let t = 0; t < 230 && D.get('gameState') == 'play'; t++) { D.tick(); if (!D.get('dragonWing').flags.inv) wing = true; if (!D.get('breath').flags.inv) head = true; D.set('px', 60); D.set('invuln', 0); }
+  check('a wing sweeps over, then the head breathes ice down the street', wing && head);
+  check('caught in the open, the breath kills you, frozen where you stood', D.get('gameState') == 'dead' && D.get('frozenDeath'));
+  D.run(200);
+  check('the bandits it touched are ice for good', D.get('dragonDone') && [29, 30, 31, 32, 33, 34, 35].every(i => D.get('eState')[i] == 'frozen'));
+  D.get('goToArea(30)'); D.set('pState', 'idle'); D.set('gameState', 'play'); D.run(2);
+  const sv = D.get('souls'), h29 = D.get('eHP')[29];
+  check('...still frozen when you come back', D.get('eState')[29] == 'frozen' && !D.get('redHandActive()'));
+  check('attacking a frozen bandit does nothing (and gives no souls)', D.get('hitEnemy(29, 50, true, px)') == false && D.get('eHP')[29] == h29 && D.get('souls') == sv);
+  check('after the dragon, only the wind', D.get('curMusic') == 'wind');
+  const E = load(JSON.parse(JSON.stringify(D.store)));
+  check('the dragon never comes again after a save and reload', E.get('dragonDone'));
+}
+{
+  // roll through the breath at the right moment and live
+  const R2 = load(JSON.parse(JSON.stringify(G.store)));
+  inFolke(R2); R2.get('goToArea(30)'); R2.set('px', 70); R2.run(2);
+  check('pressing on into the street brings the dragon too', R2.get('dragonT') >= 0);
+  let rolled = false;
+  for (let t = 0; t < 230; t++) {
+    R2.set('hp', 112); R2.set('invuln', 0);
+    if (!rolled && R2.get('dragonT') >= R2.get('DR_BREATH_START') && R2.get('breathX') - R2.get('px') < 12) { R2.set('pDir', 1); R2.keys.add('B'); R2.tick(); R2.keys.delete('B'); rolled = true; continue; }
+    R2.tick();
+  }
+  check('rolling through the breath: you live', rolled && R2.get('gameState') == 'play' && R2.get('dragonDone'));
+}
+{
+  // or get back out through the gate
+  const R3 = load(JSON.parse(JSON.stringify(G.store)));
+  inFolke(R3); R3.get('goToArea(30)'); R3.set('px', 50); R3.run(30);
+  R3.set('px', 8); R3.set('pState', 'idle'); R3.run(12, ['left']);
+  check('back through the gate: it happens without you, and you live', R3.get('area') == 29 && R3.get('dragonDone') && R3.get('gameState') == 'play');
+}
+
 console.log(failures ? failures + ' check(s) FAILED' : 'All checks passed');
 process.exit(failures ? 1 : 0);

@@ -553,9 +553,7 @@ function physics() {
     }
     // the Warren: the way on to Folkewood isn't open yet, the camp's throne gate is barred,
     // and the camp is walled off on its left
-    if (area == 20 && px > 136) {
-        px = 136
-    }
+
     if (area == 23 && px > 146 && !(campGateOpen)) {
         px = 146
     }
@@ -718,6 +716,9 @@ function animateKnight() {
         im = kIaiDash
     } else if (pState == "iaiEnd") {
         im = kIaiEnd
+    } else if (pState == "dead" && frozenDeath) {
+        // the dragon's breath: frozen where you stood
+        im = frozenKnight
     } else if (pState == "dead") {
         im = kDead
     } else if (pState == "waking") {
@@ -858,6 +859,11 @@ function eastOf(a: number): number {
         return a + 1
     } else if (a == 23 && campGateOpen) {
         return 24
+    } else if (a == 20) {
+        // on to Folkewood
+        return 29
+    } else if (a == 29) {
+        return 30
     }
     return -1
 }
@@ -866,6 +872,10 @@ function westOf(a: number): number {
         return 15
     } else if (a == 18 || a == 19 || a == 20 || a == 22 || a == 23 || a == 24 || a == 26 || a == 27 || a == 28) {
         return a - 1
+    } else if (a == 29) {
+        return 20
+    } else if (a == 30) {
+        return 29
     }
     return -1
 }

@@ -145,7 +145,7 @@ def bg_warren2():
         for x in range(71, 71 + (GROUND - 18 - y) // 2 + 2): g.p[y][x] = '2'
     return g
 
-def bg_warren_edge():
+def bg_warren_edge(blocked=False):
     g = woods_base(201)
     trunk(g, 16, 5); trunk(g, 70, 3)
     sign = T.text_grid('FOLKEWOOD', 8, 'f', font=T.SANS, spacing=0, shadow='.')
@@ -167,8 +167,8 @@ def bg_warren_edge():
     for y in range(sh):
         for x in range(sw):
             if sign[y][x] == 'f': g.p[top + y][bx0 + 1 + x] = 'f'
-    # a fallen tree across the way on: not yet
-    for x in range(140, 160):
+    # (a fallen tree used to block the way on; Folkewood is open now)
+    for x in (range(140, 160) if blocked else []):
         for y in range(GROUND - 16, GROUND):
             if (x - 150) ** 2 / 100 + (y - GROUND + 8) ** 2 / 64 < 1: g.p[y][x] = 'e' if (x + y) % 4 else 'c'
     return g

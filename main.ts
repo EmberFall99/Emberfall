@@ -1,6 +1,6 @@
 // ---------------------------------------------------------------- version
 // shown on the title screen; bump it with every update
-let VERSION = "v0.8.3"
+let VERSION = "v0.9.0"
 
 // ---------------------------------------------------------------- the main loop
 game.onUpdateInterval(33, function () {
@@ -37,6 +37,10 @@ game.onUpdateInterval(33, function () {
     }
     if (gameState != "title") {
         updateScenery()
+    }
+    if (gameState != "title") {
+        dragonTrigger()
+        updateDragon()
     }
     updateMusic()
     updateEmbered()
@@ -104,6 +108,22 @@ for (let fl = 0; fl <= FLAG_POLE_X.length - 1; fl++) {
     fs.z = 2
     fs.setFlag(SpriteFlag.Invisible, true)
     rhFlags.push(fs)
+}
+// Folkewood: Glargon's second note, and the dragon (only ever partly on screen)
+let note2 = sprites.create(noteImg, SpriteKind.Scenery)
+note2.x = NOTE2_X
+note2.bottom = GROUND
+note2.setFlag(SpriteFlag.Invisible, true)
+let dragonShadow = sprites.create(dragonShadowImg, SpriteKind.Scenery)
+dragonShadow.z = 3
+let dragonWing = sprites.create(dragonWingImg, SpriteKind.Scenery)
+dragonWing.z = 40
+let dragonHead = sprites.create(dragonHeadImg, SpriteKind.Scenery)
+dragonHead.z = 40
+let breath = sprites.create(breathImgs[0], SpriteKind.Scenery)
+breath.z = 39
+for (let ds of [dragonShadow, dragonWing, dragonHead, breath]) {
+    ds.setFlag(SpriteFlag.Invisible, true)
 }
 let katanaItem = sprites.create(katanaImg, SpriteKind.Scenery)
 katanaItem.x = KATANA_X

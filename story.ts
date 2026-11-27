@@ -126,6 +126,11 @@ function startScene(target: string) {
             banditTreeScene()
         } else if (target == "horn") {
             hornScene()
+        } else if (target == "note2") {
+            say("A note", NOTE2_TEXT)
+            gameState = "play"
+            waitRelease = true
+            startDragon()
         } else {
             say("A note", NOTE_TEXT)
             gameState = "play"

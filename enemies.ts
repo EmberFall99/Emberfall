@@ -1,7 +1,8 @@
 // ---------------------------------------------------------------- enemies
 // returns true if the attack connected (even if it was blocked)
 function hitEnemy(i: number, dmg: number, heavy: boolean, fromX: number): boolean {
-    if (eState[i] == "dying" || eState[i] == "hidden" || eState[i] == "bones" || eState[i] == "rising" || eState[i] == "hop") {
+    if (eState[i] == "dying" || eState[i] == "hidden" || eState[i] == "bones" || eState[i] == "rising" || eState[i] == "hop" || eState[i] == "frozen") {
+        // (frozen by the dragon: your blade just skids off the ice)
         return false
     }
     let s = eSprites[i]
@@ -130,7 +131,9 @@ function enemyThink(i: number) {
     eX[i] = eX[i] + eKb[i]
     eKb[i] = eKb[i] * 0.75
     let im = sIdle
-    if (eState[i] == "bones" || eState[i] == "rising") {
+    if (eState[i] == "frozen") {
+        im = bdIced
+    } else if (eState[i] == "bones" || eState[i] == "rising") {
         im = boneThink(i)
     } else if (eState[i] == "parried" || eState[i] == "riposted" || eState[i] == "stunned") {
         im = reelingThink(i)
@@ -437,7 +440,10 @@ function banditThink(i: number, dist: number): Image {
         }
         return im
     }
-    if (st == "idle") {
+    if (st == "milling") {
+        // Folkewood: loitering in the street, not looking your way
+        im = bdIdle
+    } else if (st == "idle") {
         // the ones under the tree: they come for you once you're close
         im = bdIdle
         if (Math.abs(dist) < 90 && Math.abs(py - eH[i]) < 20) {

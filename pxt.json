@@ -23,6 +23,7 @@
         "story.ts",
         "redhand.ts",
         "shop.ts",
+        "dragon.ts",
         "saving.ts",
         "main.ts",
         "README.md",

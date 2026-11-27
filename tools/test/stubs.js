@@ -4,7 +4,7 @@
 var __keys = new Set(['A']); var __log = []; var __sprites = []; var __update = null; var __bg = null;
 function __mkImg(w, h, rows) {
   const im = { width: w, height: h, rows: rows || Array.from({length: h}, () => Array(w).fill('.')),
-    clone() { return __mkImg(w, h, this.rows.map(r => r.slice())); },
+    clone() { return __mkImg(w, h, this.rows.map(r => r.slice())); }, replace(a, b) {},
     flipX() { this.rows = this.rows.map(r => r.slice().reverse()); }, flipY() { this.rows = this.rows.slice().reverse(); }, drawRect() {}, print(t) { __printed.push(t); }, printCenter(t) { __printed.push(t); }, setPixel() {}, drawTransparentImage() {},
     fill(c) {}, fillRect(x, y, ww, hh, c) { if (isNaN(ww) || isNaN(x)) throw new Error('NaN fillRect'); } };
   return im;
