@@ -9,7 +9,7 @@ import json, os, sys, subprocess, tempfile
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.dirname(HERE)
 sys.path.insert(0, os.path.join(HERE, 'art'))
-import pixrig as R, pixrig2 as Q, pixrig3 as Z, pixrig4 as W, textart as T
+import pixrig as R, pixrig2 as Q, pixrig3 as Z, pixrig4 as W, pixrig5 as V, textart as T
 
 def grid(g): return g.p if hasattr(g, 'p') else g
 def fit(t, size, font, spacing, room=152):
@@ -35,8 +35,8 @@ def banner(t, col, big=False, sub=None):
     return g
 
 BR = [R.boss_frames(r) for r in (0, 1, 2)]
-LO = [Q.loadout_frames(w) for w in ('sword', 'shield', 'bow')]
-LN = ['Sword', 'Shield', 'Bow']
+LO = [Q.loadout_frames(w) for w in ('sword', 'shield', 'bow')] + [V.katana_frames()]
+LN = ['Sword', 'Shield', 'Bow', 'Katana']
 KN, AR, S = Q.knight_skel_frames(), Q.archer_frames(), R.skel_frames()
 KF = R.knight_frames()
 fl, dg = Q.arrow_imgs(); pfl, _ = Q.arrow_imgs('4', '5')
@@ -66,13 +66,13 @@ def anim(var, name, frames, interval=100):
 # ---- player
 for key, base in [('idle1', 'knightIdle'), ('idle2', 'knightBreathe'), ('jump', 'knightJump'), ('drink', 'knightDrink'), ('hurt', 'knightHurt')]:
     var = {'idle1': 'kIdle1', 'idle2': 'kIdle2', 'jump': 'kJump', 'drink': 'kDrink', 'hurt': 'kHurt'}[key]
-    array(var, [(base + LN[i], LO[i][key]) for i in range(3)])
-for i in range(3):
+    array(var, [(base + LN[i], LO[i][key]) for i in range(4)])
+for i in range(4):
     animations['knightWalk' + LN[i]] = ([grid(LO[i][f'walk{n}']) for n in range(1, 5)], 150)
-code_array['kWalk'] = 'assets.animation`knightWalkSword`.concat(assets.animation`knightWalkShield`).concat(assets.animation`knightWalkBow`)'
+code_array['kWalk'] = 'assets.animation`knightWalkSword`.concat(assets.animation`knightWalkShield`).concat(assets.animation`knightWalkBow`).concat(assets.animation`knightWalkKatana`)'
 for key, var, base in [('windup', 'kWindup', 'knightWindup'), ('slash', 'kSlash', 'knightSlash'), ('windup2', 'kWindup2', 'knightBackswingWindup'),
                        ('slash2', 'kSlash2', 'knightBackswing'), ('windup3', 'kWindup3', 'knightThrustWindup'), ('thrust', 'kThrust', 'knightThrust')]:
-    array(var, [(base + LN[i], LO[i][key]) for i in range(2)])
+    array(var, [(base + LN[i], LO[i][key]) for i in range(2)] + [(base + 'Sword', LO[0][key]), (base + 'Katana', LO[3][key])])
 single('kHeavyUp', 'knightHeavyWindup', LO[0]['heavyup'])
 single('kHeavySlash', 'knightHeavy', LO[0]['heavy'])
 single('kBlock', 'knightBlock', LO[1]['block'])
@@ -107,6 +107,18 @@ single('friendLeanImg', 'uncorruptedBandit', FL)
 single('friendTalkImg', 'uncorruptedBanditTalking', FT)
 single('merchantImg', 'veiledMerchant', W.merchant_behind_counter())
 single('farsightImg', 'farsightAmulet', W.amulet_pickup())
+# ---- chunk 3: the knife thrower, its knife, the Katana, crypt bones
+TH = V.thrower_frames()
+for var, name, key in [('thIdle', 'throwerIdle', 'idle'), ('thWind', 'throwerWindup', 'wind'), ('thThrow', 'throwerThrow', 'throw'),
+                       ('thEmpty', 'throwerEmptyHanded', 'empty'), ('thHurt', 'throwerHurt', 'hurt'), ('thDead', 'throwerDead', 'dead')]:
+    single(var, name, TH[key])
+anim('thWalk', 'throwerWalk', [TH['walk1'], TH['walk2']], 200)
+anim('knifeImgs', 'thrownKnife', V.knife_frames(), 60)
+single('kIai', 'knightKatanaSheathedCharge', LO[3]['iai'])
+single('kIaiDash', 'knightKatanaDash', LO[3]['iaiDash'])
+single('kIaiEnd', 'knightKatanaDashFinish', LO[3]['iaiEnd'])
+single('katanaImg', 'katanaPickup', V.katana_pickup())
+single('boneImg', 'cryptBones', V.bone_pile())
 # ---- boss: [normal, enraged dim, enraged bright]
 for var, base, key in [('bIdle', 'wardenIdle', 'b_idle'), ('bRaise', 'wardenSlamWindup', 'b_raise'), ('bSlam', 'wardenSlam', 'b_slam'),
                        ('bSweepUp', 'wardenSweepWindup', 'b_sweepup'), ('bSweep', 'wardenSweep', 'b_sweep'), ('bCrouch', 'wardenChargeWindup', 'b_crouch'),
@@ -128,7 +140,7 @@ for var, name, g in [('arrowFlat', 'arrow', fl), ('arrowDiag', 'arrowDiagonal', 
                      ('manGlowImg', 'prisonerTransforming', Z.man_glow()), ('wizardImg', 'glargon', Z.wizard()),
                      ('wizardCastImg', 'glargonCasting', Z.wizard(cast=True, glow=True)), ('noteImg', 'glargonsNote', Z.note_img())]:
     single(var, name, g)
-array('icons', [('iconSword', Q.icon('sword')), ('iconSwordShield', Q.icon('shield')), ('iconBow', Q.icon('bow')), ('iconLocked', Q.icon('lock')), ('iconAmulet', W.amulet_icon())])
+array('icons', [('iconSword', Q.icon('sword')), ('iconSwordShield', Q.icon('shield')), ('iconBow', Q.icon('bow')), ('iconLocked', Q.icon('lock')), ('iconAmulet', W.amulet_icon()), ('iconKatana', V.katana_icon())])
 # ---- backgrounds
 for var, name, g in [('bgField', 'bgFrostbittenField', Z.bg_battlefield()), ('bgLake', 'bgStillLake', Z.bg_lake()), ('bgCell', 'bgCell', Q.bg_cell()), ('bgTitle', 'bgTitle', R.bg_title()), ('bgGate', 'bgAshenGate', R.bg_gate()), ('bgHall', 'bgSunkenHall', Q.bg_hall2()),
                      ('bgWoods', 'bgWhisperingWoods', Q.bg_forest()), ('bgRampart', 'bgArchersRampart', Q.bg_rampart()), ('bgArena', 'bgWardenArena', R.bg_arena()),
@@ -136,7 +148,12 @@ for var, name, g in [('bgField', 'bgFrostbittenField', Z.bg_battlefield()), ('bg
                      ('bgForde2', 'bgFordeStreetChurch', W.bg_village2()), ('bgForde3', 'bgFordeStreetShop', W.bg_village3()),
                      ('bgHouseIn', 'bgFordeHouseInside', W.bg_house_inside()), ('bgChurchIn', 'bgFordeChurchInside', W.bg_church_inside()),
                      ('bgShopIn', 'bgFordeShopInside', W.bg_shop_inside()), ('bgTree', 'bgGreatTree', W.bg_tree()),
-                     ('bgTreehouse', 'bgTreehouse', W.bg_treehouse())]:
+                     ('bgTreehouse', 'bgTreehouse', W.bg_treehouse()),
+                     ('bgWarren1', 'bgWarrenEntrance', V.bg_warren1()), ('bgHollow', 'bgWarrenHollow', V.bg_hollow()),
+                     ('bgWarren2', 'bgWarrenDeep', V.bg_warren2()), ('bgWarrenEdge', 'bgWarrenEdge', V.bg_warren_edge()),
+                     ('bgCamp1', 'bgCampHuts', V.bg_camp1()), ('bgCamp2', 'bgCampBridge', V.bg_camp2()), ('bgCamp3', 'bgCampApproach', V.bg_camp3()),
+                     ('bgCrypt1', 'bgCryptStair', V.bg_crypt1()), ('bgCrypt2', 'bgCryptPillars', V.bg_crypt2()),
+                     ('bgCrypt3', 'bgCryptPits', V.bg_crypt3()), ('bgCrypt4', 'bgCryptAltar', V.bg_crypt4())]:
     single(var, name, g)
 # ---- text
 for var, name, g in [
@@ -165,6 +182,11 @@ for var, name, g in [
     ('bnShield', 'bannerShield', banner('SHIELD ACQUIRED', '5', sub='Press MENU to equip it')),
     ('bnDoor', 'bannerDoorUnlocked', banner('DOOR UNLOCKED', '5')),
     ('bnForde', 'bannerAshenForde', banner('ASHEN FORDE', 'd')),
+    ('bnWarren', 'bannerTheWarren', banner('THE WARREN', '7')),
+    ('bnCamp', 'bannerAbandonedCamp', banner('THE ABANDONED CAMP', '2')),
+    ('bnCrypt', 'bannerTheCrypt', banner('THE CRYPT', 'b')),
+    ('bnKatana', 'bannerKatana', banner('KATANA', '1', sub='Press MENU to equip it')),
+    ('txtDescend', 'textDescend', T.text_grid('A: Descend', 8, '5', font=T.SANS)),
     ('bnFarsight', 'bannerFarsight', banner('FARSIGHT AMULET', '5', sub='Press MENU to equip it')),
     ('txtEnter', 'textEnter', T.text_grid('A: Enter', 8, '5', font=T.SANS))]:
     single(var, name, g)

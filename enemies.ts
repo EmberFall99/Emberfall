@@ -1,7 +1,7 @@
 // ---------------------------------------------------------------- enemies
 // returns true if the attack connected (even if it was blocked)
 function hitEnemy(i: number, dmg: number, heavy: boolean, fromX: number): boolean {
-    if (eState[i] == "dying" || eState[i] == "hidden") {
+    if (eState[i] == "dying" || eState[i] == "hidden" || eState[i] == "bones" || eState[i] == "rising") {
         return false
     }
     let s = eSprites[i]
@@ -92,7 +92,7 @@ function hitEnemy(i: number, dmg: number, heavy: boolean, fromX: number): boolea
         }
     } else if (eState[i] == "parried" || eState[i] == "riposted" || eState[i] == "stunned") {
         // already reeling: stay that way
-    } else if (heavy || eType[i] == "archer") {
+    } else if (heavy || eType[i] == "archer" || eType[i] == "thrower") {
         eState[i] = "stagger"
         eFrame[i] = 0
     }
@@ -104,7 +104,7 @@ function enemyThink(i: number) {
     // was I hit by the player's sword?
     if (atkActive && eLast[i] != atkID && eState[i] != "hidden" && Math.abs(eX[i] - atkX) < atkRange + 5 && Math.abs(py - eH[i]) < 15) {
         eLast[i] = atkID
-        if (amulet == 1 && loadout <= 1 && inParryWindow(i)) {
+        if (amulet == 1 && isMelee() && inParryWindow(i)) {
             parryEnemy(i)
         } else {
             hitEnemy(i, atkDmg, atkHeavy, px)
@@ -113,8 +113,12 @@ function enemyThink(i: number) {
     eX[i] = eX[i] + eKb[i]
     eKb[i] = eKb[i] * 0.75
     let im = sIdle
-    if (eState[i] == "parried" || eState[i] == "riposted" || eState[i] == "stunned") {
+    if (eState[i] == "bones" || eState[i] == "rising") {
+        im = boneThink(i)
+    } else if (eState[i] == "parried" || eState[i] == "riposted" || eState[i] == "stunned") {
         im = reelingThink(i)
+    } else if (eType[i] == "thrower") {
+        im = throwerThink(i, dist)
     } else if (eType[i] == "archer") {
         im = archerThink(i, dist)
     } else if (eType[i] == "bandit") {
@@ -129,20 +133,26 @@ function enemyThink(i: number) {
         if (eType[i] == "bandit") {
             im = bdDead
         }
+        if (eType[i] == "thrower") {
+            im = thDead
+        }
         if (eFrame[i] == 18) {
             // once the body has crumbled, its embers rise out of the remains
             spawnEmbers(eX[i], GROUND - eH[i] - 8, Math.min(10, Math.idiv(eSouls[i], 15)))
         }
         if (eFrame[i] > 20) {
-            eAlive[i] = 0
-            eSprites[i].setFlag(SpriteFlag.Invisible, true)
+            if (eRevive[i] == 1) {
+                // crypt skeletons don't stay down: the bones lie there, then pull themselves back together
+                eState[i] = "bones"
+                eFrame[i] = 0
+            } else {
+                eAlive[i] = 0
+                eSprites[i].setFlag(SpriteFlag.Invisible, true)
+            }
         }
     }
-    if (eH[i] > 0) {
-        eX[i] = Math.min(Math.max(eX[i], platX1[0] + 4), platX2[0] - 4)
-    } else {
-        eX[i] = Math.min(Math.max(eX[i], 4), 156)
-    }
+    // stay on your own platform / your own stretch of ground (never walk off into a pit)
+    eX[i] = Math.min(Math.max(eX[i], eMin[i]), eMax[i])
     eSprites[i].setImage(faced(im, eDir[i]))
     eSprites[i].x = eX[i]
     eSprites[i].bottom = GROUND - eH[i]
@@ -283,6 +293,7 @@ function shootEnemyArrow(i: number) {
     music.play(music.melodyPlayable(music.pewPew), music.PlaybackMode.InBackground)
 }
 function updateProjectiles() {
+    updateKnives()
     for (let ea of sprites.allOfKind(SpriteKind.EnemyArrow)) {
         if (Math.abs(ea.x - px) < 5 && Math.abs(ea.y - (GROUND - py - 9)) < 9) {
             dmgIn += 14
@@ -339,11 +350,11 @@ function inParryWindow(i: number): boolean {
     let st = eState[i]
     let f = eFrame[i]
     if (t == "skel") {
-        return st == "windup" && f >= 12 || st == "strike" && f <= 2
+        return st == "windup" && f >= 9 || st == "strike" && f <= 3
     } else if (t == "knight") {
-        return st == "windup" && f >= 18 || st == "strike" && f <= 2
+        return st == "windup" && f >= 15 || st == "strike" && f <= 3
     } else if (t == "bandit") {
-        return st == "windup" && f >= 6 || st == "lunge" && f <= 6 || st == "slashUp" && f >= 3 || st == "riposte" && f <= 6
+        return st == "windup" && f >= 4 || st == "lunge" && f <= 7 || st == "slashUp" && f >= 2 || st == "riposte" && f <= 6
     }
     return false
 }
@@ -364,6 +375,8 @@ function hurtImg(i: number): Image {
         return arHurt
     } else if (eType[i] == "bandit") {
         return bdStun
+    } else if (eType[i] == "thrower") {
+        return thHurt
     }
     return sHurt
 }
@@ -522,4 +535,119 @@ function banditRecover(i: number, ticks: number) {
     eState[i] = "recover"
     eFrame[i] = 0
     eWait[i] = ticks
+}
+
+// ---------------------------------------------------------------- crypt skeletons getting back up
+function boneThink(i: number): Image {
+    if (eState[i] == "bones") {
+        if (eFrame[i] > 170) {
+            eState[i] = "rising"
+            eFrame[i] = 0
+            eSprites[i].startEffect(effects.ashes, 300)
+            music.play(music.melodyPlayable(music.knock), music.PlaybackMode.InBackground)
+        }
+        return boneImg
+    }
+    if (eFrame[i] > 18) {
+        eHP[i] = eMaxHP[i]
+        eState[i] = "chase"
+        eFrame[i] = 0
+    }
+    return sHurt
+}
+// ---------------------------------------------------------------- knife throwers
+// a ranged bandit: keeps its distance, throws a spinning knife that flies out, cuts, and curves back to its hand.
+// It can't throw again until the knife is back - that's your moment.
+function throwerThink(i: number, dist: number): Image {
+    let im = thIdle
+    if (eState[i] != "dying" && eState[i] != "stagger") {
+        eDir[i] = sign(dist)
+    }
+    let st = eState[i]
+    let knifeOut = eKnifeT[i] >= 0
+    if (st == "idle") {
+        if (knifeOut) {
+            im = thEmpty
+        }
+        if (Math.abs(dist) < 34 && Math.abs(py - eH[i]) < 20) {
+            // too close: back away
+            eX[i] = eX[i] - eDir[i] * 0.8
+            im = thWalk[Math.idiv(animT, 6) % 2]
+        }
+        if (!(knifeOut) && Math.abs(dist) < 120 && eFrame[i] > 40) {
+            eState[i] = "wind"
+            eFrame[i] = 0
+        }
+    } else if (st == "wind") {
+        im = thWind
+        if (eFrame[i] > 16) {
+            throwKnife(i)
+            eState[i] = "throw"
+            eFrame[i] = 0
+        }
+    } else if (st == "throw") {
+        im = thThrow
+        if (eFrame[i] > 8) {
+            eState[i] = "idle"
+            eFrame[i] = 0
+        }
+    } else if (st == "stagger") {
+        im = thHurt
+        if (eFrame[i] > 16) {
+            eState[i] = "idle"
+            eFrame[i] = 0
+        }
+    } else if (st == "dying") {
+        im = thHurt
+    }
+    return im
+}
+let KNIFE_TIME = 52
+function throwKnife(i: number) {
+    let sx = eX[i] + eDir[i] * 6
+    let sy = GROUND - eH[i] - 12
+    let dx = px - sx
+    let dy = GROUND - py - 10 - sy
+    let d = Math.max(1, Math.sqrt(dx * dx + dy * dy))
+    eKnifeX[i] = sx
+    eKnifeY[i] = sy
+    eKnifeUx[i] = dx / d
+    eKnifeUy[i] = dy / d
+    eKnifeR[i] = Math.min(130, d + 16)
+    eKnifeT[i] = 0
+    eKnifeHit[i] = false
+    eKnifeSpr[i].setFlag(SpriteFlag.Invisible, false)
+    music.play(music.melodyPlayable(music.pewPew), music.PlaybackMode.InBackground)
+}
+// out along the line to the player and back again, spinning
+function updateKnives() {
+    for (let i = 0; i <= eType.length - 1; i++) {
+        if (eKnifeT[i] < 0) {
+            continue
+        }
+        if (eArea[i] != area || eAlive[i] == 0 || eState[i] == "dying") {
+            // the thrower's gone (or you've left): the knife drops
+            eKnifeT[i] = -1
+            eKnifeSpr[i].setFlag(SpriteFlag.Invisible, true)
+            continue
+        }
+        eKnifeT[i] = eKnifeT[i] + 1
+        let reach = eKnifeR[i] * Math.sin(Math.PI * eKnifeT[i] / KNIFE_TIME)
+        let kx = eKnifeX[i] + eKnifeUx[i] * reach
+        let ky = eKnifeY[i] + eKnifeUy[i] * reach
+        let k = eKnifeSpr[i]
+        k.setImage(knifeImgs[Math.idiv(eKnifeT[i], 2) % 4])
+        k.setPosition(kx, ky)
+        if (!(eKnifeHit[i]) && Math.abs(kx - px) < 6 && Math.abs(ky - (GROUND - py - 9)) < 9) {
+            eKnifeHit[i] = true
+            dmgIn += 15
+            dmgDir = sign(eKnifeUx[i] * (eKnifeT[i] < KNIFE_TIME / 2 ? 1 : -1))
+        }
+        if (eKnifeT[i] >= KNIFE_TIME) {
+            // caught
+            eKnifeT[i] = -1
+            k.setFlag(SpriteFlag.Invisible, true)
+            eFrame[i] = 0
+        }
+    }
 }

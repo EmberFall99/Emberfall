@@ -23,6 +23,10 @@ function isFree(): boolean {
 // how high is the ground under x, for something standing at height h?
 function supportAt(x: number, h: number): number {
     let best = 0
+    if (overPit(x)) {
+        // nothing underneath but the drop
+        best = -999
+    }
     for (let q = 0; q <= platArea.length - 1; q++) {
         if (platArea[q] == area && x >= platX1[q] && x <= platX2[q] && h >= platH[q] - 1) {
             best = Math.max(best, platH[q])
@@ -35,4 +39,17 @@ function sign(n: number): number {
         return -1
     }
     return 1
+}
+// is there a pit (a gap in the ground) under x in this area?
+function overPit(x: number): boolean {
+    for (let q = 0; q <= pitArea.length - 1; q++) {
+        if (pitArea[q] == area && x > pitX1[q] + 2 && x < pitX2[q] - 2) {
+            return true
+        }
+    }
+    return false
+}
+// the weapons you swing (and so can parry and riposte with): sword, sword & shield, katana
+function isMelee(): boolean {
+    return loadout == 0 || loadout == 1 || loadout == 3
 }

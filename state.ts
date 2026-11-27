@@ -85,36 +85,79 @@ let spawnArea = 1
 let spawnX = 40
 let nearFire = false
 let fireX = 22
-let visited = [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false]
+let visited: boolean[] = []
+for (let v = 0; v <= 28; v++) {
+    visited.push(false)
+}
 let bannerT = 0
 let deadT = 0
 // ladders and ledges, one slot per ladder / ledge
-let ladArea = [2, 4, 15]
-let ladX = [120, 92, 120]
-let ladTop = [96, 44, 86]
-let platArea = [4]
-let platX1 = [96]
-let platX2 = [140]
-let platH = [44]
+// ladUpTo: the area the top of the ladder leads up into (-1 = it just ends on a ledge);
+// coming back, you climb down through a hatch at the same x in that area
+let ladArea = [2, 4, 15, 18]
+let ladX = [120, 92, 120, 130]
+let ladTop = [96, 44, 86, 96]
+let ladUpTo = [3, -1, 16, 21]
+// platforms you can stand on (one-way: you can jump up through them)
+let platArea = [4, 18, 19, 21, 22, 22, 23, 26, 26, 26]
+let platX1 = [96, 52, 110, 20, 40, 82, 116, 34, 70, 104]
+let platX2 = [140, 92, 150, 60, 68, 126, 156, 58, 94, 130]
+let platH = [44, 20, 20, 18, 0, 0, 20, 12, 24, 12]
+// pits: gaps in the ground. Fall in and you die. (Kept in step with tools/art/pixrig5.py)
+let pitArea = [22, 25, 26, 27, 27]
+let pitX1 = [40, 88, 30, 48, 110]
+let pitX2 = [126, 108, 136, 70, 128]
 // enemies: one slot in each list per enemy
-// (slots 6-7: the corrupted bandits who ambush you inside the first house in Ashen Forde;
-//  slots 8-9: the two waiting under the great tree)
-let eType = ["skel", "skel", "skel", "knight", "archer", "archer", "bandit", "bandit", "bandit", "bandit"]
-let eArea = [1, 2, 2, 3, 3, 4, 10, 10, 15, 15]
-let eHome = [117, 55, 88, 70, 138, 126, 30, 142, 92, 146]
-let eH = [0, 0, 0, 0, 0, 44, 0, 0, 0, 0]
-let eMaxHP = [40, 40, 40, 70, 30, 30, 120, 120, 120, 120]
-let eSouls = [50, 50, 50, 120, 80, 80, 150, 150, 150, 150]
-let eAlive = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
-let eX = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-let eHP = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-let eState = ["idle", "idle", "idle", "idle", "idle", "idle", "idle", "idle", "idle", "idle"]
-let eFrame = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-let eDir = [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
-let eLast = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-let eKb = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+// slots 6-7: the corrupted bandits who ambush you inside the first house in Ashen Forde; 8-9: under the great tree;
+// 10-14: the Warren; 15-21: the abandoned camp; 22-28: the crypt (their skeletons get back up - eRevive)
+let eType = ["skel", "skel", "skel", "knight", "archer", "archer", "bandit", "bandit", "bandit", "bandit", "bandit", "thrower", "bandit", "bandit", "thrower", "bandit", "thrower", "bandit", "thrower", "bandit", "bandit", "thrower", "skel", "skel", "skel", "skel", "skel", "skel", "skel"]
+let eArea = [1, 2, 2, 3, 3, 4, 10, 10, 15, 15, 17, 18, 19, 19, 19, 21, 21, 22, 22, 23, 23, 23, 25, 25, 26, 26, 27, 27, 27]
+let eHome = [117, 55, 88, 70, 138, 126, 30, 142, 92, 146, 110, 72, 60, 100, 130, 80, 40, 20, 146, 50, 96, 136, 60, 130, 82, 148, 30, 90, 146]
+let eH = [0, 0, 0, 0, 0, 44, 0, 0, 0, 0, 0, 20, 0, 0, 20, 0, 18, 0, 0, 0, 0, 20, 0, 0, 24, 0, 0, 0, 0]
+let eMaxHP = [40, 40, 40, 70, 30, 30, 120, 120, 120, 120, 120, 45, 120, 120, 45, 120, 45, 120, 45, 120, 120, 45, 40, 40, 40, 40, 40, 40, 40]
+let eSouls = [50, 50, 50, 120, 80, 80, 150, 150, 150, 150, 150, 100, 150, 150, 100, 150, 100, 150, 100, 150, 150, 100, 50, 50, 50, 50, 50, 50, 50]
+let eRevive = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1]
+let eAlive: number[] = []
+let eX: number[] = []
+let eHP: number[] = []
+let eState: string[] = []
+let eFrame: number[] = []
+let eDir: number[] = []
+let eLast: number[] = []
+let eKb: number[] = []
+// how far each enemy can roam (its platform, or its stretch of ground between pits) - set in setupEnemy()
+let eMin: number[] = []
+let eMax: number[] = []
 // how long each bandit waits before its next attack (re-rolled after every attack)
-let eWait = [0, 0, 0, 0, 0, 0, 40, 55, 30, 50]
+let eWait = [0, 0, 0, 0, 0, 0, 30, 50, 40, 55, 30, 0, 40, 55, 0, 50, 0, 55, 0, 50, 40, 0, 0, 0, 0, 0, 0, 0, 0]
+// knife throwers: their knife's flight (eKnifeT < 0 = in the hand)
+let eKnifeT: number[] = []
+let eKnifeX = [0]
+let eKnifeY = [0]
+let eKnifeUx = [0]
+let eKnifeUy = [0]
+let eKnifeR = [0]
+let eKnifeHit = [false]
+let eKnifeSpr: Sprite[] = []
+for (let n = 0; n <= eType.length - 1; n++) {
+    eAlive.push(1)
+    eX.push(0)
+    eHP.push(0)
+    eState.push("idle")
+    eFrame.push(0)
+    eDir.push(-1)
+    eLast.push(0)
+    eKb.push(0)
+    eMin.push(4)
+    eMax.push(156)
+    eKnifeT.push(-1)
+    eKnifeX[n] = 0
+    eKnifeY[n] = 0
+    eKnifeUx[n] = 0
+    eKnifeUy[n] = 0
+    eKnifeR[n] = 0
+    eKnifeHit[n] = false
+}
 let eSprites: Sprite[] = []
 // the boss
 let bossActive = false
@@ -148,4 +191,10 @@ let forceRoll = 0
 let riposteOn = -1
 // which background track is playing ("" = none)
 let curMusic = ""
+// ---------------------------------------------------------------- the Warren (chunk 3)
+// areas: 17 entrance, 18 the hollow (bonfire, ladder up, stair down), 19 deeper woods, 20 the edge (to Folkewood);
+// up: 21-23 the abandoned camp; down: 25-28 the crypt. (24 is kept for the Red Hand's throne.)
+let HOLE_X = 30
+let KATANA_X = 112
+let hasKatana = false
 let bossTune = music.stringPlayable("D4 D4 F4 D4 A4 G4 F4 E4 ", 260)

@@ -81,6 +81,8 @@ function updateScenery() {
             talkTarget = "note"
         } else if ((area == 9 || area == 11 || area == 13) && Math.abs(px - DOOR_X) < 8) {
             talkTarget = "enter"
+        } else if (area == 18 && Math.abs(px - HOLE_X) < 10) {
+            talkTarget = "descend"
         } else if (area == 12 && !(banditMet) && Math.abs(px - FRIEND_CHURCH_X) < 18) {
             talkTarget = "bandit"
         } else if (area == 16 && banditMet && !(banditGone) && Math.abs(px - FRIEND_TREE_X) < 18) {
@@ -97,6 +99,9 @@ function updateScenery() {
     } else if (talkTarget == "enter") {
         talkPrompt.setImage(txtEnter)
         talkPrompt.setPosition(DOOR_X, GROUND - 36)
+    } else if (talkTarget == "descend") {
+        talkPrompt.setImage(txtDescend)
+        talkPrompt.setPosition(HOLE_X, GROUND - 26)
     } else if (talkTarget == "bandit") {
         talkPrompt.setImage(txtTalk)
         talkPrompt.setPosition(FRIEND_CHURCH_X, GROUND - 32)
@@ -150,6 +155,14 @@ function updateScenery() {
         showBanner(bnFarsight, 80)
         saveGame()
     }
+    // the Katana, on the altar at the bottom of the crypt
+    katanaItem.setFlag(SpriteFlag.Invisible, hasKatana || area != 28)
+    if (!(hasKatana) && area == 28 && Math.abs(px - KATANA_X) < 10 && py == 0 && gameState == "play") {
+        hasKatana = true
+        music.play(music.melodyPlayable(music.powerUp), music.PlaybackMode.InBackground)
+        showBanner(bnKatana, 80)
+        saveGame()
+    }
     // your lost souls wait where you died
     stain.setFlag(SpriteFlag.Invisible, !(stainSouls > 0 && area == stainArea && gameState != "title"))
     stain.x = stainX
@@ -189,7 +202,7 @@ function drawHud() {
         }
     }
     hud.setFlag(SpriteFlag.Invisible, gameState == "title")
-    weaponIcon.setImage(icons[loadout])
+    weaponIcon.setImage(icons[itemIcon[loadout]])
     weaponIcon.setFlag(SpriteFlag.Invisible, gameState == "title")
     keyIcon.setFlag(SpriteFlag.Invisible, !(hasKey) || gameState == "title")
     amuletIcon.setFlag(SpriteFlag.Invisible, amulet == 0 || gameState == "title")

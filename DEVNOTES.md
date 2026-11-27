@@ -3,7 +3,7 @@
 Everything needed to pick this project up again, including in a fresh Claude conversation.
 **If you're a new session: read this whole file before changing anything.**
 
-Current version: **v0.6.5** (shown bottom-left of the title screen; the `VERSION` constant in `main.ts`).
+Current version: **v0.7.0** (shown bottom-left of the title screen; the `VERSION` constant in `main.ts`).
 
 ---
 
@@ -27,7 +27,8 @@ playing; no tutorials. Dark Souls is the reference point throughout.
 - **Music is generated from code too**: `node tools/make_music.js` composes the background tracks and writes
   `music.ts` (songs in the Music editor's own format, encoded with pxt-core's encoder). Four loops:
   `songDark` (title, cell → Warden's arena), `songWind` (Frostbitten Field: wind only), `songLake` (Still Lake:
-  mystical) and `songTown` (Ashen Forde onwards). `updateMusic()` in `world.ts` picks one each tick via
+  mystical), `songTown` (Ashen Forde and the Warren's main path), `songTrees` (the abandoned camp: no music, just
+  wind in the trees – Charlie's request) and `songCrypt` (a low drone and dripping water). `updateMusic()` in `world.ts` picks one each tick via
   `musicFor()`; the boss fight swaps in `bossTune`; death is silent until you respawn. If Charlie edits a song
   in Arcade's Music editor, that edit lives in `music.ts` – re-running the script would overwrite it.
 - **Use the JavaScript view.** The project is too large and multi-file for Blocks, and the Python view's
@@ -54,6 +55,8 @@ Neither tool can show what the game *looks* like or how it *feels* – Charlie p
 | `images.g.jres`, `images.g.ts`, `art.ts` | Art (generated – see above) |
 | `state.ts` | Every global variable: player, input, combat, souls/bloodstain, world, ladders/ledges, enemy tables, boss, levelling, story flags |
 | `tools/art/pixrig4.py` | Chunk 2 art: Ashen Forde backgrounds, bandits, the uncorrupted bandit, the merchant, the Farsight Amulet |
+| `tools/art/pixrig5.py` | Chunk 3 art: the Warren, the abandoned camp, the crypt, the knife thrower, the Katana. **Its `PLATS`/`PITS` tables are the layout** – `state.ts` mirrors them and the smoke test checks they match |
+| `tools/make_music.js` | Composes the background music into `music.ts` |
 | `helpers.ts` | `faced()`, `queueAction()`, `showBanner()`, `isFree()`, `supportAt()`, `sign()` |
 | `world.ts` | `respawn()`, `resetWorld()`, `goToArea()`, `setupEnemy()`, `rest()`, `die()`, `hasBonfire()` |
 | `player.ts` | Damage intake, input, combo, heavy, shield block, bow, roll, heal, climbing, physics/area edges, animation, doors (`enterBuilding`/`leaveBuilding`), the riposte |
@@ -85,6 +88,19 @@ Neither tool can show what the game *looks* like or how it *feels* – Charlie p
   Buildings: each street has a doorway at `DOOR_X` (80); A enters area+1 (10 the ambush house, 12 the church,
   14 the merchant's house). Walking off the left edge of an interior goes back out of the door.
   The treehouse is reached like the Whispering Woods: climb ladder slot 2 in area 15; down the hatch at x 120.
+  **The Warren** (chunk 3), east of the great tree: 15 → 17 entrance → 18 the hollow (bonfire at x 100) → 19 deeper
+  woods → 20 the edge (Folkewood signpost; east is closed, px clamped at 136).
+  Up from the hollow: ladder slot 3 (x 130) → **the abandoned camp** 21 (walled on the left) → 22 the rope bridge
+  (a long pit with two plank platforms at height 0 and a gap to jump) → 23 the approach (the throne gate is barred,
+  px clamped at 146; **area 24 is kept for the Red Hand's throne**).
+  Down from the hollow: A at the broken stair (`HOLE_X` 30, prompt "A: Descend") → **the crypt** 25 → 26 → 27 → 28
+  (the Katana on the altar at `KATANA_X`). Walking off the left of 25 climbs back out into the hollow.
+  Straight runs use `eastOf()`/`westOf()` in `player.ts`. Ladders: `ladUpTo[l]` is the area the top leads into
+  (-1 = ends on a ledge); `hatchHere()` takes you back down through the hatch at the same x.
+- **Pits** (`pitArea/pitX1/pitX2`): `supportAt()` returns -999 over a pit unless a platform is there. Falling below
+  py -24 over a pit calls `fallDeath()`: you die and your souls are left at the pit's nearer edge.
+- **Platforms** are one-way (you can jump up through them). Jump height is ~25px and jump distance ~30px, so
+  platforms are at most 20 high (12 apart in the crypt) and gaps at most 22 wide.
   Area edges are handled in `physics()`; only walking/rolling towards an edge changes area.
 - **Player states** (`pState`): idle, walk, light (with `combo` 1–3), heavy, block, aim, shoot, loose, roll,
   heal, hurt, climb, waking, dead. `isFree()` = idle/walk. Inputs are buffered for 8 ticks (`buf`).
@@ -96,8 +112,16 @@ Neither tool can show what the game *looks* like or how it *feels* – Charlie p
   Bow arrows are sprites (`PlayerArrow`/`PowerArrow`) checked in `arrowHits()`.
 - **Enemies** are parallel lists indexed by slot (`eType, eArea, eHome, eH, eMaxHP, eSouls, eAlive, eX, eHP,
   eState, eFrame, eDir, eLast, eKb, eSprites`). To add one: append to every list in `state.ts`.
-  Types: `skel`, `knight` (blocks front hits in idle/chase/windup; heavies break it), `archer`, `bandit`.
-  Bandits also use `eWait` (ticks before their next attack).
+  Types: `skel`, `knight` (blocks front hits in idle/chase/windup; heavies break it), `archer`, `bandit`, `thrower`.
+  Bandits also use `eWait` (ticks before their next attack). The roster is generated in `state.ts` (types, areas,
+  homes, heights, HP, souls, `eRevive`); the per-enemy working lists are filled by a loop.
+  `setRoam()` (world.ts) gives each enemy `eMin/eMax`: its own platform, or its stretch of ground between pits.
+- **Crypt skeletons** (`eRevive` = 1, slots 22–28): when one dies it lies as bones (`bones`, ~170 ticks), then
+  `rising`, then fights again at full HP. They give souls every time. (A future magic weapon could stop this.)
+- **Knife throwers** (`thrower`, 45 HP, 100 souls): keep their distance and throw a spinning knife that flies out
+  along the line to you and curves back (`throwKnife`/`updateKnives`; `eKnife*` lists, one sprite per enemy in
+  `eKnifeSpr`). 15 damage, once per throw, blockable by the shield. They can't throw again until it's back.
+  Not part of the d6; any hit staggers them.
 - **Corrupted bandits** (slots 6 and 7, area 10): state `hidden` until the player passes x 70, then they appear
   on both sides (the ambush). Slots 8 and 9 wait under the great tree (area 15): `idle` until you're within 90px. States: stalk (circle at ~22–44px, fast), windup → lunge (20 dmg), slashUp → slash
   (16 dmg), recover (the opening), dodge, hurt, parry → riposte (34 dmg), stunned, parried, riposted, dying.
@@ -106,15 +130,25 @@ Neither tool can show what the game *looks* like or how it *feels* – Charlie p
   Heavies (sword heavy, power shot) skip the roll and stun it. Hits on a stunned/parried bandit skip the roll.
   Tests set `forceRoll` to choose the d6. The first bandit killed drops the Farsight Amulet.
 - **Amulets** (`amulet`: 0 none, 1 Farsight; one at a time, chosen in the menu's 4th row).
-  **Farsight:** if your sword hits an enemy inside `inParryWindow()` (the last frames of a skeleton/knight/bandit
-  wind-up, or the start of its strike/lunge), you parry instead: the enemy goes `parried` for 55 ticks.
-  **Riposte:** attacking (light or heavy, sword loadouts only) within 26px of a `parried` enemy starts
+  **Farsight:** the parry is judged **the moment you press attack** (`pressParry()`, from `startLight`, heavy and
+  the katana dash): an enemy within 30px in front of you that is inside `inParryWindow()` (the last frames of its
+  wind-up, or the start of its strike/lunge) is parried and goes `parried` for 55 ticks. A swing that reaches an
+  enemy in the window also still parries. (v0.7.0 widened the windows and moved the check to the press – Charlie
+  found the old timing laggy.)
+  **Riposte:** attacking (light or heavy, any melee loadout – `isMelee()`) within 26px of a `parried` enemy starts
   `pState = "riposte"`: lunge (0–7), blade through at frame 8 for 54 × melee multiplier, hold, pull free, done at 36.
   You're untouchable during it. A riposte also cuts into the end of a combo/heavy. Heavy-stunned enemies can't be
   riposted. The boss can't be parried.
 - **Loadouts** (`loadout`): 0 sword (tap = 3-hit combo, hold = heavy), 1 sword & shield (hold = block;
-  dropped by the skeleton knight), 2 bow (tap = arrow, hold = power shot; dropped by the first archer killed).
-  Knight art lists are indexed by loadout (walk frames: `loadout * 4 + n`).
+  dropped by the skeleton knight), 2 bow (tap = arrow, hold = power shot; dropped by the first archer killed),
+  3 **Katana** (at the bottom of the crypt): tap = a faster 3-hit chain (10/10/15); hold = `iai`, the sheathed
+  charge (up to 36 ticks), release = `iaiDash`: a dash of 8–17 ticks × 4.2px that hits everything it passes
+  once, as a heavy (stuns bandits), for (20 + 0.7 × charge) × `katanaMul()`. Invincible while dashing; you can
+  dash off a ledge into a pit. Scales with **Dex** (`katanaMul()`; `weaponMul()` picks by loadout).
+  Knight art lists are indexed by loadout (walk frames: `loadout * 4 + n`); the melee swing lists have the
+  sword's frames in the bow's slot (index 2) so the katana can sit at index 3.
+- **Weapon menu:** a scrolling list (`WEAPON_ROWS` = 3 visible, `menuTop`) with the amulet slot underneath.
+  To add a weapon: extend `itemNames/itemTap/itemHold/itemHint/itemIcon` and `owns()` in `menus.ts`.
 - **Levelling:** `lvSta/lvCon/lvStr/lvDex/lvAtt`; cost `100 + 50 × totalLv`; Attunement costs double and is
   capped at 2 levels (5 flasks) via `statMaxed()` – a future item should lift that cap.
   Ember glow: carrying ≥ `EMBER_AT` (1.0) × next level cost → +20% damage, −20% damage taken, +20% stamina regen.
@@ -127,7 +161,8 @@ Neither tool can show what the game *looks* like or how it *feels* – Charlie p
   lvAtt, souls, spawnArea, spawnX, loadout, stainSouls, stainArea, stainX, stainH]`, `ef_flags` `[hasShield,
   hasBow, hasKey, doorOpen, hasCellKey, cellOpen, bossDead, hasKeyRing, gateOpen, glargonFreed, teleported]`,
   `ef_visited` (per area). **Only ever append to these arrays** so old saves keep loading.
-  Since v0.6.3: `ef_stats` += `amulet`; `ef_flags` += `hasFarsight, banditMet`, then (v0.6.4) `banditGone`; `loadGame()` checks the lengths.
+  Since v0.6.3: `ef_stats` += `amulet`; `ef_flags` += `hasFarsight, banditMet`, then (v0.6.4) `banditGone`,
+  (v0.7.0) `hasKatana`; `loadGame()` checks the lengths.
   Saves happen on rest, respawn, pickups, doors and story moments.
 
 ## 5. Story so far (exact text)
@@ -161,10 +196,27 @@ treehouse; corrupted bandits with the d6; the uncorrupted bandit; the amulet slo
 riposte. The merchant is a placeholder (asleep behind her counter, no interaction yet).
 v0.6.4: two more bandits under the great tree, bandit HP 75 → 120, the treehouse speech + fade.
 
-### Next – waiting on details from Charlie
-- What lies east of the great tree (the road to **Folkewood**), and how to wake the merchant.
+### Chunk 3 – The Warren *(done, v0.7.0)*
+The main path to Folkewood (bandits, knife throwers up trees, the hollow bonfire), the abandoned camp above (huts,
+the rope bridge, the barred throne gate), the crypt below (pits, ledges, skeletons that get back up, the Katana),
+knife throwers, the Katana, the scrolling weapon menu, parrying judged on the press, camp and crypt soundscapes.
 
-### Chunk 3 – the remaining amulets, the shop
+### Chunk 4 – The Red Hand *(next)*
+- Optional boss in area 24, behind the barred gate at the end of the camp (open the gate in this chunk).
+  He sits on a throne surrounded by bodies (blood is fine – this is Charlie's own project now), spears and
+  flowing flags, and rises when you approach. About twice the player's size. **One phase.**
+- Fast, like the bandits: he dodges, throws knives (like the knife throwers' boomerang knives) and **parries
+  the third hit of a combo** (so you can't just combo him). Parrying him with Farsight, then riposting, should be
+  the best way to kill him. Several heavies stun him (not every one).
+- Drops **1,500 souls** (enough for one amulet), **the horn** and **the Rusted Dagger**.
+- **The horn:** at the sleeping merchant, "A: Blow the horn" wakes her; from then on "A: Trade". Charlie may want
+  to reuse the horn later.
+- **The Rusted Dagger:** a new weapon in the menu. A normal melee weapon, but while you carry enough souls for a
+  level-up, attacking throws it: it spins forward, cleaves through enemies and returns to your hand (like the
+  knife throwers' knives). *Still to ask Charlie:* does the throw cost anything beyond the soul threshold?
+- Charlie plans to collect many weapons suited to different stats – the menu already scrolls.
+
+### Then – the remaining amulets, the shop
 - **Stalwart Amulet:** when an enemy parries you, you're not stunned; you take the damage of a normal hit,
   reduced by 50%, instead of the stun + riposte.
 - **Focus Amulet:** the roll becomes a much faster dash, same invincibility window.
@@ -179,5 +231,5 @@ v0.6.4: two more bandits under the great tree, bandit HP 75 → 120, the treehou
 
 - MakeCode's long-text dialog miscounts blank lines – never put `\n\n` in `game.showLongText`.
 - Arcade font is 6px per character: 26 characters max across the screen, 24 in the dialogue box.
-- Static TypeScript: no ternaries are needed, but keep to simple JS (no classes required); `for…of` and closures are fine.
+- Static TypeScript: keep to simple JS (no classes needed); ternaries, `for…of` and closures are fine.
 - Big images are fine in the browser; this game won't fit on cheap Arcade handheld hardware.

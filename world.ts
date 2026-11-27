@@ -80,8 +80,30 @@ function goToArea(n: number) {
         scene.setBackgroundImage(bgShopIn)
     } else if (area == 15) {
         scene.setBackgroundImage(bgTree)
-    } else {
+    } else if (area == 16) {
         scene.setBackgroundImage(bgTreehouse)
+    } else if (area == 17) {
+        scene.setBackgroundImage(bgWarren1)
+    } else if (area == 18) {
+        scene.setBackgroundImage(bgHollow)
+    } else if (area == 19) {
+        scene.setBackgroundImage(bgWarren2)
+    } else if (area == 20) {
+        scene.setBackgroundImage(bgWarrenEdge)
+    } else if (area == 21) {
+        scene.setBackgroundImage(bgCamp1)
+    } else if (area == 22) {
+        scene.setBackgroundImage(bgCamp2)
+    } else if (area == 23) {
+        scene.setBackgroundImage(bgCamp3)
+    } else if (area == 25) {
+        scene.setBackgroundImage(bgCrypt1)
+    } else if (area == 26) {
+        scene.setBackgroundImage(bgCrypt2)
+    } else if (area == 27) {
+        scene.setBackgroundImage(bgCrypt3)
+    } else {
+        scene.setBackgroundImage(bgCrypt4)
     }
     // snow only falls on the frozen field
     if (area == 6) {
@@ -95,6 +117,8 @@ function goToArea(n: number) {
         fireX = 40
     } else if (area == 16) {
         fireX = 50
+    } else if (area == 18) {
+        fireX = 100
     } else {
         fireX = 30
     }
@@ -117,6 +141,12 @@ function goToArea(n: number) {
             showBanner(bnLake, 60)
         } else if (area == 9) {
             showBanner(bnForde, 60)
+        } else if (area == 17) {
+            showBanner(bnWarren, 60)
+        } else if (area == 21) {
+            showBanner(bnCamp, 60)
+        } else if (area == 25) {
+            showBanner(bnCrypt, 60)
         }
     }
     if (area == 5 && !(bossDead) && !(bossActive)) {
@@ -137,6 +167,7 @@ function setupEnemy(i: number) {
         eLast[i] = atkID
         eKb[i] = 0
         eSprites[i].setFlag(SpriteFlag.Invisible, false)
+        setRoam(i)
         if (eType[i] == "bandit" && eArea[i] == 10) {
             // the bandits in the house wait in the shadows until you're halfway in
             eState[i] = "hidden"
@@ -147,7 +178,7 @@ function setupEnemy(i: number) {
     }
 }
 function hasBonfire(): boolean {
-    return area == 1 || area == 3 || area == 7 || area == 16
+    return area == 1 || area == 3 || area == 7 || area == 16 || area == 18
 }
 function rest() {
     hp = maxHP
@@ -190,6 +221,10 @@ function musicFor(): string {
         return "wind"
     } else if (area == 7) {
         return "lake"
+    } else if (area >= 21 && area <= 23) {
+        return "trees"
+    } else if (area >= 25 && area <= 28) {
+        return "crypt"
     }
     return "town"
 }
@@ -214,5 +249,36 @@ function updateMusic() {
         music.play(songLake, music.PlaybackMode.LoopingInBackground)
     } else if (want == "town") {
         music.play(songTown, music.PlaybackMode.LoopingInBackground)
+    } else if (want == "trees") {
+        music.play(songTrees, music.PlaybackMode.LoopingInBackground)
+    } else if (want == "crypt") {
+        music.play(songCrypt, music.PlaybackMode.LoopingInBackground)
     }
+}
+
+// where an enemy may roam: its own platform, or its stretch of ground between pits
+function setRoam(i: number) {
+    let lo = 4
+    let hi = 156
+    if (eH[i] > 0) {
+        for (let q = 0; q <= platArea.length - 1; q++) {
+            if (platArea[q] == eArea[i] && platH[q] == eH[i] && eHome[i] >= platX1[q] && eHome[i] <= platX2[q]) {
+                lo = platX1[q] + 4
+                hi = platX2[q] - 4
+            }
+        }
+    } else {
+        for (let q = 0; q <= pitArea.length - 1; q++) {
+            if (pitArea[q] == eArea[i]) {
+                if (pitX2[q] <= eHome[i]) {
+                    lo = Math.max(lo, pitX2[q] + 4)
+                }
+                if (pitX1[q] >= eHome[i]) {
+                    hi = Math.min(hi, pitX1[q] - 4)
+                }
+            }
+        }
+    }
+    eMin[i] = lo
+    eMax[i] = hi
 }

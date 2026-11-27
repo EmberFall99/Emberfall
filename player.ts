@@ -9,7 +9,7 @@ function takeDamage() {
         }
         // the first 12 ticks of a roll are invincible ("i-frames")
         // (and you can't be touched mid-riposte)
-        if (!((pState == "roll" && pFrame < 13) || invuln > 0 || pState == "riposte")) {
+        if (!((pState == "roll" && pFrame < 13) || invuln > 0 || pState == "riposte" || pState == "iaiDash")) {
             if (pState == "block" && dmgDir == 0 - pDir) {
                 // blocked by the shield: costs stamina instead of health
                 stamina += 0 - dmgIn * 1.3 * (1 - 0.05 * lvStr)
@@ -63,6 +63,8 @@ function readInput() {
     if (talkTarget != "" && controller.A.isPressed() && aHeld == 0 && !(waitRelease)) {
         if (talkTarget == "enter") {
             enterBuilding()
+        } else if (talkTarget == "descend") {
+            descendToCrypt()
         } else {
             startScene(talkTarget)
         }
@@ -86,13 +88,18 @@ function readInput() {
             pState = "aim"
             pFrame = 0
         }
+        if (loadout == 3 && aHeld == 9 && isFree() && py == supportAt(px, py) && stamina > 0) {
+            // katana: hand on the hilt, blade in the sheath, charging
+            pState = "iai"
+            pFrame = 0
+        }
     } else {
         if (loadout == 1) {
             if (aHeld > 0 && aHeld < 4) {
                 queueAction("light")
             }
         } else if (aHeld > 0 && aHeld < 9) {
-            if (loadout == 0) {
+            if (loadout == 0 || loadout == 3) {
                 queueAction("light")
             } else {
                 queueAction("shoot")
@@ -105,6 +112,9 @@ function readInput() {
             fireArrow(pFrame >= Math.max(8, 15 - lvDex))
             pState = "loose"
             pFrame = 0
+        }
+        if (pState == "iai") {
+            startIaiDash()
         }
         aHeld = 0
     }
@@ -134,19 +144,12 @@ function readInput() {
             if (nearFire) {
                 rest()
                 openLevelMenu()
-            } else if (area == 3 && Math.abs(px - 120) < 5 && py == 0) {
-                // down the hatch, back to the hall
-                goToArea(2)
-                ladder = 0
-                px = 120
-                py = 88
-                pState = "climb"
-            } else if (area == 16 && Math.abs(px - 120) < 5 && py == 0) {
-                // down the hatch, back down the tree
-                goToArea(15)
-                ladder = 2
-                px = 120
-                py = 84
+            } else if (hatchHere() >= 0) {
+                // down through the hatch, back down the ladder you came up
+                ladder = hatchHere()
+                goToArea(ladArea[ladder])
+                px = ladX[ladder]
+                py = ladTop[ladder] - 8
                 pState = "climb"
             } else if (canClimbDown() >= 0) {
                 ladder = canClimbDown()
@@ -206,10 +209,28 @@ function startLight(step: number) {
     stamina += -12
     stamDelay = 30
     buf = ""
+    pressParry()
+}
+// with the Farsight Amulet, the parry is judged the moment you press attack (not when the blade lands),
+// so it feels as responsive as a dodge
+function pressParry() {
+    if (amulet != 1 || !(isMelee())) {
+        return
+    }
+    for (let q = 0; q <= eType.length - 1; q++) {
+        if (eArea[q] == area && eAlive[q] == 1 && inParryWindow(q) && Math.abs(py - eH[q]) < 15) {
+            let d = eX[q] - px
+            if (Math.abs(d) < 30 && (sign(d) == pDir || Math.abs(d) < 8)) {
+                parryEnemy(q)
+                // the swing that's starting won't also hit it
+                eLast[q] = atkID + 1
+            }
+        }
+    }
 }
 // attacking an enemy you've just parried runs it through instead (sword only, not the bow)
 function tryRiposte(): boolean {
-    if ((buf == "light" || buf == "heavy") && loadout <= 1 && stamina > 0 && riposteFoe() >= 0) {
+    if ((buf == "light" || buf == "heavy") && isMelee() && stamina > 0 && riposteFoe() >= 0) {
         riposteOn = riposteFoe()
         pState = "riposte"
         pFrame = 0
@@ -250,6 +271,7 @@ function startAction() {
         stamina += -26
         stamDelay = 35
         buf = ""
+        pressParry()
     }
     if (buf == "shoot" && stamina > 0) {
         pState = "shoot"
@@ -279,7 +301,7 @@ function swingHitbox(reach: number, range: number, dmg: number, heavy: boolean) 
     atkID += 1
     atkX = px + pDir * reach
     atkRange = range
-    atkDmg = Math.round(dmg * meleeMul())
+    atkDmg = Math.round(dmg * weaponMul())
     atkHeavy = heavy
     atkActive = true
 }
@@ -305,10 +327,12 @@ function fireArrow(power: boolean) {
 function doAction() {
     pFrame += 1
     // a parried enemy takes priority over the next swing of a combo
-    if ((pState == "light" && pFrame >= 8 || pState == "heavy" && pFrame >= 19) && tryRiposte()) {
+    if ((pState == "light" && pFrame >= (loadout == 3 ? 6 : 8) || pState == "heavy" && pFrame >= 19) && tryRiposte()) {
         pFrame = 1
     }
-    if (pState == "light") {
+    if (pState == "light" && loadout == 3) {
+        katanaLight()
+    } else if (pState == "light") {
         // the 3-hit combo: tap A again during the recovery to chain the next swing
         if (combo == 1) {
             if (pFrame < 8) {
@@ -423,6 +447,29 @@ function doAction() {
     if (pState == "riposte") {
         doRiposte()
     }
+    if (pState == "iai") {
+        // charging: stamina doesn't come back while you hold it
+        stamDelay = 20
+        if (pFrame == 12 || pFrame == 36) {
+            music.play(music.melodyPlayable(music.knock), music.PlaybackMode.InBackground)
+        }
+    }
+    if (pState == "iaiDash") {
+        // the draw: a blur across the ground, cutting everything in the way (each foe once)
+        px += pDir * 4.2
+        atkX = px
+        atkActive = true
+        if (pFrame >= iaiLen) {
+            atkActive = false
+            pState = "iaiEnd"
+            pFrame = 0
+        }
+    }
+    if (pState == "iaiEnd") {
+        if (pFrame > 14) {
+            pState = "idle"
+        }
+    }
     if (pState == "waking") {
         if (pFrame > 54) {
             pState = "idle"
@@ -437,15 +484,10 @@ function doAction() {
             py += -0.9
         }
         if (py >= ladTop[ladder]) {
-            if (area == 2) {
-                // up through the ceiling into the woods
-                goToArea(3)
-                px = 128
-                py = 0
-            } else if (area == 15) {
-                // up the great tree, into the treehouse
-                goToArea(16)
-                px = 128
+            if (ladUpTo[ladder] >= 0) {
+                // up through the hatch into the area above (the woods, the treehouse, the camp)
+                px = ladX[ladder] + 8
+                goToArea(ladUpTo[ladder])
                 py = 0
             } else {
                 // step off the top of the ladder onto the ledge
@@ -470,6 +512,11 @@ function physics() {
             vy = 0
         }
     }
+    // fell into a pit
+    if (py < -24 && overPit(px)) {
+        fallDeath()
+        return
+    }
     let walkingRight = (pState == "walk" || pState == "roll") && pDir == 1
     let walkingLeft = (pState == "walk" || pState == "roll") && pDir == -1
     // the locked doors
@@ -481,6 +528,17 @@ function physics() {
     }
     if (area == 5 && !(gateOpen) && px > 141) {
         px = 141
+    }
+    // the Warren: the way on to Folkewood isn't open yet, the camp's throne gate is barred,
+    // and the camp is walled off on its left
+    if (area == 20 && px > 136) {
+        px = 136
+    }
+    if (area == 23 && px > 146) {
+        px = 146
+    }
+    if (area == 21 && px < 10) {
+        px = 10
     }
     if (px > 156) {
         if (walkingRight && area == 0) {
@@ -498,6 +556,9 @@ function physics() {
         } else if (walkingRight && area == 5 && gateOpen) {
             px = 6
             goToArea(6)
+        } else if (walkingRight && eastOf(area) >= 0) {
+            px = 6
+            goToArea(eastOf(area))
         } else if (walkingRight && (area == 7 || area == 8 || area == 9 || area == 11 || area == 13)) {
             // east from the lake: the road, through the gate, down the village street, out to the great tree
             px = 6
@@ -545,6 +606,14 @@ function physics() {
             } else {
                 goToArea(13)
             }
+        } else if (walkingLeft && area == 25) {
+            // back up the stair into the hollow
+            goToArea(18)
+            px = HOLE_X + 14
+            pDir = 1
+        } else if (walkingLeft && westOf(area) >= 0) {
+            px = 154
+            goToArea(westOf(area))
         } else if (walkingLeft && (area == 10 || area == 12 || area == 14)) {
             // out of the door you came in by
             leaveBuilding()
@@ -612,6 +681,12 @@ function animateKnight() {
         } else {
             im = kWindup2[loadout]
         }
+    } else if (pState == "iai") {
+        im = kIai
+    } else if (pState == "iaiDash") {
+        im = kIaiDash
+    } else if (pState == "iaiEnd") {
+        im = kIaiEnd
     } else if (pState == "dead") {
         im = kDead
     } else if (pState == "waking") {
@@ -688,4 +763,109 @@ function doRiposte() {
         }
         riposteOn = -1
     }
+}
+
+// ---------------------------------------------------------------- the Katana
+let iaiLen = 10
+// quick cuts: the same three-hit chain as the sword, but faster and a touch lighter
+function katanaLight() {
+    if (combo == 1 || combo == 2) {
+        if (pFrame < 5) {
+            px += pDir * 0.3
+        }
+        if (pFrame == 3) {
+            music.play(music.melodyPlayable(music.knock), music.PlaybackMode.InBackground)
+            swingHitbox(13, 11, 10, false)
+        }
+        if (pFrame == 6) {
+            atkActive = false
+        }
+        if (pFrame >= 6 && buf == "light" && stamina > 0) {
+            startLight(combo + 1)
+        } else if (pFrame > 12) {
+            pState = "idle"
+        }
+    } else {
+        if (pFrame > 2 && pFrame < 8) {
+            px += pDir * 2
+        }
+        if (pFrame == 5) {
+            music.play(music.melodyPlayable(music.smallCrash), music.PlaybackMode.InBackground)
+            swingHitbox(17, 12, 15, false)
+        }
+        if (pFrame == 9) {
+            atkActive = false
+        }
+        if (pFrame > 18) {
+            pState = "idle"
+        }
+    }
+}
+// let go of A: the blade leaves the sheath in a dash. The longer the charge, the further and harder.
+function startIaiDash() {
+    let charge = Math.min(pFrame, 36)
+    iaiLen = 8 + Math.idiv(charge, 4)
+    pState = "iaiDash"
+    pFrame = 0
+    atkID += 1
+    atkX = px
+    atkRange = 10
+    atkDmg = Math.round((20 + charge * 0.7) * katanaMul())
+    atkHeavy = true
+    atkActive = true
+    stamina = Math.max(0, stamina - 30)
+    stamDelay = 35
+    music.play(music.melodyPlayable(music.smallCrash), music.PlaybackMode.InBackground)
+    pressParry()
+}
+// ---------------------------------------------------------------- the Warren's routes
+// the next area east / west along a straight run, or -1
+function eastOf(a: number): number {
+    if (a == 15) {
+        return 17
+    } else if (a == 17 || a == 18 || a == 19 || a == 21 || a == 22 || a == 25 || a == 26 || a == 27) {
+        return a + 1
+    }
+    return -1
+}
+function westOf(a: number): number {
+    if (a == 17) {
+        return 15
+    } else if (a == 18 || a == 19 || a == 20 || a == 22 || a == 23 || a == 26 || a == 27 || a == 28) {
+        return a - 1
+    }
+    return -1
+}
+// standing on the hatch at the top of a ladder?
+function hatchHere(): number {
+    for (let h = 0; h <= ladArea.length - 1; h++) {
+        if (ladUpTo[h] == area && Math.abs(px - ladX[h]) < 5 && py == 0) {
+            return h
+        }
+    }
+    return -1
+}
+function descendToCrypt() {
+    waitRelease = true
+    music.play(music.melodyPlayable(music.footstep), music.PlaybackMode.InBackground)
+    goToArea(25)
+    px = 16
+    py = 0
+    pDir = 1
+    pState = "idle"
+}
+// the drop takes you; your souls stay at the edge you fell from
+function fallDeath() {
+    for (let q = 0; q <= pitArea.length - 1; q++) {
+        if (pitArea[q] == area && px > pitX1[q] && px < pitX2[q]) {
+            if (px - pitX1[q] < pitX2[q] - px) {
+                px = pitX1[q] - 4
+            } else {
+                px = pitX2[q] + 4
+            }
+        }
+    }
+    py = 0
+    vy = 0
+    die()
 }

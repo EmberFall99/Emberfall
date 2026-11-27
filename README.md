@@ -19,8 +19,8 @@ Wake in a cell. Fight through the Ashen Gate, the Sunken Hall, the Whispering Wo
 | Down | Climb, drink a flask, rest at a bonfire |
 | B | Roll (invincible for a moment) |
 | A (tap) | Attack. Tap A A A for the sword combo |
-| A (hold) | Heavy attack / raise shield / power shot, depending on loadout |
-| A (near someone / a door) | Talk / read / enter |
+| A (hold) | Heavy attack / raise shield / power shot / Katana: sheathed charge, let go to dash, depending on loadout |
+| A (near someone / a door / a stair) | Talk / read / enter / descend |
 | A (as a foe attacks, with the Farsight Amulet) | Parry. Attack again to riposte |
 | Menu | Equipment |
 

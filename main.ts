@@ -1,6 +1,6 @@
 // ---------------------------------------------------------------- version
 // shown on the title screen; bump it with every update
-let VERSION = "v0.6.5"
+let VERSION = "v0.7.0"
 
 // ---------------------------------------------------------------- the main loop
 game.onUpdateInterval(33, function () {
@@ -81,7 +81,16 @@ for (let n = 0; n <= eType.length - 1; n++) {
     en.setFlag(SpriteFlag.Invisible, true)
     en.z = 5
     eSprites.push(en)
+    // each knife thrower's knife (unused by everyone else)
+    let kn = sprites.create(knifeImgs[0], SpriteKind.Scenery)
+    kn.setFlag(SpriteFlag.Invisible, true)
+    kn.z = 6
+    eKnifeSpr.push(kn)
 }
+let katanaItem = sprites.create(katanaImg, SpriteKind.Scenery)
+katanaItem.x = KATANA_X
+katanaItem.bottom = GROUND - 10
+katanaItem.setFlag(SpriteFlag.Invisible, true)
 let boss = sprites.create(bIdle[0], SpriteKind.Boss)
 boss.setFlag(SpriteFlag.Invisible, true)
 boss.z = 6

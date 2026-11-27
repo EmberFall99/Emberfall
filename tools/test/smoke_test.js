@@ -81,7 +81,7 @@ check('d6 = 3-6: hits land; the bandit dies for 150 souls', G.get('eAlive')[6] =
 check('the first bandit killed drops the Farsight Amulet', G.get('farsightDropped') && G.get('farsightArea') == 10);
 G.set('pState', 'idle'); G.set('px', G.get('farsightItem').x); G.run(3);
 check('picking up the Farsight Amulet', G.get('hasFarsight'));
-G.set('pState', 'idle'); G.press('menu'); G.press('down'); G.press('down'); G.press('down'); G.press('A'); G.press('B'); G.run(2);
+G.set('pState', 'idle'); G.press('menu'); G.press('down'); G.press('down'); G.press('down'); G.press('down'); G.press('A'); G.press('B'); G.run(2);
 check('equipping it in the amulet slot', G.get('amulet') == 1 && G.get('loadout') == 0);
 // parry: strike as the second bandit is about to lunge
 G.set('forceRoll', 6); G.set('pState', 'idle'); G.set('pDir', 1); G.set('stamina', 100); G.set('invuln', 0); G.set('hp', 100);
@@ -121,7 +121,8 @@ check('two corrupted bandits wait under the tree (120 HP)', G.get('eAlive')[8] =
 G.set('invuln', 1e9); G.set('px', 40); G.set('pState', 'idle'); G.run(20);
 check('...and come for you when you get close', G.get('eState')[8] != 'idle');
 edge('right');
-check('...and no further east for now', G.get('area') == 15);
+check('east of the great tree lies the Warren', G.get('area') == 17 && G.get('visited')[17]);
+edge('left');
 G.set('px', 120); G.set('pState', 'idle'); G.run(2, ['up']); G.run(120, ['up']);
 check('climbing the tree into the treehouse', G.get('area') == 16);
 G.set('px', G.get('FRIEND_TREE_X') - 6); G.set('pState', 'idle'); G.run(3);
@@ -135,10 +136,107 @@ G.set('px', 120); G.set('pState', 'idle'); G.run(2); G.run(2, ['down']);
 check('down the hatch to the foot of the tree', G.get('area') == 15 && G.get('pState') == 'climb');
 G.run(120, ['down']);
 
+// ---- chunk 3: The Warren - the main path, the camp above, the crypt below, knife throwers, the Katana
+{
+  // the art's layout table and the game's platforms/pits must agree
+  const lay = JSON.parse(require('child_process').execSync("python3 -c \"import sys,json; sys.path.insert(0,'tools/art'); import pixrig5 as V; print(json.dumps({'plats':V.PLATS,'pits':V.PITS,'hole':V.HOLE_X,'ladder':V.UP_LADDER_X,'katana':V.KATANA_X}))\"").toString());
+  const pa = G.get('platArea'), p1 = G.get('platX1'), p2 = G.get('platX2'), ph = G.get('platH');
+  let ok = true;
+  for (const a in lay.plats) for (const [x1, x2, h] of lay.plats[a]) ok = ok && pa.some((v, i) => v == +a && p1[i] == x1 && p2[i] == x2 && ph[i] == h);
+  const ta = G.get('pitArea'), t1 = G.get('pitX1'), t2 = G.get('pitX2');
+  for (const a in lay.pits) for (const [x1, x2] of lay.pits[a]) ok = ok && ta.some((v, i) => v == +a && t1[i] == x1 && t2[i] == x2);
+  ok = ok && G.get('HOLE_X') == lay.hole && G.get('ladX')[3] == lay.ladder && G.get('KATANA_X') == lay.katana;
+  check('the Warren art and the game agree on every platform and pit', ok);
+}
+G.set('pState', 'idle'); G.get('goToArea(15)'); G.set('invuln', 1e9);
+edge('right');
+check('east of the great tree: THE WARREN', G.get('area') == 17);
+edge('right');
+check('the hollow, with a bonfire', G.get('area') == 18 && G.get('hasBonfire()'));
+G.set('px', 100); G.set('pState', 'idle'); G.run(3); G.run(2, ['down']); G.press('B'); G.run(3);
+check('resting at the hollow bonfire', G.get('spawnArea') == 18);
+edge('right'); edge('right');
+check('deeper woods, then the edge of the Warren', G.get('area') == 20);
+G.run(80, ['right']);
+check('...the way on to Folkewood is not open yet', G.get('area') == 20 && G.get('px') <= 136);
+edge('left'); edge('left');
+// up the ladder into the camp
+G.set('px', 130); G.set('pState', 'idle'); G.run(2); G.run(2, ['up']); G.run(130, ['up']);
+check('up the rope ladder into the abandoned camp', G.get('area') == 21 && G.get('visited')[21]);
+G.set('px', 130); G.set('pState', 'idle'); G.run(2); G.run(2, ['down']);
+check('down the hatch back to the hollow', G.get('area') == 18 && G.get('pState') == 'climb');
+G.run(130, ['down']); G.get('goToArea(21)'); G.set('pState', 'idle'); G.set('py', 0);
+G.set('px', 30); G.run(30, ['left']);
+check('the camp is walled off to the left', G.get('area') == 21 && G.get('px') >= 10);
+edge('right');
+check('the rope bridge', G.get('area') == 22);
+G.set('px', 52); G.set('pState', 'idle'); G.run(5);
+check('the bridge planks hold you up', G.get('py') == 0 && G.get('gameState') == 'play');
+G.set('invuln', 0); G.set('souls', 77); G.set('px', 75); G.set('pState', 'idle'); G.run(40);
+check('falling through the gap in the bridge kills you', G.get('gameState') == 'dead' && G.get('stainSouls') == 77 && G.get('stainArea') == 22 && (G.get('stainX') == 36 || G.get('stainX') == 130));
+G.run(130);
+check('...and you wake at the hollow bonfire', G.get('area') == 18 && G.get('gameState') == 'play');
+G.get('goToArea(23)'); G.set('pState', 'idle'); G.set('invuln', 1e9); G.set('px', 120); G.run(60, ['right']);
+check('the gate to the throne is barred', G.get('area') == 23 && G.get('px') <= 146);
+// a knife thrower in the deeper woods (slot 14, on its tree platform)
+G.get('goToArea(19)'); G.set('pState', 'idle'); G.set('invuln', 0); G.set('hp', 100); G.set('px', 70); G.set('loadout', 0);
+for (const b of [12, 13]) { G.set('eAlive[' + b + ']', 0); }
+let thrown = false, back = false, hurt = false;
+for (let t = 0; t < 200; t++) { G.tick(); if (G.get('eKnifeT')[14] >= 0) thrown = true; if (thrown && G.get('eKnifeT')[14] < 0) back = true; if (G.get('hp') < 100) hurt = true; G.set('invuln', Math.min(G.get('invuln'), 5)); }
+check('the knife thrower throws a spinning knife that cuts you', thrown && hurt);
+check('...and it comes back to his hand', back);
+G.set('hp', 100); G.set('loadout', 1); G.set('hasShield', true); G.set('pDir', 1); G.set('stamina', 100);
+let blockedHp = true;
+G.keys.add('A');
+for (let t = 0; t < 200; t++) { G.tick(); G.set('pDir', 1); if (G.get('hp') < 100) blockedHp = false; G.set('invuln', 0); }
+G.keys.delete('A'); G.run(2);
+check('...your shield blocks it', blockedHp && G.get('stamina') < 100 + 1);
+G.set('loadout', 0);
+// the crypt
+G.get('goToArea(18)'); G.set('pState', 'idle'); G.set('invuln', 1e9); G.set('px', G.get('HOLE_X')); G.run(3);
+check('A: Descend at the broken stair', G.get('talkTarget') == 'descend');
+tapA(); G.run(2);
+check('down into THE CRYPT', G.get('area') == 25 && G.get('visited')[25]);
+G.set('eHP[22]', 1); G.set('eX[22]', 80); G.set('px', 66); G.set('pDir', 1); G.set('pState', 'idle'); G.set('eState[22]', 'idle'); tapA(); G.run(40);
+check('crypt skeletons fall to bones...', G.get('eState')[22] == 'bones' && G.get('eAlive')[22] == 1);
+G.run(200);
+check('...and pull themselves back together at full health', G.get('eState')[22] != 'bones' && G.get('eHP')[22] == 40);
+G.set('px', 150); G.set('pState', 'idle'); G.run(12, ['right']);
+check('deeper into the crypt', G.get('area') == 26);
+G.set('px', 46); G.set('py', 12); G.set('vy', 0); G.set('pState', 'idle'); G.run(5);
+check('the crypt ledges hold you up', G.get('py') == 12);
+G.get('goToArea(28)'); G.set('pState', 'idle'); G.set('py', 0); G.set('px', G.get('KATANA_X')); G.run(3);
+check('the Katana, on the altar at the bottom', G.get('hasKatana'));
+G.get('goToArea(25)'); G.set('px', 8); G.set('pState', 'idle'); G.run(12, ['left']);
+check('back up the stair to the hollow', G.get('area') == 18 && Math.abs(G.get('px') - G.get('HOLE_X')) < 20);
+// the weapon menu scrolls
+G.set('px', 100); G.set('pState', 'idle'); G.run(2); G.set('loadout', 0); G.run(2); G.press('menu'); G.press('down'); G.press('down'); G.press('down');
+check('the weapon menu scrolls to show the Katana', G.get('menuSel') == 3 && G.get('menuTop') == 1);
+G.press('A'); G.press('B'); G.run(2);
+check('equipping the Katana', G.get('loadout') == 3);
+G.set('lvDex', 0); const k0 = G.get('weaponMul()'); G.set('lvDex', 5); const k5 = G.get('weaponMul()'); G.set('lvStr', 9); const k9 = G.get('weaponMul()'); G.set('lvStr', 2);
+check('the Katana scales with dexterity, not strength', k5 > k0 && k9 == k5);
+// the sheathed dash: hold, release, cut through two bandits in a line
+G.get('goToArea(19)'); G.set('pState', 'idle'); G.set('px', 30); G.set('pDir', 1); G.set('stamina', 200);
+G.set('eAlive[12]', 1); G.set('eAlive[13]', 1); G.get('setupEnemy(12)'); G.get('setupEnemy(13)'); G.set('eAlive[14]', 0);
+G.set('eX[12]', 60); G.set('eX[13]', 80); G.set('eState[12]', 'recover'); G.set('eState[13]', 'recover'); G.set('eWait[12]', 1e9); G.set('eWait[13]', 1e9);
+G.run(45, ['A']);
+check('holding A with the Katana: the sheathed charge', G.get('pState') == 'iai');
+const h12 = G.get('eHP')[12], h13 = G.get('eHP')[13]; G.run(20);
+check('letting go: a dash that cuts through both bandits and stuns them', G.get('eHP')[12] < h12 && G.get('eHP')[13] < h13 && G.get('eState')[12] == 'stunned' && G.get('px') > 85, 'px ' + G.get('px'));
+G.run(30);
+// parrying is judged the moment you press attack
+G.set('loadout', 0); G.set('amulet', 1); G.set('pState', 'idle'); G.set('px', 60); G.set('pDir', 1);
+G.set('eX[12]', 78); G.set('eDir[12]', -1); G.set('eState[12]', 'windup'); G.set('eFrame[12]', 4); G.set('eHP[12]', 120);
+tapA(); G.tick();
+check('parry happens on the press, not when the blade lands', G.get('eState')[12] == 'parried', G.get('eState')[12]);
+G.set('amulet', 0); G.set('invuln', 0);
+G.get('goToArea(18)'); G.set('px', 100); G.set('pState', 'idle'); G.run(3); G.run(2, ['down']); G.press('B'); G.run(3);
+
 // ---- saving and Continue
 const saved = JSON.parse(JSON.stringify(G.store));
 const H = load(saved);
-check('Continue loads back at the treehouse with progress kept', H.get('area') == 16 && H.get('bossDead') && H.get('glargonFreed') && H.get('maxHP') == 112 && H.get('hasFarsight') && H.get('banditMet') && H.get('banditGone') && H.get('amulet') == 1);
+check('Continue loads back at the hollow with progress kept', H.get('area') == 18 && H.get('hasKatana') && H.get('bossDead') && H.get('glargonFreed') && H.get('maxHP') == 112 && H.get('hasFarsight') && H.get('banditMet') && H.get('banditGone'));
 // a save from before this update (shorter lists) still loads
 const old = JSON.parse(JSON.stringify(G.store));
 old.ef_stats = old.ef_stats.slice(0, 13); old.ef_flags = old.ef_flags.slice(0, 11); old.ef_visited = old.ef_visited.slice(0, 8); old.ef_stats[6] = 7; old.ef_stats[7] = 40;

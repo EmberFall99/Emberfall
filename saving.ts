@@ -10,7 +10,7 @@ function saveGame() {
     settings.writeNumber("ef_saved", 1)
     // only ever add to the END of these lists, so older saves still load
     settings.writeNumberArray("ef_stats", [lvSta, lvCon, lvStr, lvDex, lvAtt, souls, spawnArea, spawnX, loadout, stainSouls, stainArea, stainX, stainH, amulet])
-    settings.writeNumberArray("ef_flags", [bit(hasShield), bit(hasBow), bit(hasKey), bit(doorOpen), bit(hasCellKey), bit(cellOpen), bit(bossDead), bit(hasKeyRing), bit(gateOpen), bit(glargonFreed), bit(teleported), bit(hasFarsight), bit(banditMet), bit(banditGone)])
+    settings.writeNumberArray("ef_flags", [bit(hasShield), bit(hasBow), bit(hasKey), bit(doorOpen), bit(hasCellKey), bit(cellOpen), bit(bossDead), bit(hasKeyRing), bit(gateOpen), bit(glargonFreed), bit(teleported), bit(hasFarsight), bit(banditMet), bit(banditGone), bit(hasKatana)])
     let vis: number[] = []
     for (let v of visited) {
         vis.push(bit(v))
@@ -60,6 +60,9 @@ function loadGame() {
     }
     if (fl2.length > 13) {
         banditGone = fl2[13] == 1
+    }
+    if (fl2.length > 14) {
+        hasKatana = fl2[14] == 1
     }
     let vis2 = settings.readNumberArray("ef_visited")
     for (let vi = 0; vi <= vis2.length - 1; vi++) {

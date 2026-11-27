@@ -5,7 +5,7 @@ import pixrig as R
 
 # ---------------------------------------------------------------- knight with loadouts
 def knight(weapon='sword', lean=0, legs=((2, 0), (-2, 0)), knees=None, arm=-60, sword=60, crouch=0, fx=None,
-           back_arm=-110, block=False, bow_draw=0, flask=False):
+           back_arm=-110, block=False, bow_draw=0, flask=False, sheathed=False):
     g = G(30, 24, 15, 23)
     hy = -7 + crouch
     sx = lean
@@ -45,6 +45,22 @@ def knight(weapon='sword', lean=0, legs=((2, 0), (-2, 0)), knees=None, arm=-60, 
         g.set(*P(hand, sword, -1), 'e')
         g.line(P(hand, sword, 1), P(hand, sword, 9), '1')
         g.line(P(hand, sword + 90, 1), P(hand, sword - 90, 1), '5')
+    elif weapon == 'katana' and sheathed:
+        # blade in its scabbard at the hip, hand on the hilt
+        g.line((sx - 1, hy - 1), (sx - 10, hy + 2), 'f')
+        g.line((sx - 1, hy - 2), (sx - 9, hy + 1), 'c')
+        g.line((sx, hy - 2), hand, 'e')
+        g.set(sx, hy - 1, '5')
+    elif weapon == 'katana':
+        # a long, thin, faintly curved blade with a small round guard
+        g.set(*P(hand, sword, -1), 'e'); g.set(*P(hand, sword, -2), 'e')
+        base = P(hand, sword, 1)
+        g.line(base, P(hand, sword, 7), '1')
+        g.line(P(hand, sword, 7), P(P(hand, sword, 7), sword - 12, 5), '1')
+        g.set(*P(P(hand, sword, 7), sword - 12, 5), '9')
+        g.set(*base, 'f')
+        if weapon == 'katana':      # the empty scabbard stays on the hip
+            g.line((sx - 1, hy - 1), (sx - 9, hy + 2), 'f')
     elif weapon == 'bow':
         # bow held upright in the front hand, bulging forward
         hx2, hy2 = hand

@@ -37,6 +37,16 @@ function emberMul(): number {
 function meleeMul(): number {
     return (1 + 0.08 * lvStr) * emberMul()
 }
+// the katana scales with dexterity, not strength
+function katanaMul(): number {
+    return (1 + 0.1 * lvDex) * emberMul()
+}
+function weaponMul(): number {
+    if (loadout == 3) {
+        return katanaMul()
+    }
+    return meleeMul()
+}
 function rangedMul(): number {
     return (1 + 0.1 * lvDex) * emberMul()
 }
