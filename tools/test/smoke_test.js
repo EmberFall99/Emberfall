@@ -398,13 +398,15 @@ function inFolke(Gx) {
   const R2 = load(JSON.parse(JSON.stringify(G.store)));
   inFolke(R2); R2.get('goToArea(30)'); R2.set('px', 70); R2.run(2);
   check('pressing on into the street brings the dragon too', R2.get('dragonT') >= 0);
-  let rolled = false;
+  let rolled = false, allFrozenByBreath = false;
   for (let t = 0; t < 230; t++) {
     R2.set('hp', 112); R2.set('invuln', 0);
+    if (R2.get('dragonT') == R2.get('DR_BREATH_END')) allFrozenByBreath = [29, 30, 31, 32, 33, 34, 35].every(i => R2.get('eState')[i] == 'frozen');
     if (!rolled && R2.get('dragonT') >= R2.get('DR_BREATH_START') && R2.get('breathX') - R2.get('px') < 12) { R2.set('pDir', 1); R2.keys.add('B'); R2.tick(); R2.keys.delete('B'); rolled = true; continue; }
     R2.tick();
   }
   check('rolling through the breath: you live', rolled && R2.get('gameState') == 'play' && R2.get('dragonDone'));
+  check('the breath itself catches all seven bandits, even the one at the far end', allFrozenByBreath);
 }
 {
   // or get back out through the gate

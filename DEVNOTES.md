@@ -3,7 +3,7 @@
 Everything needed to pick this project up again, including in a fresh Claude conversation.
 **If you're a new session: read this whole file before changing anything.**
 
-Current version: **v0.9.0** (shown bottom-left of the title screen; the `VERSION` constant in `main.ts`).
+Current version: **v0.9.1** (shown bottom-left of the title screen; the `VERSION` constant in `main.ts`).
 
 ---
 
@@ -104,7 +104,7 @@ Neither tool can show what the game *looks* like or how it *feels* – Charlie p
 - **The dragon** (`dragon.ts`): Glargon's second note lies just inside the gate (`NOTE2_X` 24): "Dragon. – Glargon
   Jones". Reading it, or walking past x 44, starts it (`startDragon`, `dragonT` counts ticks): the music stops, a roar,
   the shadow races over (0–40), a wing sweeps across the top (20–78), the head dips in (78–98), then the breath – a
-  column of ice under the head – sweeps right to left down the street (98–160, `breathX`). Bandits it touches become
+  column of ice under the head – sweeps right to left down the street from the screen edge (98–160, `breathX` from `BREATH_FROM` 158). Bandits it touches become
   `frozen` (ice-recoloured, untouchable, no souls, for good). It kills you (`frozenDeath`: you're left as an ice
   statue) unless you're mid-roll (i-frames) or you've gone back through the gate (leaving area 30 finishes it without
   you). After: `dragonDone` (saved), the street is buried in frost (`bgFolkeFrozen`), and the music is just wind.

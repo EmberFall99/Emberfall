@@ -29,6 +29,7 @@ let DR_HEAD_START = 78
 let DR_BREATH_START = 98
 let DR_BREATH_END = 160
 let DR_END = 195
+let BREATH_FROM = 158
 function startDragon() {
     if (dragonDone || dragonT >= 0) {
         return
@@ -67,7 +68,7 @@ function updateDragon() {
     dragonHead.setFlag(SpriteFlag.Invisible, !(headOn))
     if (t < DR_BREATH_START) {
         dragonHead.setImage(dragonHeadImg)
-        breathX = 140
+        breathX = BREATH_FROM
         dragonHead.left = breathX - 10
         dragonHead.top = -64 + Math.min(56, (t - DR_HEAD_START) * 3)
     } else if (t <= DR_BREATH_END) {
@@ -76,7 +77,8 @@ function updateDragon() {
             music.play(music.melodyPlayable(music.magicWand), music.PlaybackMode.InBackground)
         }
         dragonHead.setImage(dragonJawImg)
-        breathX = 140 - (t - DR_BREATH_START) * 2.3
+        // from the right-hand edge all the way across, so nobody in the street is missed
+        breathX = BREATH_FROM - (t - DR_BREATH_START) * 2.6
         dragonHead.left = breathX - 10
         dragonHead.top = -8
         breath.setFlag(SpriteFlag.Invisible, false)
