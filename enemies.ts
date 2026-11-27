@@ -109,8 +109,6 @@ function hitEnemy(i: number, dmg: number, heavy: boolean, fromX: number): boolea
         // already reeling: stay that way
     } else if (eType[i] == "redhand") {
         // he takes it and keeps coming (his own rules - poise, rolls, parries - are in redHandHit)
-    } else if (eType[i] == "thrower" && !(heavy)) {
-        // knife throwers shrug off light hits and keep fighting; only a heavy staggers them
     } else if (heavy || eType[i] == "archer" || eType[i] == "thrower") {
         eState[i] = "stagger"
         eFrame[i] = 0

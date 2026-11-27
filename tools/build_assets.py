@@ -137,6 +137,8 @@ anim('ghostImgs', 'ghostDagger', X.ghost_dagger_frames(), 60)
 single('merchantAwakeImg', 'merchantAwake', X.merchant_awake())
 single('hornImg', 'hornPickup', X.horn_pickup())
 single('daggerImg', 'rustedDaggerPickup', X.dagger_pickup())
+anim('stainImgs', 'smoulderingEmbers', X.smoulder_frames(), 120)
+anim('sparkImgs', 'smoulderSpark', X.smoulder_sparks(), 120)
 single('kLeapUp', 'knightDaggerLeapWindup', LO[4]['leapUp'])
 single('kLeap', 'knightDaggerLeap', LO[4]['leap'])
 # ---- boss: [normal, enraged dim, enraged bright]

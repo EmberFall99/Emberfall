@@ -13,4 +13,5 @@ namespace SpriteKind {
     export const PlayerArrow = SpriteKind.create()
     export const PowerArrow = SpriteKind.create()
     export const Ember = SpriteKind.create()
+    export const Smoulder = SpriteKind.create()
 }

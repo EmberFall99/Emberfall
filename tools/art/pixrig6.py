@@ -387,3 +387,29 @@ def dagger_frames():
     f['leap'] = k(lean=5, crouch=-2, arm=-30, sword=-40, legs=((4, -3), (-6, -1)), knees=((5, -6), (-3, -5)), back_arm=-170,
                   fx=slash_arc(3, -12, 10, 60, -70))
     return f
+
+# ---------------------------------------------------------------- your dropped souls: a smouldering heap of embers
+def smoulder_frames():
+    """3 frames of a low heap of embers, glowing and flickering (16x7, sits on the ground)"""
+    out = []
+    shape = [(-6, 0), (-5, 0), (-4, 0), (-3, 0), (-2, 0), (-1, 0), (0, 0), (1, 0), (2, 0), (3, 0), (4, 0), (5, 0),
+             (-4, -1), (-3, -1), (-2, -1), (-1, -1), (0, -1), (1, -1), (2, -1), (3, -1),
+             (-2, -2), (-1, -2), (0, -2), (1, -2), (-1, -3), (0, -3)]
+    for k in range(3):
+        g = G(16, 7, 8, 6)
+        r = random.Random(60 + k)
+        for (x, y) in shape:
+            hot = r.random()
+            c = '5' if hot < .25 else ('4' if hot < .6 else ('2' if hot < .85 else 'e'))
+            if y == 0 and abs(x) > 3: c = 'e' if hot < .6 else '2'
+            g.set(x, y, c)
+        g.set(0, -4 - (k % 2), '5' if k != 1 else '4')     # a lick of flame on top
+        if k == 2: g.set(-1, -4, '4')
+        out.append(g)
+    return out
+
+def smoulder_sparks():
+    """tiny sparks that rise off the heap"""
+    a, b = G(1, 2, 0, 0), G(1, 2, 0, 0)
+    a.p = [['5'], ['4']]; b.p = [['4'], ['2']]
+    return [a, b]

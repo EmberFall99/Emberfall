@@ -176,6 +176,10 @@ G.set('invuln', 0); G.set('souls', 77); G.set('px', 75); G.set('pState', 'idle')
 check('falling through the gap in the bridge kills you', G.get('gameState') == 'dead' && G.get('stainSouls') == 77 && G.get('stainArea') == 22 && (G.get('stainX') == 36 || G.get('stainX') == 130));
 G.run(130);
 check('...and you wake at the hollow bonfire', G.get('area') == 18 && G.get('gameState') == 'play');
+G.get('goToArea(22)'); G.set('invuln', 1e9); G.run(12);
+check('your lost souls smoulder where you fell, sparks rising', G.get('sprites.allOfKind(SpriteKind.Smoulder).length') > 0 && !G.get('stain').flags.inv);
+G.get('goToArea(18)'); G.run(2);
+check('...the sparks are cleared when you leave', G.get('sprites.allOfKind(SpriteKind.Smoulder).length') == 0);
 G.get('goToArea(23)'); G.set('pState', 'idle'); G.set('invuln', 1e9); G.set('px', 120); G.run(60, ['right']);
 check('the gate to the throne is barred', G.get('area') == 23 && G.get('px') <= 146);
 // a knife thrower in the deeper woods (slot 14, on its tree platform)
@@ -206,7 +210,7 @@ let moves = new Set();
 for (let t = 0; t < 120; t++) { G.set('px', G.get('eX')[11] - 14); G.tick(); moves.add(G.get('eState')[11]); }
 check('a cornered knife thrower hops back or slashes', moves.has('hop') || moves.has('slashUp'), [...moves].join(','));
 G.set('eState[11]', 'idle'); G.set('eFrame[11]', 0); G.set('eHP[11]', 70); G.set('px', G.get('eX')[11] - 12); G.set('pState', 'idle'); tapA(); G.run(8);
-check('light hits wound it without staggering it', G.get('eHP')[11] < 70 && G.get('eState')[11] != 'stagger', G.get('eState')[11]);
+check('light hits wound it and stagger it', G.get('eHP')[11] < 70 && G.get('eState')[11] == 'stagger', G.get('eState')[11]);
 G.set('eH[11]', 20);
 // the crypt
 G.get('goToArea(18)'); G.set('pState', 'idle'); G.set('invuln', 1e9); G.set('px', G.get('HOLE_X')); G.run(3);

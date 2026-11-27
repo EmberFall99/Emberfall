@@ -49,6 +49,7 @@ function goToArea(n: number) {
     sprites.destroyAllSpritesOfKind(SpriteKind.EnemyArrow)
     sprites.destroyAllSpritesOfKind(SpriteKind.PlayerArrow)
     sprites.destroyAllSpritesOfKind(SpriteKind.PowerArrow)
+    sprites.destroyAllSpritesOfKind(SpriteKind.Smoulder)
     dropAllKnives()
     if (area == 0) {
         scene.setBackgroundImage(bgCell)

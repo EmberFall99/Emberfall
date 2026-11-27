@@ -189,6 +189,18 @@ function updateScenery() {
     stain.setFlag(SpriteFlag.Invisible, !(stainSouls > 0 && area == stainArea && gameState != "title"))
     stain.x = stainX
     stain.bottom = GROUND - stainH
+    if (stainSouls > 0 && area == stainArea && gameState != "title") {
+        // your lost souls smoulder where you fell, sparks rising off them
+        stain.setImage(stainImgs[Math.idiv(animT, 4) % 3])
+        if (animT % 3 == 0) {
+            let sp = sprites.create(sparkImgs[randint(0, 1)], SpriteKind.Smoulder)
+            sp.setPosition(stainX + randint(-5, 5), GROUND - stainH - 2)
+            sp.vx = randint(-5, 5)
+            sp.vy = randint(-24, -12)
+            sp.lifespan = randint(700, 1500)
+            sp.z = 3
+        }
+    }
     if (gameState == "play" && stainSouls > 0 && area == stainArea && Math.abs(px - stainX) < 7 && Math.abs(py - stainH) < 7) {
         souls += stainSouls
         stainSouls = 0

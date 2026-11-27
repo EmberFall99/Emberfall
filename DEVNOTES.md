@@ -3,7 +3,7 @@
 Everything needed to pick this project up again, including in a fresh Claude conversation.
 **If you're a new session: read this whole file before changing anything.**
 
-Current version: **v0.8.0** (shown bottom-left of the title screen; the `VERSION` constant in `main.ts`).
+Current version: **v0.8.1** (shown bottom-left of the title screen; the `VERSION` constant in `main.ts`).
 
 ---
 
@@ -133,7 +133,8 @@ Neither tool can show what the game *looks* like or how it *feels* – Charlie p
   along the line to you, past you, and curves back. 22 damage, and it can hit **twice** – once going out, once coming back. Coming back it
   hits you from behind, so the shield blocks the throw but not the return. They can't throw again until it's back.
   Up close (< 22px) they either `hop` backwards (untouchable while hopping) or `slashUp` → `slash` (14 dmg).
-  Not part of the d6. Light hits don't stagger them; heavies do. (Toughened in v0.7.1 – Charlie found them too weak.)
+  Not part of the d6. Any hit staggers them (v0.8.1: Charlie's playtests wanted light hits to stun them again;
+  the rest of the v0.7.1 toughening stays).
 - **Corrupted bandits** (slots 6 and 7, area 10): state `hidden` until the player passes x 70, then they appear
   on both sides (the ambush). Slots 8 and 9 wait under the great tree (area 15): `idle` until you're within 90px. States: stalk (circle at ~22–44px, fast), windup → lunge (20 dmg), slashUp → slash
   (16 dmg), recover (the opening), dodge, hurt, parry → riposte (34 dmg), stunned, parried, riposted, dying.
@@ -186,7 +187,8 @@ Neither tool can show what the game *looks* like or how it *feels* – Charlie p
   capped at 2 levels (5 Cordials) via `statMaxed()` – a future item should lift that cap.
   Ember glow: carrying ≥ `EMBER_AT` (1.0) × next level cost → +20% damage, −20% damage taken, +20% stamina regen.
 - **Souls-like rules:** resting or dying respawns every enemy (`resetWorld()`); dying drops all souls as a
-  bloodstain (`stainSouls/stainArea/stainX/stainH`); items, keys, doors and the boss stay done.
+  bloodstain (`stainSouls/stainArea/stainX/stainH`) – drawn as a smouldering heap of embers (`stainImgs`) with
+  sparks rising off it (`SpriteKind.Smoulder`, cleared on area change); items, keys, doors and the boss stay done.
 - **Cutscenes:** `startScene()` sets `gameState = "cutscene"` and runs a script with `control.runInParallel`,
   using `say(name, text)` (typed text, 24 chars × 4 lines per page, A to advance), `fadeOut/fadeIn(white)`
   and plain `pause()`s. Unknown characters speak as **???** until named.
