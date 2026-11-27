@@ -1,5 +1,6 @@
 {
     "name": "Emberfall",
+    "version": "0.1.0",
     "description": "A souls-like made in MakeCode Arcade",
     "dependencies": {
         "device": "*"
