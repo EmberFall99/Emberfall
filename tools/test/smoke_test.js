@@ -186,12 +186,28 @@ for (let t = 0; t < 200; t++) { G.tick(); if (G.get('eKnifeT')[14] >= 0) thrown 
 check('the knife thrower throws a spinning knife that cuts you', thrown && hurt);
 check('...and it comes back to his hand', back);
 G.set('hp', 100); G.set('loadout', 1); G.set('hasShield', true); G.set('pDir', 1); G.set('stamina', 100);
-let blockedHp = true;
+let blockedOut = false, hitBack = false, lastSta = 100;
 G.keys.add('A');
-for (let t = 0; t < 200; t++) { G.tick(); G.set('pDir', 1); if (G.get('hp') < 100) blockedHp = false; G.set('invuln', 0); }
+for (let t = 0; t < 200; t++) {
+  G.tick(); G.set('pDir', 1); G.set('invuln', 0);
+  const kt = G.get('eKnifeT')[14], half = G.get('KNIFE_TIME') / 2;
+  if (G.get('stamina') < lastSta - 5 && kt >= 0 && kt < half) blockedOut = true;
+  if (G.get('hp') < 100 && kt >= half) hitBack = true;
+  lastSta = G.get('stamina'); G.set('hp', 100);
+}
 G.keys.delete('A'); G.run(2);
-check('...your shield blocks it', blockedHp && G.get('stamina') < 100 + 1);
+check('...your shield blocks it on the way out', blockedOut);
+check('...but it can catch you from behind on the way back', hitBack);
 G.set('loadout', 0);
+// up close it hops away or slashes, and light hits don't stagger it
+G.get('goToArea(18)'); G.set('pState', 'idle'); G.set('invuln', 1e9); G.set('eX[11]', 72); G.set('eKnifeT[11]', -1);
+G.set('eH[11]', 0); G.set('eMin[11]', 4); G.set('eMax[11]', 156); G.set('px', 60); G.set('py', 0); G.set('pDir', 1);
+let moves = new Set();
+for (let t = 0; t < 120; t++) { G.set('px', G.get('eX')[11] - 14); G.tick(); moves.add(G.get('eState')[11]); }
+check('a cornered knife thrower hops back or slashes', moves.has('hop') || moves.has('slashUp'), [...moves].join(','));
+G.set('eState[11]', 'idle'); G.set('eFrame[11]', 0); G.set('eHP[11]', 70); G.set('px', G.get('eX')[11] - 12); G.set('pState', 'idle'); tapA(); G.run(8);
+check('light hits wound it without staggering it', G.get('eHP')[11] < 70 && G.get('eState')[11] != 'stagger', G.get('eState')[11]);
+G.set('eH[11]', 20);
 // the crypt
 G.get('goToArea(18)'); G.set('pState', 'idle'); G.set('invuln', 1e9); G.set('px', G.get('HOLE_X')); G.run(3);
 check('A: Descend at the broken stair', G.get('talkTarget') == 'descend');

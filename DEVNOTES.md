@@ -3,7 +3,7 @@
 Everything needed to pick this project up again, including in a fresh Claude conversation.
 **If you're a new session: read this whole file before changing anything.**
 
-Current version: **v0.7.0** (shown bottom-left of the title screen; the `VERSION` constant in `main.ts`).
+Current version: **v0.7.1** (shown bottom-left of the title screen; the `VERSION` constant in `main.ts`).
 
 ---
 
@@ -118,10 +118,12 @@ Neither tool can show what the game *looks* like or how it *feels* – Charlie p
   `setRoam()` (world.ts) gives each enemy `eMin/eMax`: its own platform, or its stretch of ground between pits.
 - **Crypt skeletons** (`eRevive` = 1, slots 22–28): when one dies it lies as bones (`bones`, ~170 ticks), then
   `rising`, then fights again at full HP. They give souls every time. (A future magic weapon could stop this.)
-- **Knife throwers** (`thrower`, 45 HP, 100 souls): keep their distance and throw a spinning knife that flies out
-  along the line to you and curves back (`throwKnife`/`updateKnives`; `eKnife*` lists, one sprite per enemy in
-  `eKnifeSpr`). 15 damage, once per throw, blockable by the shield. They can't throw again until it's back.
-  Not part of the d6; any hit staggers them.
+- **Knife throwers** (`thrower`, 70 HP, 120 souls): keep their distance and throw a spinning knife that flies out
+  along the line to you, past you, and curves back (`throwKnife`/`updateKnives`; `eKnife*` lists, one sprite per
+  enemy in `eKnifeSpr`). 22 damage, and it can hit **twice** – once going out, once coming back. Coming back it
+  hits you from behind, so the shield blocks the throw but not the return. They can't throw again until it's back.
+  Up close (< 22px) they either `hop` backwards (untouchable while hopping) or `slashUp` → `slash` (14 dmg).
+  Not part of the d6. Light hits don't stagger them; heavies do. (Toughened in v0.7.1 – Charlie found them too weak.)
 - **Corrupted bandits** (slots 6 and 7, area 10): state `hidden` until the player passes x 70, then they appear
   on both sides (the ambush). Slots 8 and 9 wait under the great tree (area 15): `idle` until you're within 90px. States: stalk (circle at ~22–44px, fast), windup → lunge (20 dmg), slashUp → slash
   (16 dmg), recover (the opening), dodge, hurt, parry → riposte (34 dmg), stunned, parried, riposted, dying.
@@ -211,9 +213,10 @@ knife throwers, the Katana, the scrolling weapon menu, parrying judged on the pr
 - Drops **1,500 souls** (enough for one amulet), **the horn** and **the Rusted Dagger**.
 - **The horn:** at the sleeping merchant, "A: Blow the horn" wakes her; from then on "A: Trade". Charlie may want
   to reuse the horn later.
-- **The Rusted Dagger:** a new weapon in the menu. A normal melee weapon, but while you carry enough souls for a
-  level-up, attacking throws it: it spins forward, cleaves through enemies and returns to your hand (like the
-  knife throwers' knives). *Still to ask Charlie:* does the throw cost anything beyond the soul threshold?
+- **The Rusted Dagger:** a new weapon in the menu. Its attacks always cost stamina, and each one carries you a
+  little further forward than other weapons, so it feels nimble. While you carry enough souls for a level-up,
+  every attack works as normal **and also** throws a pale orange, glowing ghost dagger that spins forward, cleaves
+  through enemies and returns (like the knife throwers' knives). The souls are never spent by this.
 - Charlie plans to collect many weapons suited to different stats – the menu already scrolls.
 
 ### Then – the remaining amulets, the shop

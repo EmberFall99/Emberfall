@@ -1,7 +1,7 @@
 // ---------------------------------------------------------------- enemies
 // returns true if the attack connected (even if it was blocked)
 function hitEnemy(i: number, dmg: number, heavy: boolean, fromX: number): boolean {
-    if (eState[i] == "dying" || eState[i] == "hidden" || eState[i] == "bones" || eState[i] == "rising") {
+    if (eState[i] == "dying" || eState[i] == "hidden" || eState[i] == "bones" || eState[i] == "rising" || eState[i] == "hop") {
         return false
     }
     let s = eSprites[i]
@@ -92,6 +92,8 @@ function hitEnemy(i: number, dmg: number, heavy: boolean, fromX: number): boolea
         }
     } else if (eState[i] == "parried" || eState[i] == "riposted" || eState[i] == "stunned") {
         // already reeling: stay that way
+    } else if (eType[i] == "thrower" && !(heavy)) {
+        // knife throwers shrug off light hits and keep fighting; only a heavy staggers them
     } else if (heavy || eType[i] == "archer" || eType[i] == "thrower") {
         eState[i] = "stagger"
         eFrame[i] = 0
@@ -574,13 +576,49 @@ function throwerThink(i: number, dist: number): Image {
             eX[i] = eX[i] - eDir[i] * 0.8
             im = thWalk[Math.idiv(animT, 6) % 2]
         }
-        if (!(knifeOut) && Math.abs(dist) < 120 && eFrame[i] > 40) {
+        if (Math.abs(dist) < 22 && Math.abs(py - eH[i]) < 14 && eFrame[i] > 12) {
+            // right on top of it: hop back out of reach, or slash with a spare knife
+            eFrame[i] = 0
+            if (randint(1, 2) == 1) {
+                eState[i] = "hop"
+                music.play(music.melodyPlayable(music.footstep), music.PlaybackMode.InBackground)
+            } else {
+                eState[i] = "slashUp"
+            }
+        } else if (!(knifeOut) && Math.abs(dist) < 120 && eFrame[i] > 25) {
             eState[i] = "wind"
             eFrame[i] = 0
         }
+    } else if (st == "hop") {
+        // a quick backwards hop: untouchable while in the air
+        im = thWalk[1]
+        if (eFrame[i] < 10) {
+            eX[i] = eX[i] - eDir[i] * 2.4
+        }
+        if (eFrame[i] > 12) {
+            eState[i] = "idle"
+            eFrame[i] = 20
+        }
+    } else if (st == "slashUp") {
+        im = thWind
+        if (eFrame[i] > 7) {
+            eState[i] = "slash"
+            eFrame[i] = 0
+            music.play(music.melodyPlayable(music.knock), music.PlaybackMode.InBackground)
+        }
+    } else if (st == "slash") {
+        im = thThrow
+        if (eFrame[i] == 1 && Math.abs(px - (eX[i] + eDir[i] * 8)) < 11 && Math.abs(py - eH[i]) < 13) {
+            dmgIn += 14
+            dmgDir = eDir[i]
+        }
+        if (eFrame[i] > 12) {
+            eState[i] = "idle"
+            eFrame[i] = 15
+        }
     } else if (st == "wind") {
         im = thWind
-        if (eFrame[i] > 16) {
+        if (eFrame[i] > 12) {
             throwKnife(i)
             eState[i] = "throw"
             eFrame[i] = 0
@@ -602,7 +640,7 @@ function throwerThink(i: number, dist: number): Image {
     }
     return im
 }
-let KNIFE_TIME = 52
+let KNIFE_TIME = 46
 function throwKnife(i: number) {
     let sx = eX[i] + eDir[i] * 6
     let sy = GROUND - eH[i] - 12
@@ -613,7 +651,7 @@ function throwKnife(i: number) {
     eKnifeY[i] = sy
     eKnifeUx[i] = dx / d
     eKnifeUy[i] = dy / d
-    eKnifeR[i] = Math.min(130, d + 16)
+    eKnifeR[i] = Math.min(140, d + 28)
     eKnifeT[i] = 0
     eKnifeHit[i] = false
     eKnifeSpr[i].setFlag(SpriteFlag.Invisible, false)
@@ -638,9 +676,13 @@ function updateKnives() {
         let k = eKnifeSpr[i]
         k.setImage(knifeImgs[Math.idiv(eKnifeT[i], 2) % 4])
         k.setPosition(kx, ky)
+        if (eKnifeT[i] == Math.idiv(KNIFE_TIME, 2)) {
+            // it turns: it can catch you again on the way back
+            eKnifeHit[i] = false
+        }
         if (!(eKnifeHit[i]) && Math.abs(kx - px) < 6 && Math.abs(ky - (GROUND - py - 9)) < 9) {
             eKnifeHit[i] = true
-            dmgIn += 15
+            dmgIn += 22
             dmgDir = sign(eKnifeUx[i] * (eKnifeT[i] < KNIFE_TIME / 2 ? 1 : -1))
         }
         if (eKnifeT[i] >= KNIFE_TIME) {
