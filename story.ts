@@ -126,6 +126,8 @@ function startScene(target: string) {
             banditTreeScene()
         } else if (target == "horn") {
             hornScene()
+        } else if (target == "armour") {
+            armourScene()
         } else if (target == "note2") {
             say("A note", NOTE2_TEXT)
             gameState = "play"

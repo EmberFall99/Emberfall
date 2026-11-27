@@ -5,6 +5,7 @@ from pixrig import G, P, GROUND, bg_base
 import pixrig4 as W
 import pixrig5 as V
 import textart as T
+import pixrig2 as Q
 
 NOTE_X = 24        # Glargon's note, just inside the gate (area 30)
 GATE_X = 140       # the palisade gate at the end of the road (area 29)
@@ -203,3 +204,54 @@ def shadow_frame():
             if (x + y) % 2 == 0 and (edge > 6 or (x + y) % 4 == 0) and abs(y - 3) < 3 - (1 if edge < 3 else 0):
                 g.p[y][x] = 'f'
     return g
+
+# ---------------------------------------------------------------- the Indentured General's Armour
+SAMURAI_X = 73      # the kneeling body at the crypt altar (area 28)
+
+def samurai_kneeling():
+    """the general, long dead, kneeling before the altar in the armour he couldn't take off (30x26)"""
+    g = G(30, 26, 15, 25)
+    LAC, GOLD, CORD = 'c', '5', '2'
+    # folded legs: shin flat on the ground, thigh angled up
+    g.thick((-6, -1), (4, -1), LAC, 2)
+    g.thick((-4, -2), (2, -7), LAC, 3)
+    # skirt plates (kusazuri) with gold lacing
+    g.poly([(-4, -8), (4, -8), (5, -3), (-6, -3)], LAC)
+    for x in range(-4, 5, 2): g.set(x, -5, GOLD)
+    # the cuirass, bowed forward
+    g.poly([(-3, -16), (4, -15), (5, -8), (-4, -8)], LAC)
+    g.line((-3, -13), (4, -12), GOLD); g.line((-4, -10), (5, -9), GOLD)
+    g.set(0, -11, CORD); g.set(1, -11, CORD)
+    # shoulder guards
+    g.rect(-5, -16, -3, -12, LAC); g.rect(4, -15, 6, -11, LAC)
+    g.line((-5, -13), (-3, -13), GOLD); g.line((4, -12), (6, -12), GOLD)
+    # arms resting on the thighs, bony hands
+    g.line((5, -12), (7, -7), LAC); g.set(8, -6, 'd'); g.set(8, -5, 'd')
+    # the helmet with its crescent crest, a skull underneath, head bowed
+    g.rect(4, -21, 9, -16, LAC)
+    g.rect(6, -18, 9, -16, 'd'); g.set(8, -17, 'f'); g.set(7, -16, 'f')
+    g.line((3, -22), (5, -26), GOLD); g.line((10, -22), (8, -26), GOLD); g.line((5, -22), (8, -22), GOLD)
+    g.line((3, -16), (2, -14), LAC); g.line((10, -16), (11, -14), LAC)
+    # a red contract cord tied around the waist, trailing
+    g.line((-4, -9), (-8, -4), CORD)
+    g.outline()
+    return g
+
+def offering_frames():
+    """arms flung out to the sides, head back: the curse feeding (one per loadout weapon)"""
+    out = []
+    for w in ('sword', 'shield', 'bow', 'katana', 'dagger'):
+        def drops(g):
+            for (x, y) in ((-10, -16), (9, -18), (-7, -21), (6, -10)):
+                g.set(x, y, '2')
+        out.append(Q.knight(w, arm=-15, sword=-95, back_arm=195, crouch=-1, lean=-1,
+                            legs=((4, 0), (-4, 0)), fx=drops))
+    return out
+
+def prompt_two_lines(a, b):
+    """a two-line prompt (for "A: Equip Indentured General's Armour")"""
+    ga = T.text_grid(a, 8, '5', font=T.SANS)
+    gb = T.text_grid(b, 8, '5', font=T.SANS)
+    w = max(len(ga[0]), len(gb[0]))
+    pad = lambda grid: [row + ['.'] * (w - len(row)) for row in grid]
+    return pad(ga) + pad(gb)

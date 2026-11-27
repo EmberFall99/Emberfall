@@ -75,6 +75,7 @@ function closeShop() {
     waitRelease = true
     aHeld = 0
     bWas = true
+    bHeld = 99
 }
 function drawShop() {
     let m = shopPanel.image

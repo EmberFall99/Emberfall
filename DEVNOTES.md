@@ -3,7 +3,7 @@
 Everything needed to pick this project up again, including in a fresh Claude conversation.
 **If you're a new session: read this whole file before changing anything.**
 
-Current version: **v0.9.1** (shown bottom-left of the title screen; the `VERSION` constant in `main.ts`).
+Current version: **v0.10.0** (shown bottom-left of the title screen; the `VERSION` constant in `main.ts`).
 
 ---
 
@@ -63,6 +63,7 @@ Neither tool can show what the game *looks* like or how it *feels* – Charlie p
 | `tools/make_music.js` | Composes the background music into `music.ts` (now with MakeCode's drum kit for the Red Hand) |
 | `redhand.ts` | The Red Hand: his AI, his hit rules, his death and drops, the camp gate, his flags |
 | `shop.ts` | The merchant: the horn scene and her amulet shop |
+| `armour.ts` | The Indentured General's Armour: equip + contract, the curse's numbers, the blood offering, the recolour, `choose()` (A/B question) |
 | `dragon.ts` | Folkewood's ice dragon set piece, frozen bandits, `iced()` (recolour any picture to ice) |
 | `tools/art/pixrig7.py` | Chunk 5 art: the road to Folkewood, Folkewood's street (before/after), the dragon's wing, head, breath, shadow |
 | `helpers.ts` | `faced()`, `queueAction()`, `showBanner()`, `isFree()`, `supportAt()`, `sign()` |
@@ -302,21 +303,24 @@ The road in, the palisade gate, Glargon's note, the dragon, the frozen street.
   at runtime). Effects: no damage from ranged attacks that hit you **from behind**; **frost stun duration halved**.
   Consequence: enemies of the Shadowed Men (not yet written) will know you later. Tied to accepting.
 
-### Then – the Indentured General's Armour (agreed, not built)
-- On the kneeling samurai at the crypt altar. "A: Equip Indentured General's Armour" → "Are you sure? This action can
-  only be undone with a pardon." Equipping binds you to **a contract**: the first time you inherit the General's – **the
-  Red Hand**. You can't take it off; the Justicar pardons you once the contract is fulfilled (shrine comes later).
-- **Re-equipping** after a pardon needs a new contract: **the uncorrupted bandit, your friend**. The contract could be
-  where his real name is first revealed – Charlie wants the Justicar's shrine to be where you first see his name,
-  with a possible (optional) way to learn it earlier, so for some players the contract is a shock and for others
-  an informed choice. If he's dead, the armour can never be worn again.
-- **The curse:** max health always 50% of normal (Constitution still raises it); +30% walk speed (not attack speed);
-  a faster roll (still slower than Focus; Focus wins if both) and a snappier jump (same height and distance, so
-  platforming isn't broken); +20% damage below 30% health (faint red glow) – stacks with the ember glow.
-- **Blood offering:** while armoured, tap B = roll (on release), hold B = stand with arms out and drain your own health
-  (never below 1) to switch the low-health bonus on before a fight. Healing above 30% turns it off.
-- While worn, **max health and Cordial healing are both halved** (damage taken is unchanged).
-- Look: the knight recoloured at runtime (dark lacquer and gold) rather than redrawn (keeps the project small).
+### Chunk 6 – the Indentured General's Armour *(done, v0.10.0)*
+Built as agreed: the armoured samurai kneels at the crypt altar (`SAMURAI_X` 73, area 28) – "A: Equip Indentured
+General's Armour" → `choose()`: "Are you sure? This action can only be undone with a pardon." (A: Equip, B: Leave it).
+Equipping (`armourOn`, saved) shows the contract: "THE RED HAND." (or "...Fulfilled." if he's dead – `contractFulfilled()`).
+It can't be removed yet. The curse (`armour.ts`): `computeMaxHP()` halves max HP; `cordialHeal()` halves healing;
+`walkSpeed()` 1.43 (+30%); roll 2.9px/tick for 11 ticks, done at 15 (same i-frames; Focus still wins);
+`jumpPower()` 4.82 / `gravity()` 0.459 = the same height (~25px) and reach at the faster walk, in ~21 ticks;
+`curseMul()` ×1.2 to all damage below 30% HP (a red aura shows it; stacks with the ember glow).
+**Blood offering:** while armoured, tap B = roll on release; hold B (9 ticks, standing on the ground) = `offering`:
+arms out (`kOffer`), −1 HP every 2 ticks (never below 1), red drops rising; let go to stop. Hits interrupt it.
+**Look:** `armoured()` recolours every knight frame at runtime (white plate → dark lacquer, grey → deep brown,
+plume → gold; the red cape stays – the Shadowed Men covenant will recolour it). The menu gains an armour page.
+`forceChoice` (1 = A, 2 = B) is a test hook, like `forceRoll`.
+
+### Later – the pardon and the second contract (agreed)
+- **The Shrine of the Justicar** pardons you once your contract is fulfilled; the armour comes off (and halved
+  health ends). **Re-equipping** needs a new contract: **the uncorrupted bandit, your friend** – the first place his
+  real name may appear (or an optional earlier way to learn it). If he's dead, it can never be worn again.
 
 ### Then – Folkewood's cultist boss and the Dragon Tail Glaive (agreed)
 - The boss is beyond the friend's bonfire, behind the door the talisman opens. He wields the Glaive.

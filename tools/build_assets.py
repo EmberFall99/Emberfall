@@ -144,6 +144,9 @@ single('dragonHeadImg', 'dragonHead', F.dragon_head(False))
 single('dragonJawImg', 'dragonHeadBreathing', F.dragon_head(True))
 single('dragonShadowImg', 'dragonShadow', F.shadow_frame())
 anim('breathImgs', 'dragonBreath', F.breath_frames(), 80)
+# ---- the Indentured General's Armour
+single('samuraiImg', 'samuraiKneeling', F.samurai_kneeling())
+array('kOffer', [('knightOffering' + LN[i], f) for i, f in enumerate(F.offering_frames())])
 anim('sparkImgs', 'smoulderSpark', X.smoulder_sparks(), 120)
 single('kLeapUp', 'knightDaggerLeapWindup', LO[4]['leapUp'])
 single('kLeap', 'knightDaggerLeap', LO[4]['leap'])
@@ -220,6 +223,7 @@ for var, name, g in [
     ('txtDescend', 'textDescend', T.text_grid('A: Descend', 8, '5', font=T.SANS)),
     ('bnRedHand', 'bannerRedHand', banner('THE RED HAND', '2')),
     ('bnFolke', 'bannerFolkewood', banner('FOLKEWOOD', '9')),
+    ('txtEquipArmour', 'textEquipArmour', F.prompt_two_lines('A: Equip Indentured', "General's Armour")),
     ('bnRedFelled', 'bannerRedHandFelled', banner('RED HAND FELLED', '5', big=True)),
     ('bnHorn', 'bannerHorn', banner("THE RED HAND'S HORN", '5', sub='Loud enough to wake anyone')),
     ('bnDagger', 'bannerRustedDagger', banner('RUSTED DAGGER', '4', sub='Press MENU to equip it')),

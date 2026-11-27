@@ -80,6 +80,7 @@ function updateScenery() {
         merchant.setImage(merchantAsleepL)
     }
     updateRedHandScenery()
+    updateArmourLook()
     talkTarget = ""
     if (gameState == "play" && isFree() && py == 0) {
         if (area == 6 && !(glargonFreed) && Math.abs(px - 112) < 18) {
@@ -88,6 +89,8 @@ function updateScenery() {
             talkTarget = "note"
         } else if ((area == 9 || area == 11 || area == 13) && Math.abs(px - DOOR_X) < 8) {
             talkTarget = "enter"
+        } else if (area == 28 && !(armourOn) && Math.abs(px - SAMURAI_X) < 10) {
+            talkTarget = "armour"
         } else if (area == 30 && Math.abs(px - NOTE2_X) < 10) {
             talkTarget = "note2"
         } else if (area == 18 && Math.abs(px - HOLE_X) < 10) {
@@ -114,6 +117,9 @@ function updateScenery() {
     } else if (talkTarget == "enter") {
         talkPrompt.setImage(txtEnter)
         talkPrompt.setPosition(DOOR_X, GROUND - 36)
+    } else if (talkTarget == "armour") {
+        talkPrompt.setImage(txtEquipArmour)
+        talkPrompt.setPosition(80, GROUND - 40)
     } else if (talkTarget == "note2") {
         talkPrompt.setImage(txtRead)
         talkPrompt.setPosition(NOTE2_X, 86)

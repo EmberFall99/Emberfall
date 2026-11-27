@@ -416,5 +416,49 @@ function inFolke(Gx) {
   check('back through the gate: it happens without you, and you live', R3.get('area') == 29 && R3.get('dragonDone') && R3.get('gameState') == 'play');
 }
 
+// ---- chunk 6: the Indentured General's Armour
+{
+  const A2 = load(JSON.parse(JSON.stringify(G.store)));
+  inFolke(A2); A2.keys.delete('A'); A2.set('waitRelease', false); A2.set('aHeld', 0);
+  A2.get('goToArea(28)'); A2.set('px', A2.get('SAMURAI_X')); A2.set('pState', 'idle'); A2.run(3);
+  const tap = (k) => { A2.keys.add(k); A2.tick(); A2.keys.delete(k); A2.run(2); };
+  check('the samurai kneels at the altar: A: Equip Indentured General\'s Armour', A2.get('talkTarget') == 'armour' && !A2.get('samurai').flags.inv);
+  A2.set('forceChoice', 2); tap('A'); A2.run(5);
+  check('"Are you sure? ..." - B leaves it', !A2.get('armourOn') && A2.printed.some(t => t.indexOf('pardon') >= 0) && A2.get('gameState') == 'play');
+  A2.set('pState', 'idle'); A2.run(3); A2.set('forceChoice', 1); tap('A'); A2.run(10);
+  const lvCon = A2.get('lvCon');
+  check('A puts it on: the General\'s contract is yours (the Red Hand - already fulfilled)', A2.get('armourOn') && A2.printed.some(t => t.indexOf('Fulfilled') >= 0));
+  for (let k = 0; k < 4 && A2.get('gameState') != 'play'; k++) tap('A');
+  check('...half your max health', A2.get('maxHP') == Math.floor((100 + 12 * lvCon) / 2));
+  check('...the samurai is left in his bones', A2.get('samurai').flags.inv);
+  check('...Cordials heal half as much', A2.get('cordialHeal()') == 22);
+  A2.set('pState', 'idle'); A2.set('px', 20); A2.run(10, ['right']);
+  check('...you walk faster', A2.get('px') > 33, 'px ' + A2.get('px'));
+  A2.set('pState', 'idle'); A2.set('py', 0); A2.set('vy', 0); A2.set('stamina', 100); A2.run(2);
+  let topY = 0, air = 0; A2.keys.add('up'); A2.tick(); A2.keys.delete('up');
+  for (let t = 0; t < 40; t++) { A2.tick(); topY = Math.max(topY, A2.get('py')); if (A2.get('py') > 0) air++; }
+  check('...a snappier jump with the same height', topY > 22 && topY < 28 && air < 24, 'height ' + topY.toFixed(1) + ', airtime ' + air);
+  A2.set('pState', 'idle'); A2.set('stamina', 100); A2.set('px', 60); A2.set('pDir', 1); A2.run(2);
+  A2.keys.add('B'); A2.tick(); A2.keys.delete('B'); A2.run(2);
+  check('...tap B: a (quicker) roll, on release', A2.get('pState') == 'roll' || A2.get('px') > 66);
+  A2.run(20); A2.set('pState', 'idle'); A2.set('hp', A2.get('maxHP')); A2.run(2);
+  const hp0 = A2.get('hp');
+  A2.run(14, ['B']);
+  check('...hold B: arms out, the curse feeds on you', A2.get('pState') == 'offering' && A2.get('hp') < hp0);
+  A2.run(400, ['B']);
+  check('...it never takes your last point of health', A2.get('hp') == 1 && A2.get('gameState') == 'play');
+  A2.run(2);
+  check('...let go and it stops', A2.get('pState') == 'idle');
+  A2.run(2);
+  const m1 = A2.get('meleeMul()'); A2.set('hp', A2.get('maxHP')); A2.run(1); const m0 = A2.get('meleeMul()');
+  A2.set('hp', 1); A2.run(1);
+  check('...below 30% health you hit 20% harder, glowing red', Math.abs(m1 / m0 - 1.2) < 0.001 && !A2.get('redAura').flags.inv);
+  A2.set('pState', 'idle'); A2.press('menu'); A2.press('right'); A2.press('right'); A2.press('right');
+  check('...its own page in the menu, with its contract', A2.get('menuPage') == 3);
+  A2.press('B'); A2.run(2);
+  const A3 = load(JSON.parse(JSON.stringify(A2.store)));
+  check('...and it stays on after a save and reload', A3.get('armourOn') && A3.get('maxHP') == Math.floor((100 + 12 * lvCon) / 2));
+}
+
 console.log(failures ? failures + ' check(s) FAILED' : 'All checks passed');
 process.exit(failures ? 1 : 0);

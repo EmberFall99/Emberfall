@@ -35,11 +35,11 @@ function emberMul(): number {
     return 1
 }
 function meleeMul(): number {
-    return (1 + 0.08 * lvStr) * emberMul()
+    return (1 + 0.08 * lvStr) * emberMul() * curseMul()
 }
 // the katana scales with dexterity, not strength
 function katanaMul(): number {
-    return (1 + 0.1 * lvDex) * emberMul()
+    return (1 + 0.1 * lvDex) * emberMul() * curseMul()
 }
 function weaponMul(): number {
     if (loadout == 3 || loadout == 4) {
@@ -49,7 +49,7 @@ function weaponMul(): number {
     return meleeMul()
 }
 function rangedMul(): number {
-    return (1 + 0.1 * lvDex) * emberMul()
+    return (1 + 0.1 * lvDex) * emberMul() * curseMul()
 }
 function buyStat(stat: number) {
     let cost = statCost(stat)
@@ -66,7 +66,7 @@ function buyStat(stat: number) {
         stamina = maxSta
     } else if (stat == 1) {
         lvCon += 1
-        maxHP = 100 + 12 * lvCon
+        maxHP = computeMaxHP()
         hp = maxHP
     } else if (stat == 2) {
         lvStr += 1

@@ -1,6 +1,6 @@
 // ---------------------------------------------------------------- version
 // shown on the title screen; bump it with every update
-let VERSION = "v0.9.1"
+let VERSION = "v0.10.0"
 
 // ---------------------------------------------------------------- the main loop
 game.onUpdateInterval(33, function () {
@@ -125,6 +125,14 @@ breath.z = 39
 for (let ds of [dragonShadow, dragonWing, dragonHead, breath]) {
     ds.setFlag(SpriteFlag.Invisible, true)
 }
+let samurai = sprites.create(samuraiImg, SpriteKind.Scenery)
+samurai.x = SAMURAI_X
+samurai.bottom = GROUND
+samurai.z = 2
+samurai.setFlag(SpriteFlag.Invisible, true)
+let redAura = sprites.create(auraImgs[0], SpriteKind.Scenery)
+redAura.z = 9
+redAura.setFlag(SpriteFlag.Invisible, true)
 let katanaItem = sprites.create(katanaImg, SpriteKind.Scenery)
 katanaItem.x = KATANA_X
 katanaItem.bottom = GROUND - 10

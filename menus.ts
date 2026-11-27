@@ -46,12 +46,12 @@ function openMenu() {
         drawMenu()
     })
     controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
-        menuPage = (menuPage + 1) % 3
+        menuPage = (menuPage + 1) % menuPages()
         music.play(music.melodyPlayable(music.footstep), music.PlaybackMode.InBackground)
         drawMenu()
     })
     controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
-        menuPage = (menuPage + 2) % 3
+        menuPage = (menuPage + menuPages() - 1) % menuPages()
         music.play(music.melodyPlayable(music.footstep), music.PlaybackMode.InBackground)
         drawMenu()
     })
@@ -83,6 +83,7 @@ function closeMenu() {
     waitRelease = true
     aHeld = 0
     bWas = true
+    bHeld = 99
 }
 function menuRow(y: number, selected: boolean) {
     if (selected) {
@@ -110,6 +111,9 @@ function drawMenu() {
         return
     } else if (menuPage == 2) {
         drawKeyItems()
+        return
+    } else if (menuPage == 3) {
+        drawArmourPage()
         return
     }
     m.print("EQUIPMENT", 6, 4, 4)
@@ -255,4 +259,23 @@ function drawKeyItems() {
 }
 function anyAmulet(): boolean {
     return ownsAmulet(1) || ownsAmulet(2) || ownsAmulet(3) || ownsAmulet(4)
+}
+// the armour gets its own page once you're wearing it
+function menuPages(): number {
+    if (armourOn) {
+        return 4
+    }
+    return 3
+}
+function drawArmourPage() {
+    let m = menuPanel.image
+    m.print("< armour", 4, 4, 11)
+    m.print("INDENTURED GENERAL'S", 6, 18, 1)
+    m.print("ARMOUR", 6, 28, 1)
+    printLines(ARMOUR_DESC, 42, 13)
+    if (contractFulfilled()) {
+        m.print("THE RED HAND: fulfilled", 6, 100, 7)
+    } else {
+        m.print("Contract: THE RED HAND", 6, 100, 2)
+    }
 }

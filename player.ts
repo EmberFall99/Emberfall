@@ -129,11 +129,25 @@ function readInput() {
         aHeld = 0
     }
     if (controller.B.isPressed()) {
-        if (!(bWas)) {
+        bHeld += 1
+        if (armourOn) {
+            // armoured: hold B to let the curse feed on you (a tap still rolls, on release)
+            if (bHeld == 9 && isFree() && py == supportAt(px, py) && hp > 1) {
+                pState = "offering"
+                pFrame = 0
+            }
+        } else if (!(bWas)) {
             queueAction("roll")
         }
         bWas = true
     } else {
+        if (armourOn && bHeld > 0 && bHeld < 9) {
+            queueAction("roll")
+        }
+        if (pState == "offering") {
+            pState = "idle"
+        }
+        bHeld = 0
         bWas = false
     }
     if (controller.up.isPressed()) {
@@ -182,12 +196,12 @@ function readInput() {
         pState = "idle"
         if (controller.right.isPressed()) {
             pDir = 1
-            px += 1.1
+            px += walkSpeed()
             pState = "walk"
         }
         if (controller.left.isPressed()) {
             pDir = -1
-            px += -1.1
+            px += 0 - walkSpeed()
             pState = "walk"
         }
         if (buf != "") {
@@ -298,7 +312,7 @@ function startAction() {
     }
     if (buf == "jump") {
         if (py == supportAt(px, py) && stamina > 0) {
-            vy = 3.7
+            vy = jumpPower()
             stamina += -10
             stamDelay = 20
             music.play(music.melodyPlayable(music.jumpUp), music.PlaybackMode.InBackground)
@@ -434,6 +448,14 @@ function doAction() {
         if (pFrame > 13) {
             pState = "idle"
         }
+    } else if (pState == "roll" && armourOn) {
+        // the armour: a quicker roll over the same ground (same invincible frames)
+        if (pFrame < 11) {
+            px += pDir * 2.9
+        }
+        if (pFrame > 15) {
+            pState = "idle"
+        }
     } else if (pState == "roll") {
         if (pFrame < 15) {
             px += pDir * 2.2
@@ -468,6 +490,9 @@ function doAction() {
     }
     if (pState == "riposte") {
         doRiposte()
+    }
+    if (pState == "offering") {
+        doOffering()
     }
     if (pState == "iai") {
         // charging: stamina doesn't come back while you hold it
@@ -527,7 +552,7 @@ function doAction() {
 function physics() {
     if (pState != "climb") {
         let sup = supportAt(px, py)
-        vy += -0.27
+        vy += 0 - gravity()
         py += vy
         if (py <= sup) {
             py = sup
@@ -710,6 +735,8 @@ function animateKnight() {
         } else {
             im = kWindup2[loadout]
         }
+    } else if (pState == "offering") {
+        im = kOffer[loadout]
     } else if (pState == "iai") {
         im = kIai
     } else if (pState == "iaiDash") {
@@ -727,6 +754,9 @@ function animateKnight() {
         } else {
             im = kHurt[loadout]
         }
+    }
+    if (armourOn) {
+        im = armoured(im)
     }
     knight.setImage(faced(im, pDir))
     knight.x = px
@@ -978,8 +1008,13 @@ function ghostDagger() {
 
 // how much a Cordial heals (the Brewer's Amulet spices it up: half as much again)
 function cordialHeal(): number {
+    let heal = 45
     if (amulet == 4) {
-        return 68
+        heal = 68
     }
-    return 45
+    if (armourOn) {
+        // the armour halves healing too
+        heal = Math.idiv(heal, 2)
+    }
+    return heal
 }
