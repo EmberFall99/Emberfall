@@ -9,7 +9,6 @@
         "images.g.jres",
         "images.g.ts",
         "art.ts",
-        "music.ts",
         "state.ts",
         "helpers.ts",
         "world.ts",
@@ -23,9 +22,15 @@
         "story.ts",
         "saving.ts",
         "main.ts",
-        "README.md"
+        "README.md",
+        "main.py",
+        "music.ts"
     ],
     "testFiles": [],
+    "targetVersions": {
+        "target": "4.1.32",
+        "targetId": "arcade"
+    },
     "supportedTargets": [
         "arcade"
     ],

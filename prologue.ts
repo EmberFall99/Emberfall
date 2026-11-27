@@ -1,6 +1,6 @@
 // ---------------------------------------------------------------- the prologue
 // each line fades up out of the dark, holds, and fades away. "|" splits a line in two.
-let introLines = ["The past is the past.", "Whatever happened before,|it is done now.", "The King is dead.", "The fire is dying.", "The embers fall on|desecrated soil.", "All you can do is|march onwards.", "To your inexorable end."]
+let introLines = ["The past is the past.", "Whatever came before,|it is done now.", "The King is dead.", "The fire is dying.", "Embers fall on|desecrated soil.", "All you can do is|march onwards.", "To your inexorable end."]
 let introSkipped = false
 function introPause(ms: number) {
     let waited = 0
