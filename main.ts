@@ -1,6 +1,6 @@
 // ---------------------------------------------------------------- version
 // shown on the title screen; bump it with every update
-let VERSION = "v0.7.1"
+let VERSION = "v0.8.0"
 
 // ---------------------------------------------------------------- the main loop
 game.onUpdateInterval(33, function () {
@@ -81,11 +81,29 @@ for (let n = 0; n <= eType.length - 1; n++) {
     en.setFlag(SpriteFlag.Invisible, true)
     en.z = 5
     eSprites.push(en)
-    // each knife thrower's knife (unused by everyone else)
+}
+// the shared pool of thrown knives
+for (let kn2 = 0; kn2 <= KNIVES - 1; kn2++) {
     let kn = sprites.create(knifeImgs[0], SpriteKind.Scenery)
     kn.setFlag(SpriteFlag.Invisible, true)
     kn.z = 6
-    eKnifeSpr.push(kn)
+    knSpr.push(kn)
+}
+let hornItem = sprites.create(hornImg, SpriteKind.Scenery)
+hornItem.setFlag(SpriteFlag.Invisible, true)
+let daggerItem = sprites.create(daggerImg, SpriteKind.Scenery)
+daggerItem.setFlag(SpriteFlag.Invisible, true)
+// the Red Hand's flags, streaming from their poles (the poles are in the background)
+let rhFlags: Sprite[] = []
+let FLAG_POLE_X = [74, 100, 156]
+let FLAG_POLE_TOP = [48, 44, 46]
+for (let fl = 0; fl <= FLAG_POLE_X.length - 1; fl++) {
+    let fs = sprites.create(rhFlagImgs[0], SpriteKind.Scenery)
+    fs.left = FLAG_POLE_X[fl]
+    fs.top = FLAG_POLE_TOP[fl]
+    fs.z = 2
+    fs.setFlag(SpriteFlag.Invisible, true)
+    rhFlags.push(fs)
 }
 let katanaItem = sprites.create(katanaImg, SpriteKind.Scenery)
 katanaItem.x = KATANA_X
@@ -222,7 +240,7 @@ while (!(controller.A.isPressed())) {
         pauseUntil(() => !(controller.up.isPressed()) && !(controller.down.isPressed()))
     }
     if (controller.B.isPressed()) {
-        game.showLongText("CONTROLS\nLeft/Right: move\nUp: jump, climb\nDown: climb, flask\nDown at bonfire: rest\nB: roll (dodge)\nTap A: attack / combo\nHold A: heavy/block/aim\nA near someone: talk\nMENU: equipment", DialogLayout.Full)
+        game.showLongText("CONTROLS\nLeft/Right: move\nUp: jump, climb\nDown: climb, Cordial\nDown at bonfire: rest\nB: roll (dodge)\nTap A: attack / combo\nHold A: heavy/block/aim\nA near someone: talk\nMENU: equipment", DialogLayout.Full)
         pauseUntil(() => !(controller.A.isPressed()) && !(controller.B.isPressed()))
     }
     pause(20)

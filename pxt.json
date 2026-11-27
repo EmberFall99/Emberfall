@@ -21,6 +21,8 @@
         "levelling.ts",
         "prologue.ts",
         "story.ts",
+        "redhand.ts",
+        "shop.ts",
         "saving.ts",
         "main.ts",
         "README.md",

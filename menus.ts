@@ -2,16 +2,16 @@
 // pushScene() freezes the whole game; popScene() brings it back exactly as it was.
 // Weapons are a scrolling list (3 rows show at a time); the amulet slot sits underneath.
 // To add a weapon: add it to itemNames/itemTap/itemHold/itemHint/itemIcon and to owns().
-let itemNames = ["SWORD", "SWORD & SHIELD", "BOW", "KATANA"]
-let itemTap = ["Tap A: 3-hit combo", "Tap A: 3-hit combo", "Tap A: shoot", "Tap A: quick cuts"]
-let itemHold = ["Hold A: heavy attack", "Hold A: raise shield", "Hold A: power shot", "Hold A: sheathed dash"]
-let itemHint = ["", "Defeat the knight in the woods.", "Defeat an archer to claim it.", "It lies at the bottom of the crypt."]
+let itemNames = ["SWORD", "SWORD & SHIELD", "BOW", "KATANA", "RUSTED DAGGER"]
+let itemTap = ["Tap A: 3-hit combo", "Tap A: 3-hit combo", "Tap A: shoot", "Tap A: quick cuts", "Tap A: nimble stabs"]
+let itemHold = ["Hold A: heavy attack", "Hold A: raise shield", "Hold A: power shot", "Hold A: sheathed dash", "Hold A: leaping stab"]
+let itemHint = ["", "Defeat the knight in the woods.", "Defeat an archer to claim it.", "It lies at the bottom of the crypt.", "Carried by the Red Hand."]
 // which picture in `icons` each weapon uses
-let itemIcon = [0, 1, 2, 5]
+let itemIcon = [0, 1, 2, 5, 6]
 let menuTop = 0
 let WEAPON_ROWS = 3
 function owns(item: number): boolean {
-    return item == 0 || item == 1 && hasShield || item == 2 && hasBow || item == 3 && hasKatana
+    return item == 0 || item == 1 && hasShield || item == 2 && hasBow || item == 3 && hasKatana || item == 4 && hasDagger
 }
 function openMenu() {
     if (gameState != "play" || !(isFree())) {
@@ -38,9 +38,9 @@ function openMenu() {
     })
     controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
         if (menuSel == itemNames.length) {
-            // the amulet slot: one amulet at a time, A puts it on or takes it off
-            if (hasFarsight) {
-                amulet = 1 - amulet
+            // the amulet slot: one amulet at a time. A moves on to the next one you own (then none)
+            if (ownsAmulet(1) || ownsAmulet(2) || ownsAmulet(3)) {
+                amulet = nextAmulet(amulet)
                 music.play(music.melodyPlayable(music.baDing), music.PlaybackMode.InBackground)
             } else {
                 music.play(music.melodyPlayable(music.buzzer), music.PlaybackMode.InBackground)
@@ -112,21 +112,24 @@ function drawMenu() {
     let ay = 16 + WEAPON_ROWS * 18
     m.fillRect(8, ay - 4, 124, 1, 12)
     menuRow(ay, menuSel == amuletRow)
-    if (hasFarsight) {
-        m.drawTransparentImage(icons[4], 8, ay)
-        m.print("FARSIGHT AMULET", 24, ay + 2, 1)
+    if (amulet > 0) {
+        m.drawTransparentImage(icons[amuletIcon_[amulet]], 8, ay)
+        m.print(amuletNames[amulet], 24, ay + 2, 1)
+        m.print("E", 126, ay + 2, 7)
+    } else if (ownsAmulet(1) || ownsAmulet(2) || ownsAmulet(3)) {
+        m.drawTransparentImage(icons[3], 8, ay)
+        m.print("no amulet", 24, ay + 2, 11)
     } else {
         m.drawTransparentImage(icons[3], 8, ay)
         m.print("(amulet)", 24, ay + 2, 11)
     }
-    if (amulet == 1) {
-        m.print("E", 126, ay + 2, 7)
-    }
     // what the selection does
     if (menuSel == amuletRow) {
-        if (hasFarsight) {
-            m.print("Strike just as a foe", 6, 88, 13)
-            m.print("attacks to parry it.", 6, 98, 13)
+        if (amulet > 0) {
+            m.print(amuletLine1[amulet], 6, 88, 13)
+            m.print(amuletLine2[amulet], 6, 98, 13)
+        } else if (ownsAmulet(1) || ownsAmulet(2) || ownsAmulet(3)) {
+            m.print("A: put one on.", 6, 88, 11)
         } else {
             m.print("No amulet.", 6, 88, 11)
         }
@@ -152,4 +155,23 @@ function menuHint(t: string) {
     if (cut < t.length) {
         menuPanel.image.print(t.substr(cut + 1, t.length), 6, 98, 11)
     }
+}
+// ---------------------------------------------------------------- amulets
+// 0 none, 1 Farsight (parry), 2 Stalwart (no stun when parried), 3 Focus (a fast dash for a roll)
+let amuletNames = ["", "FARSIGHT AMULET", "STALWART AMULET", "FOCUS AMULET"]
+let amuletIcon_ = [3, 4, 7, 8]
+let amuletLine1 = ["", "Strike just as a foe", "If parried, no stun:", "Your roll becomes a"]
+let amuletLine2 = ["", "attacks to parry it.", "take half a hit.", "fast dash."]
+function ownsAmulet(a: number): boolean {
+    return a == 1 && hasFarsight || a == 2 && hasStalwart || a == 3 && hasFocus
+}
+// the next amulet you own after `a`, wrapping round through "none"
+function nextAmulet(a: number): number {
+    for (let step = 1; step <= 4; step++) {
+        let n = (a + step) % 4
+        if (n == 0 || ownsAmulet(n)) {
+            return n
+        }
+    }
+    return 0
 }

@@ -81,7 +81,7 @@ check('d6 = 3-6: hits land; the bandit dies for 150 souls', G.get('eAlive')[6] =
 check('the first bandit killed drops the Farsight Amulet', G.get('farsightDropped') && G.get('farsightArea') == 10);
 G.set('pState', 'idle'); G.set('px', G.get('farsightItem').x); G.run(3);
 check('picking up the Farsight Amulet', G.get('hasFarsight'));
-G.set('pState', 'idle'); G.press('menu'); G.press('down'); G.press('down'); G.press('down'); G.press('down'); G.press('A'); G.press('B'); G.run(2);
+G.set('pState', 'idle'); G.press('menu'); for (let k = 0; k < 5; k++) G.press('down'); G.press('A'); G.press('B'); G.run(2);
 check('equipping it in the amulet slot', G.get('amulet') == 1 && G.get('loadout') == 0);
 // parry: strike as the second bandit is about to lunge
 G.set('forceRoll', 6); G.set('pState', 'idle'); G.set('pDir', 1); G.set('stamina', 100); G.set('invuln', 0); G.set('hp', 100);
@@ -182,7 +182,7 @@ check('the gate to the throne is barred', G.get('area') == 23 && G.get('px') <= 
 G.get('goToArea(19)'); G.set('pState', 'idle'); G.set('invuln', 0); G.set('hp', 100); G.set('px', 70); G.set('loadout', 0);
 for (const b of [12, 13]) { G.set('eAlive[' + b + ']', 0); }
 let thrown = false, back = false, hurt = false;
-for (let t = 0; t < 200; t++) { G.tick(); if (G.get('eKnifeT')[14] >= 0) thrown = true; if (thrown && G.get('eKnifeT')[14] < 0) back = true; if (G.get('hp') < 100) hurt = true; G.set('invuln', Math.min(G.get('invuln'), 5)); }
+for (let t = 0; t < 200; t++) { G.tick(); if (G.get('knivesOut(14)') > 0) thrown = true; if (thrown && G.get('knivesOut(14)') == 0) back = true; if (G.get('hp') < 100) hurt = true; G.set('invuln', Math.min(G.get('invuln'), 5)); }
 check('the knife thrower throws a spinning knife that cuts you', thrown && hurt);
 check('...and it comes back to his hand', back);
 G.set('hp', 100); G.set('loadout', 1); G.set('hasShield', true); G.set('pDir', 1); G.set('stamina', 100);
@@ -190,7 +190,7 @@ let blockedOut = false, hitBack = false, lastSta = 100;
 G.keys.add('A');
 for (let t = 0; t < 200; t++) {
   G.tick(); G.set('pDir', 1); G.set('invuln', 0);
-  const kt = G.get('eKnifeT')[14], half = G.get('KNIFE_TIME') / 2;
+  const kk = G.get('knOwner').indexOf(14), kt = kk >= 0 ? G.get('knT')[kk] : -1, half = G.get('KNIFE_TIME') / 2;
   if (G.get('stamina') < lastSta - 5 && kt >= 0 && kt < half) blockedOut = true;
   if (G.get('hp') < 100 && kt >= half) hitBack = true;
   lastSta = G.get('stamina'); G.set('hp', 100);
@@ -200,7 +200,7 @@ check('...your shield blocks it on the way out', blockedOut);
 check('...but it can catch you from behind on the way back', hitBack);
 G.set('loadout', 0);
 // up close it hops away or slashes, and light hits don't stagger it
-G.get('goToArea(18)'); G.set('pState', 'idle'); G.set('invuln', 1e9); G.set('eX[11]', 72); G.set('eKnifeT[11]', -1);
+G.get('goToArea(18)'); G.set('pState', 'idle'); G.set('invuln', 1e9); G.set('eX[11]', 72); G.get('dropAllKnives()');
 G.set('eH[11]', 0); G.set('eMin[11]', 4); G.set('eMax[11]', 156); G.set('px', 60); G.set('py', 0); G.set('pDir', 1);
 let moves = new Set();
 for (let t = 0; t < 120; t++) { G.set('px', G.get('eX')[11] - 14); G.tick(); moves.add(G.get('eState')[11]); }
@@ -249,10 +249,94 @@ check('parry happens on the press, not when the blade lands', G.get('eState')[12
 G.set('amulet', 0); G.set('invuln', 0);
 G.get('goToArea(18)'); G.set('px', 100); G.set('pState', 'idle'); G.run(3); G.run(2, ['down']); G.press('B'); G.run(3);
 
+// ---- chunk 4: the Red Hand, the horn, the shop, the Stalwart and Focus amulets, the Rusted Dagger
+check('Estus is now called the Cordial', G.get('maxCordials') >= 3 && G.get('statInfo')[4].indexOf('Cordial') >= 0);
+G.get('goToArea(23)'); G.set('pState', 'idle'); G.set('invuln', 1e9); G.set('py', 0); G.set('vy', 0);
+for (const e of [19, 20, 21]) G.set('eAlive[' + e + ']', 0);
+G.set('px', 140); G.run(3);
+check('A: Lift the bar at the camp gate', G.get('talkTarget') == 'lift');
+tapA(); G.run(2);
+check('...the gate stays open', G.get('campGateOpen'));
+G.set('px', G.get('CAMP_FIRE_X')); G.set('pState', 'idle'); G.run(3); G.run(2, ['down']); G.press('B'); G.run(3);
+check('a bonfire just outside his gate', G.get('spawnArea') == 23);
+edge('right');
+const RH = G.get('RH');
+check('through the gate: the Red Hand on his throne', G.get('area') == 24 && G.get('eState')[RH] == 'throne' && !G.get('redHandActive()'));
+G.set('px', 50); G.set('pState', 'idle'); G.run(50);
+check('he rises when you step in, and the fight music starts', G.get('redHandActive()') && G.get('curMusic') == 'redhand');
+G.set('px', 8); G.set('pState', 'idle'); G.run(12, ['left']);
+check('no leaving once he is on his feet', G.get('area') == 24);
+function faceRH(st, f) { G.set('pState', 'idle'); G.set('pDir', 1); G.set('stamina', 300); G.set('invuln', 0); G.set('hp', 200); G.set('px', 60); G.set('eX[' + RH + ']', 78); G.set('eDir[' + RH + ']', -1); G.set('eState[' + RH + ']', st || 'recover'); G.set('eFrame[' + RH + ']', f || 0); G.set('eWait[' + RH + ']', 1e9); G.set('atkActive', false); G.get('dropAllKnives()'); }
+let parried = false;
+for (let tries = 0; tries < 8 && !parried; tries++) {
+  faceRH(); G.set('amulet', 0); G.set('loadout', 0);
+  for (let k = 0; k < 3; k++) { tapA(); for (let t = 0; t < 9; t++) { G.tick(); if (G.get('pState') == 'parried') parried = true; G.set('eWait[' + RH + ']', 1e9); G.set('eX[' + RH + ']', Math.max(70, Math.min(80, G.get('eX')[RH]))); } }
+  G.run(30);
+}
+check('he parries the third hit of your combo', parried);
+let stalwart = false;
+for (let tries = 0; tries < 8 && !stalwart; tries++) {
+  faceRH(); G.set('amulet', 2); G.set('hasStalwart', true);
+  let stunned = false, thirdLanded = false;
+  for (let k = 0; k < 3; k++) { tapA(); for (let t = 0; t < 9; t++) { G.tick(); if (G.get('pState') == 'parried') stunned = true; if (k == 2 && G.get('dmgIn') > 0) thirdLanded = true; G.set('eWait[' + RH + ']', 1e9); G.set('eX[' + RH + ']', Math.max(70, Math.min(80, G.get('eX')[RH]))); } }
+  G.run(3);
+  if (thirdLanded && !stunned && G.get('hp') < 200 && G.get('hp') > 180) stalwart = true;
+  G.run(30);
+}
+check('Stalwart: parried, you keep your feet and take half a hit', stalwart);
+faceRH('windup', 6); G.set('amulet', 1); G.set('rhStep', 1); tapA(); G.tick();
+check('Farsight parries the Red Hand', G.get('eState')[RH] == 'parried', G.get('eState')[RH]);
+const rhp = G.get('eHP')[RH]; G.run(4); tapA(); G.run(45);
+check('...and the riposte hits him hard', rhp - G.get('eHP')[RH] >= 50, rhp + ' -> ' + G.get('eHP')[RH]);
+faceRH(); G.set('rhPoise', 0); for (let k = 0; k < 3; k++) { G.set('eState[' + RH + ']', 'recover'); G.get('hitEnemy(' + RH + ', 5, true, 0)'); }
+check('three heavies and he staggers', G.get('eState')[RH] == 'stunned');
+faceRH('stalk', 20); G.set('px', 20); G.set('eHP[' + RH + ']', 100); G.set('rhCordials', 3); G.set('eWait[' + RH + ']', 1e9);
+G.run(50);
+check('hurt and out of reach, he drinks a Cordial', G.get('rhCordials') == 2 && G.get('eHP')[RH] > 100, G.get('eHP')[RH]);
+faceRH('drink', 5); G.set('eHP[' + RH + ']', 100); G.get('hitEnemy(' + RH + ', 5, false, 0)'); G.run(30);
+check('...hit him mid-drink and it is wasted', G.get('eHP')[RH] <= 100);
+faceRH(); G.get('rhThrowKnives(' + RH + ', true)');
+check('he throws a fan of three knives', G.get('knivesOut(' + RH + ')') == 3);
+G.get('dropAllKnives()');
+const souls4 = G.get('souls'); faceRH(); G.set('eHP[' + RH + ']', 1); G.get('hitEnemy(' + RH + ', 50, true, 0)'); G.run(90);
+check('the Red Hand falls: 1,500 souls', G.get('redHandDead') && G.get('souls') - souls4 == 1500 && G.get('eAlive')[RH] == 0);
+check('...the horn and the Rusted Dagger lie where he fell', !G.get('hornItem').flags.inv && !G.get('daggerItem').flags.inv);
+G.set('pState', 'idle'); G.set('px', G.get('hornItem').x); G.run(3); G.set('px', G.get('daggerItem').x); G.run(3);
+check('picking up the horn and the Rusted Dagger', G.get('hasHorn') && G.get('hasDagger'));
+G.get('resetWorld()'); G.get('goToArea(24)'); G.run(2);
+check('he stays dead after a rest', G.get('eAlive')[RH] == 0 && !G.get('redHandActive()'));
+// the merchant
+G.get('goToArea(14)'); G.set('pState', 'idle'); G.set('px', G.get('MERCHANT_TALK_X')); G.run(3);
+check('A: Blow the horn at the sleeping merchant', G.get('talkTarget') == 'horn');
+tapA(); G.run(80);
+check('...she wakes', G.get('merchantAwake') && G.get('gameState') == 'play');
+G.run(3);
+check('A: Trade', G.get('talkTarget') == 'trade');
+G.set('souls', 1600); G.set('hasStalwart', false); tapA(); G.run(2);
+check('her shop opens', G.paused());
+G.press('A'); G.press('B'); G.run(2);
+check('buying the Stalwart Amulet for 1,500 souls', G.get('hasStalwart') && G.get('souls') == 100);
+G.set('hasFocus', true);
+check('the amulet slot cycles through the amulets you own', G.get('nextAmulet(0)') == 1 && G.get('nextAmulet(1)') == 2 && G.get('nextAmulet(2)') == 3 && G.get('nextAmulet(3)') == 0);
+G.set('amulet', 3); G.set('pState', 'idle'); G.set('px', 40); G.set('pDir', 1); G.set('stamina', 100); G.keys.add('B'); G.tick(); G.keys.delete('B'); G.run(14);
+check('Focus: the roll becomes a fast dash', G.get('px') > 70 && G.get('pState') != 'roll', 'px ' + G.get('px'));
+G.set('amulet', 0);
+// the Rusted Dagger
+G.get('goToArea(19)'); G.set('eAlive[14]', 0); G.set('pState', 'idle'); G.set('px', 40); G.set('pDir', 1); G.set('loadout', 0); G.set('souls', 0); G.run(2);
+tapA(); G.run(16); const swordMove = G.get('px') - 40;
+G.set('loadout', 4); G.set('px', 40); G.set('pState', 'idle'); G.run(2); tapA(); G.run(14); const dagMove = G.get('px') - 40;
+check('Rusted Dagger stabs carry you further forward', dagMove > swordMove + 2, swordMove.toFixed(1) + ' vs ' + dagMove.toFixed(1));
+G.set('eAlive[12]', 1); G.get('setupEnemy(12)'); G.set('eX[12]', 90); G.set('eState[12]', 'recover'); G.set('eWait[12]', 1e9); G.set('forceRoll', 6);
+G.set('souls', 5000); G.run(3); G.set('px', 40); G.set('pState', 'idle'); const hb = G.get('eHP')[12]; tapA(); G.run(4);
+check('with souls for a level-up, the dagger throws a ghost dagger', G.get('knivesOut(-1)') > 0);
+G.run(30);
+check('...which cuts the foe in its path and comes back', G.get('eHP')[12] < hb && G.get('knivesOut(-1)') == 0);
+G.set('souls', 0); G.set('forceRoll', 0); G.set('loadout', 0); G.get('goToArea(23)'); G.set('px', 100); G.set('pState', 'idle'); G.run(3);
+
 // ---- saving and Continue
 const saved = JSON.parse(JSON.stringify(G.store));
 const H = load(saved);
-check('Continue loads back at the hollow with progress kept', H.get('area') == 18 && H.get('hasKatana') && H.get('bossDead') && H.get('glargonFreed') && H.get('maxHP') == 112 && H.get('hasFarsight') && H.get('banditMet') && H.get('banditGone'));
+check('Continue loads back at the camp bonfire with progress kept', H.get('area') == 23 && H.get('hasKatana') && H.get('redHandDead') && H.get('hasDagger') && H.get('merchantAwake') && H.get('hasStalwart') && H.get('campGateOpen') && H.get('bossDead') && H.get('glargonFreed') && H.get('maxHP') == 112 && H.get('hasFarsight') && H.get('banditMet') && H.get('banditGone'));
 // a save from before this update (shorter lists) still loads
 const old = JSON.parse(JSON.stringify(G.store));
 old.ef_stats = old.ef_stats.slice(0, 13); old.ef_flags = old.ef_flags.slice(0, 11); old.ef_visited = old.ef_visited.slice(0, 8); old.ef_stats[6] = 7; old.ef_stats[7] = 40;

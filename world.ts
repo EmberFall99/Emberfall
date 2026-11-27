@@ -3,7 +3,7 @@ function respawn() {
     hp = maxHP
     stamina = maxSta
     stamDelay = 0
-    estus = maxEstus
+    cordials = maxCordials
     px = spawnX + 18
     py = 0
     vy = 0
@@ -19,6 +19,7 @@ function respawn() {
     sprites.destroyAllSpritesOfKind(SpriteKind.EnemyArrow)
     sprites.destroyAllSpritesOfKind(SpriteKind.PlayerArrow)
     sprites.destroyAllSpritesOfKind(SpriteKind.PowerArrow)
+    dropAllKnives()
     resetWorld()
     goToArea(spawnArea)
     gameState = "play"
@@ -48,6 +49,7 @@ function goToArea(n: number) {
     sprites.destroyAllSpritesOfKind(SpriteKind.EnemyArrow)
     sprites.destroyAllSpritesOfKind(SpriteKind.PlayerArrow)
     sprites.destroyAllSpritesOfKind(SpriteKind.PowerArrow)
+    dropAllKnives()
     if (area == 0) {
         scene.setBackgroundImage(bgCell)
     } else if (area == 1) {
@@ -94,8 +96,12 @@ function goToArea(n: number) {
         scene.setBackgroundImage(bgCamp1)
     } else if (area == 22) {
         scene.setBackgroundImage(bgCamp2)
+    } else if (area == 23 && campGateOpen) {
+        scene.setBackgroundImage(bgCamp3Open)
     } else if (area == 23) {
         scene.setBackgroundImage(bgCamp3)
+    } else if (area == 24) {
+        scene.setBackgroundImage(bgThrone)
     } else if (area == 25) {
         scene.setBackgroundImage(bgCrypt1)
     } else if (area == 26) {
@@ -119,6 +125,8 @@ function goToArea(n: number) {
         fireX = 50
     } else if (area == 18) {
         fireX = 100
+    } else if (area == 23) {
+        fireX = CAMP_FIRE_X
     } else {
         fireX = 30
     }
@@ -173,16 +181,26 @@ function setupEnemy(i: number) {
             eState[i] = "hidden"
             eSprites[i].setFlag(SpriteFlag.Invisible, true)
         }
+        if (eType[i] == "redhand") {
+            // back on his throne, Cordials refilled
+            eState[i] = "throne"
+            rhCordials = 3
+            rhPoise = 0
+            if (redHandDead) {
+                eAlive[i] = 0
+                eSprites[i].setFlag(SpriteFlag.Invisible, true)
+            }
+        }
     } else {
         eSprites[i].setFlag(SpriteFlag.Invisible, true)
     }
 }
 function hasBonfire(): boolean {
-    return area == 1 || area == 3 || area == 7 || area == 16 || area == 18
+    return area == 1 || area == 3 || area == 7 || area == 16 || area == 18 || area == 23
 }
 function rest() {
     hp = maxHP
-    estus = maxEstus
+    cordials = maxCordials
     stamina = maxSta
     spawnArea = area
     spawnX = fireX
@@ -215,13 +233,15 @@ function musicFor(): string {
         return ""
     } else if (bossActive) {
         return "boss"
+    } else if (redHandActive()) {
+        return "redhand"
     } else if (gameState == "title" || area <= 5) {
         return "dark"
     } else if (area == 6) {
         return "wind"
     } else if (area == 7) {
         return "lake"
-    } else if (area >= 21 && area <= 23) {
+    } else if (area >= 21 && area <= 24) {
         return "trees"
     } else if (area >= 25 && area <= 28) {
         return "crypt"
@@ -253,6 +273,8 @@ function updateMusic() {
         music.play(songTrees, music.PlaybackMode.LoopingInBackground)
     } else if (want == "crypt") {
         music.play(songCrypt, music.PlaybackMode.LoopingInBackground)
+    } else if (want == "redhand") {
+        music.play(songRedHand, music.PlaybackMode.LoopingInBackground)
     }
 }
 
@@ -260,7 +282,11 @@ function updateMusic() {
 function setRoam(i: number) {
     let lo = 4
     let hi = 156
-    if (eH[i] > 0) {
+    if (eType[i] == "redhand") {
+        // he's big: keep all of him on screen
+        lo = 16
+        hi = 148
+    } else if (eH[i] > 0) {
         for (let q = 0; q <= platArea.length - 1; q++) {
             if (platArea[q] == eArea[i] && platH[q] == eH[i] && eHome[i] >= platX1[q] && eHome[i] <= platX2[q]) {
                 lo = platX1[q] + 4

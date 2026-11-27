@@ -65,6 +65,10 @@ function readInput() {
             enterBuilding()
         } else if (talkTarget == "descend") {
             descendToCrypt()
+        } else if (talkTarget == "lift") {
+            liftTheBar()
+        } else if (talkTarget == "trade") {
+            openShop()
         } else {
             startScene(talkTarget)
         }
@@ -77,7 +81,7 @@ function readInput() {
         }
     } else if (controller.A.isPressed()) {
         aHeld += 1
-        if (loadout == 0 && aHeld == 9) {
+        if ((loadout == 0 || loadout == 4) && aHeld == 9) {
             queueAction("heavy")
         }
         if (loadout == 1 && aHeld >= 4 && isFree() && py == supportAt(px, py)) {
@@ -99,7 +103,7 @@ function readInput() {
                 queueAction("light")
             }
         } else if (aHeld > 0 && aHeld < 9) {
-            if (loadout == 0 || loadout == 3) {
+            if (loadout == 0 || loadout == 3 || loadout == 4) {
                 queueAction("light")
             } else {
                 queueAction("shoot")
@@ -279,10 +283,10 @@ function startAction() {
         buf = ""
     }
     if (buf == "heal") {
-        if (estus > 0) {
+        if (cordials > 0) {
             pState = "heal"
             pFrame = 0
-            estus += -1
+            cordials += -1
         }
         buf = ""
     }
@@ -332,6 +336,8 @@ function doAction() {
     }
     if (pState == "light" && loadout == 3) {
         katanaLight()
+    } else if (pState == "light" && loadout == 4) {
+        daggerLight()
     } else if (pState == "light") {
         // the 3-hit combo: tap A again during the recovery to chain the next swing
         if (combo == 1) {
@@ -384,7 +390,9 @@ function doAction() {
             }
         }
     }
-    if (pState == "heavy") {
+    if (pState == "heavy" && loadout == 4) {
+        daggerHeavy()
+    } else if (pState == "heavy") {
         if (pFrame > 11 && pFrame < 18) {
             px += pDir * 0.8
         }
@@ -412,7 +420,15 @@ function doAction() {
             pState = "idle"
         }
     }
-    if (pState == "roll") {
+    if (pState == "roll" && amulet == 3) {
+        // Focus Amulet: a much faster dash, with the same invincible frames
+        if (pFrame < 10) {
+            px += pDir * 3.8
+        }
+        if (pFrame > 13) {
+            pState = "idle"
+        }
+    } else if (pState == "roll") {
         if (pFrame < 15) {
             px += pDir * 2.2
         }
@@ -534,7 +550,7 @@ function physics() {
     if (area == 20 && px > 136) {
         px = 136
     }
-    if (area == 23 && px > 146) {
+    if (area == 23 && px > 146 && !(campGateOpen)) {
         px = 146
     }
     if (area == 21 && px < 10) {
@@ -606,6 +622,9 @@ function physics() {
             } else {
                 goToArea(13)
             }
+        } else if (walkingLeft && area == 24 && redHandActive()) {
+            // no leaving once he's on his feet
+            px = 4
         } else if (walkingLeft && area == 25) {
             // back up the stair into the hollow
             goToArea(18)
@@ -652,6 +671,12 @@ function animateKnight() {
             im = kWindup3[loadout]
         } else {
             im = kThrust[loadout]
+        }
+    } else if (pState == "heavy" && loadout == 4) {
+        if (pFrame < 7) {
+            im = kLeapUp
+        } else {
+            im = kLeap
         }
     } else if (pState == "heavy") {
         if (pFrame < 14) {
@@ -825,13 +850,15 @@ function eastOf(a: number): number {
         return 17
     } else if (a == 17 || a == 18 || a == 19 || a == 21 || a == 22 || a == 25 || a == 26 || a == 27) {
         return a + 1
+    } else if (a == 23 && campGateOpen) {
+        return 24
     }
     return -1
 }
 function westOf(a: number): number {
     if (a == 17) {
         return 15
-    } else if (a == 18 || a == 19 || a == 20 || a == 22 || a == 23 || a == 26 || a == 27 || a == 28) {
+    } else if (a == 18 || a == 19 || a == 20 || a == 22 || a == 23 || a == 24 || a == 26 || a == 27 || a == 28) {
         return a - 1
     }
     return -1
@@ -868,4 +895,67 @@ function fallDeath() {
     py = 0
     vy = 0
     die()
+}
+
+// ---------------------------------------------------------------- the Rusted Dagger
+// quick stabs that carry you forward, so it feels nimble. Every attack costs stamina as usual.
+// While you carry enough souls to level up (embered), each attack also throws a ghost dagger:
+// pale orange, spinning, it cuts through everything in its path and comes back to your hand.
+function daggerLight() {
+    if (combo == 1 || combo == 2) {
+        if (pFrame < 6) {
+            px += pDir * 0.9
+        }
+        if (pFrame == 3) {
+            music.play(music.melodyPlayable(music.knock), music.PlaybackMode.InBackground)
+            swingHitbox(11, 10, 9, false)
+            ghostDagger()
+        }
+        if (pFrame == 6) {
+            atkActive = false
+        }
+        if (pFrame >= 6 && buf == "light" && stamina > 0) {
+            startLight(combo + 1)
+        } else if (pFrame > 11) {
+            pState = "idle"
+        }
+    } else {
+        if (pFrame < 8) {
+            px += pDir * 1.8
+        }
+        if (pFrame == 5) {
+            music.play(music.melodyPlayable(music.smallCrash), music.PlaybackMode.InBackground)
+            swingHitbox(14, 11, 13, false)
+            ghostDagger()
+        }
+        if (pFrame == 9) {
+            atkActive = false
+        }
+        if (pFrame > 16) {
+            pState = "idle"
+        }
+    }
+}
+// hold A: a leaping stab
+function daggerHeavy() {
+    if (pFrame > 6 && pFrame < 16) {
+        px += pDir * 1.7
+    }
+    if (pFrame == 11) {
+        music.play(music.melodyPlayable(music.smallCrash), music.PlaybackMode.InBackground)
+        swingHitbox(13, 12, 22, true)
+        ghostDagger()
+    }
+    if (pFrame == 16) {
+        atkActive = false
+    }
+    if (pFrame > 26) {
+        pState = "idle"
+    }
+}
+function ghostDagger() {
+    if (embered && knivesOut(-1) < 2) {
+        launchKnife(-1, px + pDir * 6, GROUND - py - 12, pDir, 0, 72, 32)
+        music.play(music.melodyPlayable(music.magicWand), music.PlaybackMode.InBackground)
+    }
 }

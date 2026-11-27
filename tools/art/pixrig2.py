@@ -45,6 +45,13 @@ def knight(weapon='sword', lean=0, legs=((2, 0), (-2, 0)), knees=None, arm=-60, 
         g.set(*P(hand, sword, -1), 'e')
         g.line(P(hand, sword, 1), P(hand, sword, 9), '1')
         g.line(P(hand, sword + 90, 1), P(hand, sword - 90, 1), '5')
+    elif weapon == 'dagger':
+        # a short, rust-eaten dagger
+        g.set(*P(hand, sword, -1), 'e')
+        g.line(P(hand, sword, 1), P(hand, sword, 5), '4')
+        g.set(*P(hand, sword, 5), 'd')
+        g.set(*P(hand, sword, 3), 'e')
+        g.line(P(hand, sword + 90, 1), P(hand, sword - 90, 1), 'c')
     elif weapon == 'katana' and sheathed:
         # blade in its scabbard at the hip, hand on the hilt
         g.line((sx - 1, hy - 1), (sx - 10, hy + 2), 'f')

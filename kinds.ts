@@ -1,6 +1,6 @@
 // =====================================================================
 //  EMBERFALL  -  a souls-like in MakeCode Arcade
-//  Controls:  left/right move, up jump / climb, down climb / drink flask / rest at bonfire
+//  Controls:  left/right move, up jump / climb, down climb / drink a Cordial / rest at bonfire
 //             A tap = attack (sword: 3-hit combo), A hold = heavy / block / power shot
 //             B roll (dodge)   MENU = equipment
 //  The game runs one "tick" 30 times a second (game.onUpdateInterval at the bottom).

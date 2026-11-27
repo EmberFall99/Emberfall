@@ -3,7 +3,7 @@ function levelCost(): number {
     return 100 + 50 * totalLv
 }
 function statCost(stat: number): number {
-    // attunement (extra flasks) costs double
+    // attunement (extra Cordials) costs double
     if (stat == 4) {
         return levelCost() * 2
     }
@@ -22,7 +22,7 @@ function statLevel(stat: number): number {
     return lvAtt
 }
 function statMaxed(stat: number): boolean {
-    // attunement is capped at 5 flasks (2 levels) for now; other stats at level 10
+    // attunement is capped at 5 Cordials (2 levels) for now; other stats at level 10
     if (stat == 4) {
         return lvAtt >= 2
     }
@@ -42,7 +42,8 @@ function katanaMul(): number {
     return (1 + 0.1 * lvDex) * emberMul()
 }
 function weaponMul(): number {
-    if (loadout == 3) {
+    if (loadout == 3 || loadout == 4) {
+        // the katana and the Rusted Dagger scale with dexterity
         return katanaMul()
     }
     return meleeMul()
@@ -73,8 +74,8 @@ function buyStat(stat: number) {
         lvDex += 1
     } else {
         lvAtt += 1
-        maxEstus = 3 + lvAtt
-        estus = maxEstus
+        maxCordials = 3 + lvAtt
+        cordials = maxCordials
     }
     music.play(music.melodyPlayable(music.powerUp), music.PlaybackMode.InBackground)
 }
@@ -144,7 +145,7 @@ function openLevelMenu() {
     controller.B.onEvent(ControllerButtonEvent.Pressed, closeMenu)
 }
 let statNames = ["Stamina", "Constitution", "Strength", "Dexterity", "Attunement"]
-let statInfo = ["+10 max stamina", "+12 max health", "+8% melee, cheaper block", "+10% bow, faster aim", "+1 flask (max 5)"]
+let statInfo = ["+10 max stamina", "+12 max health", "+8% melee, cheaper block", "+10% bow, faster aim", "+1 Cordial (max 5)"]
 function drawLevelMenu() {
     let m2 = lvPanel.image
     m2.fill(15)

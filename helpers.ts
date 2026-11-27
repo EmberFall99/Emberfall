@@ -51,5 +51,5 @@ function overPit(x: number): boolean {
 }
 // the weapons you swing (and so can parry and riposte with): sword, sword & shield, katana
 function isMelee(): boolean {
-    return loadout == 0 || loadout == 1 || loadout == 3
+    return loadout == 0 || loadout == 1 || loadout == 3 || loadout == 4
 }

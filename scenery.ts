@@ -73,6 +73,12 @@ function updateScenery() {
     }
     friend.bottom = GROUND
     merchant.setFlag(SpriteFlag.Invisible, area != 14)
+    if (merchantAwake) {
+        merchant.setImage(merchantAwakeL)
+    } else {
+        merchant.setImage(merchantAsleepL)
+    }
+    updateRedHandScenery()
     talkTarget = ""
     if (gameState == "play" && isFree() && py == 0) {
         if (area == 6 && !(glargonFreed) && Math.abs(px - 112) < 18) {
@@ -83,6 +89,12 @@ function updateScenery() {
             talkTarget = "enter"
         } else if (area == 18 && Math.abs(px - HOLE_X) < 10) {
             talkTarget = "descend"
+        } else if (area == 23 && !(campGateOpen) && px > 132) {
+            talkTarget = "lift"
+        } else if (area == 14 && Math.abs(px - MERCHANT_TALK_X) < 14 && merchantAwake) {
+            talkTarget = "trade"
+        } else if (area == 14 && Math.abs(px - MERCHANT_TALK_X) < 14 && hasHorn) {
+            talkTarget = "horn"
         } else if (area == 12 && !(banditMet) && Math.abs(px - FRIEND_CHURCH_X) < 18) {
             talkTarget = "bandit"
         } else if (area == 16 && banditMet && !(banditGone) && Math.abs(px - FRIEND_TREE_X) < 18) {
@@ -99,6 +111,16 @@ function updateScenery() {
     } else if (talkTarget == "enter") {
         talkPrompt.setImage(txtEnter)
         talkPrompt.setPosition(DOOR_X, GROUND - 36)
+    } else if (talkTarget == "lift") {
+        talkPrompt.setImage(txtLift)
+        talkPrompt.setPosition(136, GROUND - 52)
+    } else if (talkTarget == "trade" || talkTarget == "horn") {
+        if (talkTarget == "trade") {
+            talkPrompt.setImage(txtTrade)
+        } else {
+            talkPrompt.setImage(txtHorn)
+        }
+        talkPrompt.setPosition(116, GROUND - 40)
     } else if (talkTarget == "descend") {
         talkPrompt.setImage(txtDescend)
         talkPrompt.setPosition(HOLE_X, GROUND - 26)
@@ -192,10 +214,10 @@ function drawHud() {
     if (embered && Math.idiv(animT, 4) % 2 == 0) {
         h.fillRect(1, 13, 42, 1, 5)
     }
-    // flasks
-    for (let f = 0; f <= maxEstus - 1; f++) {
+    // Cordials
+    for (let f = 0; f <= maxCordials - 1; f++) {
         h.fillRect(f * 6, 16, 5, 6, 15)
-        if (f < estus) {
+        if (f < cordials) {
             h.fillRect(f * 6 + 1, 17, 3, 4, 4)
         } else {
             h.fillRect(f * 6 + 1, 17, 3, 4, 12)
@@ -206,15 +228,24 @@ function drawHud() {
     weaponIcon.setFlag(SpriteFlag.Invisible, gameState == "title")
     keyIcon.setFlag(SpriteFlag.Invisible, !(hasKey) || gameState == "title")
     amuletIcon.setFlag(SpriteFlag.Invisible, amulet == 0 || gameState == "title")
+    amuletIcon.setImage(icons[amuletIcon_[amulet]])
     let bb = bossBar.image
     bb.fill(0)
     bb.fillRect(0, 0, 104, 5, 15)
     bb.fillRect(1, 1, 102, 3, 14)
-    bb.fillRect(1, 1, Math.round(102 * bossHP / 280), 3, 4)
-    bossBar.setFlag(SpriteFlag.Invisible, !(bossActive))
-    bossName.setFlag(SpriteFlag.Invisible, !(bossActive))
+    if (redHandActive()) {
+        bb.fillRect(1, 1, Math.round(102 * Math.max(0, eHP[RH]) / eMaxHP[RH]), 3, 2)
+        bossName.setImage(txtRedName)
+    } else {
+        bb.fillRect(1, 1, Math.round(102 * bossHP / 280), 3, 4)
+        bossName.setImage(txtBossName)
+    }
+    bossBar.setFlag(SpriteFlag.Invisible, !(bossActive || redHandActive()))
+    bossName.setFlag(SpriteFlag.Invisible, !(bossActive || redHandActive()))
 }
 let FRIEND_CHURCH_X = 120
 let friendLeanL = faced(friendLeanImg, -1)
 let friendTalkL = faced(friendTalkImg, -1)
 let FRIEND_TREE_X = 142
+let merchantAsleepL = faced(merchantImg, -1)
+let merchantAwakeL = faced(merchantAwakeImg, -1)

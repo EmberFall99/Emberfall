@@ -13,7 +13,7 @@ let combo = 0
 let hp = 100
 let stamina = 100
 let stamDelay = 0
-let estus = 3
+let cordials = 3
 let invuln = 0
 let kb = 0
 let animT = 0
@@ -30,7 +30,7 @@ let lvAtt = 0
 let totalLv = 0
 let maxHP = 100
 let maxSta = 100
-let maxEstus = 3
+let maxCordials = 3
 let embered = false
 let lvSel = 0
 let lvPanel: Sprite = null
@@ -109,14 +109,15 @@ let pitX1 = [40, 88, 30, 48, 110]
 let pitX2 = [126, 108, 136, 70, 128]
 // enemies: one slot in each list per enemy
 // slots 6-7: the corrupted bandits who ambush you inside the first house in Ashen Forde; 8-9: under the great tree;
-// 10-14: the Warren; 15-21: the abandoned camp; 22-28: the crypt (their skeletons get back up - eRevive)
-let eType = ["skel", "skel", "skel", "knight", "archer", "archer", "bandit", "bandit", "bandit", "bandit", "bandit", "thrower", "bandit", "bandit", "thrower", "bandit", "thrower", "bandit", "thrower", "bandit", "bandit", "thrower", "skel", "skel", "skel", "skel", "skel", "skel", "skel"]
-let eArea = [1, 2, 2, 3, 3, 4, 10, 10, 15, 15, 17, 18, 19, 19, 19, 21, 21, 22, 22, 23, 23, 23, 25, 25, 26, 26, 27, 27, 27]
-let eHome = [117, 55, 88, 70, 138, 126, 30, 142, 92, 146, 110, 72, 60, 100, 130, 80, 40, 20, 146, 50, 96, 136, 60, 130, 82, 148, 30, 90, 146]
-let eH = [0, 0, 0, 0, 0, 44, 0, 0, 0, 0, 0, 20, 0, 0, 20, 0, 18, 0, 0, 0, 0, 20, 0, 0, 24, 0, 0, 0, 0]
-let eMaxHP = [40, 40, 40, 70, 30, 30, 120, 120, 120, 120, 120, 70, 120, 120, 70, 120, 70, 120, 70, 120, 120, 70, 40, 40, 40, 40, 40, 40, 40]
-let eSouls = [50, 50, 50, 120, 80, 80, 150, 150, 150, 150, 150, 120, 150, 150, 120, 150, 120, 150, 120, 150, 150, 120, 50, 50, 50, 50, 50, 50, 50]
-let eRevive = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1]
+// 10-14: the Warren; 15-21: the abandoned camp; 22-28: the crypt (their skeletons get back up - eRevive);
+// 29: the Red Hand, on his throne (area 24)
+let eType = ["skel", "skel", "skel", "knight", "archer", "archer", "bandit", "bandit", "bandit", "bandit", "bandit", "thrower", "bandit", "bandit", "thrower", "bandit", "thrower", "bandit", "thrower", "bandit", "bandit", "thrower", "skel", "skel", "skel", "skel", "skel", "skel", "skel", "redhand"]
+let eArea = [1, 2, 2, 3, 3, 4, 10, 10, 15, 15, 17, 18, 19, 19, 19, 21, 21, 22, 22, 23, 23, 23, 25, 25, 26, 26, 27, 27, 27, 24]
+let eHome = [117, 55, 88, 70, 138, 126, 30, 142, 92, 146, 110, 72, 60, 100, 130, 80, 40, 20, 146, 50, 96, 136, 60, 130, 82, 148, 30, 90, 146, 128]
+let eH = [0, 0, 0, 0, 0, 44, 0, 0, 0, 0, 0, 20, 0, 0, 20, 0, 18, 0, 0, 0, 0, 20, 0, 0, 24, 0, 0, 0, 0, 0]
+let eMaxHP = [40, 40, 40, 70, 30, 30, 120, 120, 120, 120, 120, 70, 120, 120, 70, 120, 70, 120, 70, 120, 120, 70, 40, 40, 40, 40, 40, 40, 40, 400]
+let eSouls = [50, 50, 50, 120, 80, 80, 150, 150, 150, 150, 150, 120, 150, 150, 120, 150, 120, 150, 120, 150, 150, 120, 50, 50, 50, 50, 50, 50, 50, 1500]
+let eRevive = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0]
 let eAlive: number[] = []
 let eX: number[] = []
 let eHP: number[] = []
@@ -129,16 +130,34 @@ let eKb: number[] = []
 let eMin: number[] = []
 let eMax: number[] = []
 // how long each bandit waits before its next attack (re-rolled after every attack)
-let eWait = [0, 0, 0, 0, 0, 0, 30, 50, 40, 55, 30, 0, 40, 55, 0, 50, 0, 55, 0, 50, 40, 0, 0, 0, 0, 0, 0, 0, 0]
-// knife throwers: their knife's flight (eKnifeT < 0 = in the hand)
-let eKnifeT: number[] = []
-let eKnifeX = [0]
-let eKnifeY = [0]
-let eKnifeUx = [0]
-let eKnifeUy = [0]
-let eKnifeR = [0]
-let eKnifeHit = [false]
-let eKnifeSpr: Sprite[] = []
+let eWait = [0, 0, 0, 0, 0, 0, 30, 50, 40, 55, 30, 0, 40, 55, 0, 50, 0, 55, 0, 50, 40, 0, 0, 0, 0, 0, 0, 0, 0, 40]
+// thrown knives: one shared pool for the knife throwers, the Red Hand and the Rusted Dagger's ghost dagger.
+// knOwner: the enemy slot that threw it, -1 = the player's ghost dagger, -2 = free
+let KNIVES = 8
+let knOwner: number[] = []
+let knT: number[] = []
+let knTime: number[] = []
+let knX: number[] = []
+let knY: number[] = []
+let knUx: number[] = []
+let knUy: number[] = []
+let knR: number[] = []
+let knHit: boolean[] = []
+let knId: number[] = []
+let knSpr: Sprite[] = []
+let ghostID = 500000
+for (let kk = 0; kk <= KNIVES - 1; kk++) {
+    knOwner.push(-2)
+    knT.push(0)
+    knTime.push(46)
+    knX.push(0)
+    knY.push(0)
+    knUx.push(0)
+    knUy.push(0)
+    knR.push(0)
+    knHit.push(false)
+    knId.push(0)
+}
 for (let n = 0; n <= eType.length - 1; n++) {
     eAlive.push(1)
     eX.push(0)
@@ -150,13 +169,6 @@ for (let n = 0; n <= eType.length - 1; n++) {
     eKb.push(0)
     eMin.push(4)
     eMax.push(156)
-    eKnifeT.push(-1)
-    eKnifeX[n] = 0
-    eKnifeY[n] = 0
-    eKnifeUx[n] = 0
-    eKnifeUy[n] = 0
-    eKnifeR[n] = 0
-    eKnifeHit[n] = false
 }
 let eSprites: Sprite[] = []
 // the boss
@@ -197,4 +209,24 @@ let curMusic = ""
 let HOLE_X = 30
 let KATANA_X = 112
 let hasKatana = false
+// ---------------------------------------------------------------- the Red Hand (chunk 4)
+// area 24: his throne room, through the camp gate (lift the bar to open it). He fights like a player:
+// combos, rolls, a lunge, thrown knives, parries your third hit, and drinks Cordials when he's hurt.
+let RH = eType.indexOf("redhand")
+let THRONE_X = 128
+let CAMP_FIRE_X = 64
+let campGateOpen = false
+let redHandDead = false
+let rhCordials = 3
+let rhPoise = 0
+let rhStep = 1
+let rhFired = false
+let rhRollDir = 1
+let hasHorn = false
+let hasDagger = false
+let merchantAwake = false
+// amulets you own (Farsight is hasFarsight); `amulet` is the one you wear: 0 none, 1 Farsight, 2 Stalwart, 3 Focus
+let hasStalwart = false
+let hasFocus = false
+let AMULET_PRICE = 1500
 let bossTune = music.stringPlayable("D4 D4 F4 D4 A4 G4 F4 E4 ", 260)

@@ -16,7 +16,7 @@ Wake in a cell. Fight through the Ashen Gate, the Sunken Hall, the Whispering Wo
 | --- | --- |
 | Left / Right | Move |
 | Up | Jump, climb |
-| Down | Climb, drink a flask, rest at a bonfire |
+| Down | Climb, drink a Cordial, rest at a bonfire |
 | B | Roll (invincible for a moment) |
 | A (tap) | Attack. Tap A A A for the sword combo |
 | A (hold) | Heavy attack / raise shield / power shot / Katana: sheathed charge, let go to dash, depending on loadout |

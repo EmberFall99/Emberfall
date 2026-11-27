@@ -5,6 +5,14 @@ function hitEnemy(i: number, dmg: number, heavy: boolean, fromX: number): boolea
         return false
     }
     let s = eSprites[i]
+    if (eType[i] == "redhand") {
+        let r = redHandHit(i, heavy, fromX)
+        if (r == 0) {
+            return false
+        } else if (r == 1) {
+            return true
+        }
+    }
     // corrupted bandits: any heavy (sword heavy, power shot) stuns them outright.
     // Anything else that would land rolls a d6: 1 = it parries you, 2 = it dodges, 3-6 = the hit lands.
     let banditDown = eState[i] == "stunned" || eState[i] == "parried" || eState[i] == "riposted" || eState[i] == "dodge"
@@ -19,7 +27,11 @@ function hitEnemy(i: number, dmg: number, heavy: boolean, fromX: number): boolea
             eState[i] = "parry"
             eFrame[i] = 0
             music.play(music.melodyPlayable(music.smallCrash), music.PlaybackMode.InBackground)
-            if (melee) {
+            if (melee && amulet == 2) {
+                // Stalwart: you keep your feet. It still cuts you - half a normal hit - but there's no riposte
+                stalwartHit(16, eDir[i])
+                banditRecover(i, 16)
+            } else if (melee) {
                 // your blade is turned aside: you're stunned, and it's coming for you
                 pState = "parried"
                 pFrame = 0
@@ -75,6 +87,9 @@ function hitEnemy(i: number, dmg: number, heavy: boolean, fromX: number): boolea
             bowItem.bottom = GROUND - eH[i]
             bowArea = area
         }
+        if (eType[i] == "redhand") {
+            redHandFalls(i)
+        }
         if (eType[i] == "bandit" && !(hasFarsight) && !(farsightDropped)) {
             // the first bandit you kill drops the Farsight Amulet
             farsightDropped = true
@@ -92,6 +107,8 @@ function hitEnemy(i: number, dmg: number, heavy: boolean, fromX: number): boolea
         }
     } else if (eState[i] == "parried" || eState[i] == "riposted" || eState[i] == "stunned") {
         // already reeling: stay that way
+    } else if (eType[i] == "redhand") {
+        // he takes it and keeps coming (his own rules - poise, rolls, parries - are in redHandHit)
     } else if (eType[i] == "thrower" && !(heavy)) {
         // knife throwers shrug off light hits and keep fighting; only a heavy staggers them
     } else if (heavy || eType[i] == "archer" || eType[i] == "thrower") {
@@ -104,7 +121,7 @@ function enemyThink(i: number) {
     eFrame[i] = eFrame[i] + 1
     let dist = px - eX[i]
     // was I hit by the player's sword?
-    if (atkActive && eLast[i] != atkID && eState[i] != "hidden" && Math.abs(eX[i] - atkX) < atkRange + 5 && Math.abs(py - eH[i]) < 15) {
+    if (atkActive && eLast[i] != atkID && eState[i] != "hidden" && Math.abs(eX[i] - atkX) < atkRange + 5 + bodyW(i) && Math.abs(py - eH[i]) < 15) {
         eLast[i] = atkID
         if (amulet == 1 && isMelee() && inParryWindow(i)) {
             parryEnemy(i)
@@ -121,6 +138,8 @@ function enemyThink(i: number) {
         im = reelingThink(i)
     } else if (eType[i] == "thrower") {
         im = throwerThink(i, dist)
+    } else if (eType[i] == "redhand") {
+        im = redHandThink(i, dist)
     } else if (eType[i] == "archer") {
         im = archerThink(i, dist)
     } else if (eType[i] == "bandit") {
@@ -138,11 +157,14 @@ function enemyThink(i: number) {
         if (eType[i] == "thrower") {
             im = thDead
         }
+        if (eType[i] == "redhand") {
+            im = rhDead
+        }
         if (eFrame[i] == 18) {
             // once the body has crumbled, its embers rise out of the remains
             spawnEmbers(eX[i], GROUND - eH[i] - 8, Math.min(10, Math.idiv(eSouls[i], 15)))
         }
-        if (eFrame[i] > 20) {
+        if (eFrame[i] > 20 && !(eType[i] == "redhand" && eFrame[i] < 70)) {
             if (eRevive[i] == 1) {
                 // crypt skeletons don't stay down: the bones lie there, then pull themselves back together
                 eState[i] = "bones"
@@ -327,7 +349,7 @@ function arrowHits(a: Sprite, baseDmg: number, power: boolean): boolean {
     let dmg = Math.round(baseDmg * rangedMul())
     for (let e = 0; e <= eType.length - 1; e++) {
         if (eArea[e] == area && eAlive[e] == 1 && eState[e] != "dying") {
-            if (Math.abs(a.x - eX[e]) < 6 && Math.abs(a.y - (GROUND - eH[e] - 10)) < 11) {
+            if (Math.abs(a.x - eX[e]) < 6 + bodyW(e) && Math.abs(a.y - (GROUND - eH[e] - bodyH(e) / 2)) < bodyH(e) / 2 + 1) {
                 return hitEnemy(e, dmg, power, a.x - sign(a.vx) * 10)
             }
         }
@@ -355,6 +377,8 @@ function inParryWindow(i: number): boolean {
         return st == "windup" && f >= 9 || st == "strike" && f <= 3
     } else if (t == "knight") {
         return st == "windup" && f >= 15 || st == "strike" && f <= 3
+    } else if (t == "redhand") {
+        return st == "windup" && f >= 5 || st == "cut" && f <= 1 || st == "lungeUp" && f >= 8 || st == "lunge" && f <= 5 || st == "riposte" && f <= 5
     } else if (t == "bandit") {
         return st == "windup" && f >= 4 || st == "lunge" && f <= 7 || st == "slashUp" && f >= 2 || st == "riposte" && f <= 6
     }
@@ -379,6 +403,8 @@ function hurtImg(i: number): Image {
         return bdStun
     } else if (eType[i] == "thrower") {
         return thHurt
+    } else if (eType[i] == "redhand") {
+        return rhStun
     }
     return sHurt
 }
@@ -386,7 +412,7 @@ function hurtImg(i: number): Image {
 function reelingThink(i: number): Image {
     if (eState[i] == "parried" && eFrame[i] > 55 || eState[i] == "stunned" && eFrame[i] > 45) {
         eFrame[i] = 0
-        if (eType[i] == "bandit") {
+        if (eType[i] == "bandit" || eType[i] == "redhand") {
             eState[i] = "stalk"
             eWait[i] = 20
         } else {
@@ -566,7 +592,7 @@ function throwerThink(i: number, dist: number): Image {
         eDir[i] = sign(dist)
     }
     let st = eState[i]
-    let knifeOut = eKnifeT[i] >= 0
+    let knifeOut = knivesOut(i) > 0
     if (st == "idle") {
         if (knifeOut) {
             im = thEmpty
@@ -641,55 +667,142 @@ function throwerThink(i: number, dist: number): Image {
     return im
 }
 let KNIFE_TIME = 46
+// how many knives this owner has in the air (-1 = the player's ghost daggers)
+function knivesOut(owner: number): number {
+    let n = 0
+    for (let k = 0; k <= KNIVES - 1; k++) {
+        if (knOwner[k] == owner) {
+            n += 1
+        }
+    }
+    return n
+}
+// send a knife out along (ux, uy) for `reach` pixels; it spins there and curves back to whoever threw it
+function launchKnife(owner: number, x: number, y: number, ux: number, uy: number, reach: number, time: number) {
+    for (let k = 0; k <= KNIVES - 1; k++) {
+        if (knOwner[k] == -2) {
+            knOwner[k] = owner
+            knT[k] = 0
+            knTime[k] = time
+            knX[k] = x
+            knY[k] = y
+            knUx[k] = ux
+            knUy[k] = uy
+            knR[k] = reach
+            knHit[k] = false
+            ghostID += 1
+            knId[k] = ghostID
+            knSpr[k].setFlag(SpriteFlag.Invisible, false)
+            return
+        }
+    }
+}
+function dropKnife(k: number) {
+    knOwner[k] = -2
+    knSpr[k].setFlag(SpriteFlag.Invisible, true)
+}
+function dropAllKnives() {
+    for (let k = 0; k <= KNIVES - 1; k++) {
+        dropKnife(k)
+    }
+}
+// a knife thrower's throw: straight at you
 function throwKnife(i: number) {
     let sx = eX[i] + eDir[i] * 6
     let sy = GROUND - eH[i] - 12
     let dx = px - sx
     let dy = GROUND - py - 10 - sy
     let d = Math.max(1, Math.sqrt(dx * dx + dy * dy))
-    eKnifeX[i] = sx
-    eKnifeY[i] = sy
-    eKnifeUx[i] = dx / d
-    eKnifeUy[i] = dy / d
-    eKnifeR[i] = Math.min(140, d + 28)
-    eKnifeT[i] = 0
-    eKnifeHit[i] = false
-    eKnifeSpr[i].setFlag(SpriteFlag.Invisible, false)
+    launchKnife(i, sx, sy, dx / d, dy / d, Math.min(140, d + 28), KNIFE_TIME)
     music.play(music.melodyPlayable(music.pewPew), music.PlaybackMode.InBackground)
 }
-// out along the line to the player and back again, spinning
+// out along its line and back again, spinning. On the way back it homes on its thrower's hand.
+// Enemy knives can hit you once going out and once coming back; your ghost dagger cuts each foe once each way.
 function updateKnives() {
-    for (let i = 0; i <= eType.length - 1; i++) {
-        if (eKnifeT[i] < 0) {
+    for (let k = 0; k <= KNIVES - 1; k++) {
+        let o = knOwner[k]
+        if (o == -2) {
             continue
         }
-        if (eArea[i] != area || eAlive[i] == 0 || eState[i] == "dying") {
+        if (o >= 0 && (eArea[o] != area || eAlive[o] == 0 || eState[o] == "dying")) {
             // the thrower's gone (or you've left): the knife drops
-            eKnifeT[i] = -1
-            eKnifeSpr[i].setFlag(SpriteFlag.Invisible, true)
+            dropKnife(k)
             continue
         }
-        eKnifeT[i] = eKnifeT[i] + 1
-        let reach = eKnifeR[i] * Math.sin(Math.PI * eKnifeT[i] / KNIFE_TIME)
-        let kx = eKnifeX[i] + eKnifeUx[i] * reach
-        let ky = eKnifeY[i] + eKnifeUy[i] * reach
-        let k = eKnifeSpr[i]
-        k.setImage(knifeImgs[Math.idiv(eKnifeT[i], 2) % 4])
-        k.setPosition(kx, ky)
-        if (eKnifeT[i] == Math.idiv(KNIFE_TIME, 2)) {
-            // it turns: it can catch you again on the way back
-            eKnifeHit[i] = false
+        knT[k] = knT[k] + 1
+        let half = Math.idiv(knTime[k], 2)
+        if (knT[k] == half) {
+            // it turns
+            knHit[k] = false
+            ghostID += 1
+            knId[k] = ghostID
         }
-        if (!(eKnifeHit[i]) && Math.abs(kx - px) < 6 && Math.abs(ky - (GROUND - py - 9)) < 9) {
-            eKnifeHit[i] = true
-            dmgIn += 22
-            dmgDir = sign(eKnifeUx[i] * (eKnifeT[i] < KNIFE_TIME / 2 ? 1 : -1))
+        if (knT[k] > half) {
+            // coming back to the hand that threw it
+            if (o >= 0) {
+                knX[k] = eX[o] + eDir[o] * 6
+            } else {
+                knX[k] = px + pDir * 6
+                knY[k] = GROUND - py - 12
+            }
         }
-        if (eKnifeT[i] >= KNIFE_TIME) {
+        let reach = knR[k] * Math.sin(Math.PI * knT[k] / knTime[k])
+        let kx = knX[k] + knUx[k] * reach
+        let ky = knY[k] + knUy[k] * reach
+        let goingOut = knT[k] < half
+        let s = knSpr[k]
+        if (o >= 0) {
+            s.setImage(knifeImgs[Math.idiv(knT[k], 2) % 4])
+            if (!(knHit[k]) && Math.abs(kx - px) < 6 && Math.abs(ky - (GROUND - py - 9)) < 9) {
+                knHit[k] = true
+                dmgIn += 22
+                if (goingOut) {
+                    dmgDir = sign(knUx[k])
+                } else {
+                    dmgDir = 0 - sign(knUx[k])
+                }
+            }
+        } else {
+            s.setImage(ghostImgs[Math.idiv(knT[k], 2) % 4])
+            for (let e = 0; e <= eType.length - 1; e++) {
+                if (eArea[e] == area && eAlive[e] == 1 && eLast[e] != knId[k] && Math.abs(kx - eX[e]) < 6 + bodyW(e) && Math.abs(ky - (GROUND - eH[e] - bodyH(e) / 2)) < bodyH(e) / 2 + 4) {
+                    eLast[e] = knId[k]
+                    hitEnemy(e, Math.round(8 * katanaMul()), false, kx - sign(knUx[k]) * 10)
+                }
+            }
+            if (area == 5 && bossActive && bLast != knId[k] && Math.abs(kx - bx) < 14 && ky > GROUND - 50) {
+                bLast = knId[k]
+                damageBoss(Math.round(8 * katanaMul()))
+            }
+        }
+        s.setPosition(kx, ky)
+        if (knT[k] >= knTime[k]) {
             // caught
-            eKnifeT[i] = -1
-            k.setFlag(SpriteFlag.Invisible, true)
-            eFrame[i] = 0
+            dropKnife(k)
+            if (o >= 0 && eType[o] == "thrower") {
+                eFrame[o] = 0
+            }
         }
     }
+}
+// how wide / tall an enemy's body is, for hits (the Red Hand is twice your size)
+function bodyW(i: number): number {
+    if (eType[i] == "redhand") {
+        return 10
+    }
+    return 0
+}
+function bodyH(i: number): number {
+    if (eType[i] == "redhand") {
+        return 44
+    }
+    return 20
+}
+
+// Stalwart Amulet: when you're parried you aren't stunned - you take half of a normal hit instead
+function stalwartHit(normalDmg: number, dir: number) {
+    atkActive = false
+    invuln = 0
+    dmgIn += Math.round(normalDmg / 2)
+    dmgDir = dir
 }
