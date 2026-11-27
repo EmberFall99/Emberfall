@@ -152,7 +152,7 @@ G.set('pState', 'idle'); G.get('goToArea(15)'); G.set('invuln', 1e9);
 edge('right');
 check('east of the great tree: THE WARREN', G.get('area') == 17);
 edge('right');
-check('the hollow, with a bonfire', G.get('area') == 18 && G.get('hasBonfire()'));
+check('the hollow, with a bonfire and no enemies by it', G.get('area') == 18 && G.get('hasBonfire()') && G.get('eArea').indexOf(18) < 0);
 G.set('px', 100); G.set('pState', 'idle'); G.run(3); G.run(2, ['down']); G.press('B'); G.run(3);
 check('resting at the hollow bonfire', G.get('spawnArea') == 18);
 edge('right'); edge('right');
@@ -184,9 +184,9 @@ G.get('goToArea(23)'); G.set('pState', 'idle'); G.set('invuln', 1e9); G.set('px'
 check('the gate to the throne is barred', G.get('area') == 23 && G.get('px') <= 146);
 // a knife thrower in the deeper woods (slot 14, on its tree platform)
 G.get('goToArea(19)'); G.set('pState', 'idle'); G.set('invuln', 0); G.set('hp', 100); G.set('px', 70); G.set('loadout', 0);
-for (const b of [12, 13]) { G.set('eAlive[' + b + ']', 0); }
+for (const b of [11, 12]) { G.set('eAlive[' + b + ']', 0); }
 let thrown = false, back = false, hurt = false;
-for (let t = 0; t < 200; t++) { G.tick(); if (G.get('knivesOut(14)') > 0) thrown = true; if (thrown && G.get('knivesOut(14)') == 0) back = true; if (G.get('hp') < 100) hurt = true; G.set('invuln', Math.min(G.get('invuln'), 5)); }
+for (let t = 0; t < 200; t++) { G.tick(); if (G.get('knivesOut(13)') > 0) thrown = true; if (thrown && G.get('knivesOut(13)') == 0) back = true; if (G.get('hp') < 100) hurt = true; G.set('invuln', Math.min(G.get('invuln'), 5)); }
 check('the knife thrower throws a spinning knife that cuts you', thrown && hurt);
 check('...and it comes back to his hand', back);
 G.set('hp', 100); G.set('loadout', 1); G.set('hasShield', true); G.set('pDir', 1); G.set('stamina', 100);
@@ -194,7 +194,7 @@ let blockedOut = false, hitBack = false, lastSta = 100;
 G.keys.add('A');
 for (let t = 0; t < 200; t++) {
   G.tick(); G.set('pDir', 1); G.set('invuln', 0);
-  const kk = G.get('knOwner').indexOf(14), kt = kk >= 0 ? G.get('knT')[kk] : -1, half = G.get('KNIFE_TIME') / 2;
+  const kk = G.get('knOwner').indexOf(13), kt = kk >= 0 ? G.get('knT')[kk] : -1, half = G.get('KNIFE_TIME') / 2;
   if (G.get('stamina') < lastSta - 5 && kt >= 0 && kt < half) blockedOut = true;
   if (G.get('hp') < 100 && kt >= half) hitBack = true;
   lastSta = G.get('stamina'); G.set('hp', 100);
@@ -203,24 +203,24 @@ G.keys.delete('A'); G.run(2);
 check('...your shield blocks it on the way out', blockedOut);
 check('...but it can catch you from behind on the way back', hitBack);
 G.set('loadout', 0);
-// up close it hops away or slashes, and light hits don't stagger it
-G.get('goToArea(18)'); G.set('pState', 'idle'); G.set('invuln', 1e9); G.set('eX[11]', 72); G.get('dropAllKnives()');
-G.set('eH[11]', 0); G.set('eMin[11]', 4); G.set('eMax[11]', 156); G.set('px', 60); G.set('py', 0); G.set('pDir', 1);
+// up close it hops away or slashes, and light hits stagger it
+G.get('goToArea(19)'); G.set('eAlive[11]', 0); G.set('eAlive[12]', 0); G.set('eAlive[13]', 1); G.get('setupEnemy(13)'); G.set('pState', 'idle'); G.set('invuln', 1e9); G.set('eX[13]', 72); G.get('dropAllKnives()');
+G.set('eH[13]', 0); G.set('eMin[13]', 4); G.set('eMax[13]', 156); G.set('px', 60); G.set('py', 0); G.set('pDir', 1);
 let moves = new Set();
-for (let t = 0; t < 120; t++) { G.set('px', G.get('eX')[11] - 14); G.tick(); moves.add(G.get('eState')[11]); }
+for (let t = 0; t < 120; t++) { G.set('px', G.get('eX')[13] - 14); G.tick(); moves.add(G.get('eState')[13]); }
 check('a cornered knife thrower hops back or slashes', moves.has('hop') || moves.has('slashUp'), [...moves].join(','));
-G.set('eState[11]', 'idle'); G.set('eFrame[11]', 0); G.set('eHP[11]', 70); G.set('px', G.get('eX')[11] - 12); G.set('pState', 'idle'); tapA(); G.run(8);
-check('light hits wound it and stagger it', G.get('eHP')[11] < 70 && G.get('eState')[11] == 'stagger', G.get('eState')[11]);
-G.set('eH[11]', 20);
+G.set('eState[13]', 'idle'); G.set('eFrame[13]', 0); G.set('eHP[13]', 70); G.set('px', G.get('eX')[13] - 12); G.set('pState', 'idle'); tapA(); G.run(8);
+check('light hits wound it and stagger it', G.get('eHP')[13] < 70 && G.get('eState')[13] == 'stagger', G.get('eState')[13]);
+G.set('eH[13]', 20);
 // the crypt
 G.get('goToArea(18)'); G.set('pState', 'idle'); G.set('invuln', 1e9); G.set('px', G.get('HOLE_X')); G.run(3);
 check('A: Descend at the broken stair', G.get('talkTarget') == 'descend');
 tapA(); G.run(2);
 check('down into THE CRYPT', G.get('area') == 25 && G.get('visited')[25]);
-G.set('eHP[22]', 1); G.set('eX[22]', 80); G.set('px', 66); G.set('pDir', 1); G.set('pState', 'idle'); G.set('eState[22]', 'idle'); tapA(); G.run(40);
-check('crypt skeletons fall to bones...', G.get('eState')[22] == 'bones' && G.get('eAlive')[22] == 1);
+G.set('eHP[21]', 1); G.set('eX[21]', 80); G.set('px', 66); G.set('pDir', 1); G.set('pState', 'idle'); G.set('eState[21]', 'idle'); tapA(); G.run(40);
+check('crypt skeletons fall to bones...', G.get('eState')[21] == 'bones' && G.get('eAlive')[21] == 1);
 G.run(200);
-check('...and pull themselves back together at full health', G.get('eState')[22] != 'bones' && G.get('eHP')[22] == 40);
+check('...and pull themselves back together at full health', G.get('eState')[21] != 'bones' && G.get('eHP')[21] == 40);
 G.set('px', 150); G.set('pState', 'idle'); G.run(12, ['right']);
 check('deeper into the crypt', G.get('area') == 26);
 G.set('px', 46); G.set('py', 12); G.set('vy', 0); G.set('pState', 'idle'); G.run(5);
@@ -238,25 +238,25 @@ G.set('lvDex', 0); const k0 = G.get('weaponMul()'); G.set('lvDex', 5); const k5 
 check('the Katana scales with dexterity, not strength', k5 > k0 && k9 == k5);
 // the sheathed dash: hold, release, cut through two bandits in a line
 G.get('goToArea(19)'); G.set('pState', 'idle'); G.set('px', 30); G.set('pDir', 1); G.set('stamina', 200);
-G.set('eAlive[12]', 1); G.set('eAlive[13]', 1); G.get('setupEnemy(12)'); G.get('setupEnemy(13)'); G.set('eAlive[14]', 0);
-G.set('eX[12]', 60); G.set('eX[13]', 80); G.set('eState[12]', 'recover'); G.set('eState[13]', 'recover'); G.set('eWait[12]', 1e9); G.set('eWait[13]', 1e9);
+G.set('eAlive[11]', 1); G.set('eAlive[12]', 1); G.get('setupEnemy(11)'); G.get('setupEnemy(12)'); G.set('eAlive[13]', 0);
+G.set('eX[11]', 60); G.set('eX[12]', 80); G.set('eState[11]', 'recover'); G.set('eState[12]', 'recover'); G.set('eWait[11]', 1e9); G.set('eWait[12]', 1e9);
 G.run(45, ['A']);
 check('holding A with the Katana: the sheathed charge', G.get('pState') == 'iai');
-const h12 = G.get('eHP')[12], h13 = G.get('eHP')[13]; G.run(20);
-check('letting go: a dash that cuts through both bandits and stuns them', G.get('eHP')[12] < h12 && G.get('eHP')[13] < h13 && G.get('eState')[12] == 'stunned' && G.get('px') > 85, 'px ' + G.get('px'));
+const h12 = G.get('eHP')[11], h13 = G.get('eHP')[12]; G.run(20);
+check('letting go: a dash that cuts through both bandits and stuns them', G.get('eHP')[11] < h12 && G.get('eHP')[12] < h13 && G.get('eState')[11] == 'stunned' && G.get('px') > 85, 'px ' + G.get('px'));
 G.run(30);
 // parrying is judged the moment you press attack
 G.set('loadout', 0); G.set('amulet', 1); G.set('pState', 'idle'); G.set('px', 60); G.set('pDir', 1);
-G.set('eX[12]', 78); G.set('eDir[12]', -1); G.set('eState[12]', 'windup'); G.set('eFrame[12]', 4); G.set('eHP[12]', 120);
+G.set('eX[11]', 78); G.set('eDir[11]', -1); G.set('eState[11]', 'windup'); G.set('eFrame[11]', 4); G.set('eHP[11]', 120);
 tapA(); G.tick();
-check('parry happens on the press, not when the blade lands', G.get('eState')[12] == 'parried', G.get('eState')[12]);
+check('parry happens on the press, not when the blade lands', G.get('eState')[11] == 'parried', G.get('eState')[11]);
 G.set('amulet', 0); G.set('invuln', 0);
 G.get('goToArea(18)'); G.set('px', 100); G.set('pState', 'idle'); G.run(3); G.run(2, ['down']); G.press('B'); G.run(3);
 
 // ---- chunk 4: the Red Hand, the horn, the shop, the Stalwart and Focus amulets, the Rusted Dagger
 check('Estus is now called the Cordial', G.get('maxCordials') >= 3 && G.get('statInfo')[4].indexOf('Cordial') >= 0);
 G.get('goToArea(23)'); G.set('pState', 'idle'); G.set('invuln', 1e9); G.set('py', 0); G.set('vy', 0);
-for (const e of [19, 20, 21]) G.set('eAlive[' + e + ']', 0);
+for (const e of [18, 19, 20]) G.set('eAlive[' + e + ']', 0);
 G.set('px', 140); G.run(3);
 check('A: Lift the bar at the camp gate', G.get('talkTarget') == 'lift');
 tapA(); G.run(2);
@@ -326,15 +326,15 @@ G.set('amulet', 3); G.set('pState', 'idle'); G.set('px', 40); G.set('pDir', 1); 
 check('Focus: the roll becomes a fast dash', G.get('px') > 70 && G.get('pState') != 'roll', 'px ' + G.get('px'));
 G.set('amulet', 0);
 // the Rusted Dagger
-G.get('goToArea(19)'); G.set('eAlive[14]', 0); G.set('pState', 'idle'); G.set('px', 40); G.set('pDir', 1); G.set('loadout', 0); G.set('souls', 0); G.run(2);
+G.get('goToArea(19)'); G.set('eAlive[13]', 0); G.set('pState', 'idle'); G.set('px', 40); G.set('pDir', 1); G.set('loadout', 0); G.set('souls', 0); G.run(2);
 tapA(); G.run(16); const swordMove = G.get('px') - 40;
 G.set('loadout', 4); G.set('px', 40); G.set('pState', 'idle'); G.run(2); tapA(); G.run(14); const dagMove = G.get('px') - 40;
 check('Rusted Dagger stabs carry you further forward', dagMove > swordMove + 2, swordMove.toFixed(1) + ' vs ' + dagMove.toFixed(1));
-G.set('eAlive[12]', 1); G.get('setupEnemy(12)'); G.set('eX[12]', 90); G.set('eState[12]', 'recover'); G.set('eWait[12]', 1e9); G.set('forceRoll', 6);
-G.set('souls', 5000); G.run(3); G.set('px', 40); G.set('pState', 'idle'); const hb = G.get('eHP')[12]; tapA(); G.run(4);
+G.set('eAlive[11]', 1); G.get('setupEnemy(11)'); G.set('eX[11]', 90); G.set('eState[11]', 'recover'); G.set('eWait[11]', 1e9); G.set('forceRoll', 6);
+G.set('souls', 5000); G.run(3); G.set('px', 40); G.set('pState', 'idle'); const hb = G.get('eHP')[11]; tapA(); G.run(4);
 check('with souls for a level-up, the dagger throws a ghost dagger', G.get('knivesOut(-1)') > 0);
 G.run(30);
-check('...which cuts the foe in its path and comes back', G.get('eHP')[12] < hb && G.get('knivesOut(-1)') == 0);
+check('...which cuts the foe in its path and comes back', G.get('eHP')[11] < hb && G.get('knivesOut(-1)') == 0);
 G.set('souls', 0); G.set('forceRoll', 0); G.set('loadout', 0); G.get('goToArea(23)'); G.set('px', 100); G.set('pState', 'idle'); G.run(3);
 
 // ---- saving and Continue

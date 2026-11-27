@@ -109,15 +109,15 @@ let pitX1 = [40, 88, 30, 48, 110]
 let pitX2 = [126, 108, 136, 70, 128]
 // enemies: one slot in each list per enemy
 // slots 6-7: the corrupted bandits who ambush you inside the first house in Ashen Forde; 8-9: under the great tree;
-// 10-14: the Warren; 15-21: the abandoned camp; 22-28: the crypt (their skeletons get back up - eRevive);
-// 29: the Red Hand, on his throne (area 24)
-let eType = ["skel", "skel", "skel", "knight", "archer", "archer", "bandit", "bandit", "bandit", "bandit", "bandit", "thrower", "bandit", "bandit", "thrower", "bandit", "thrower", "bandit", "thrower", "bandit", "bandit", "thrower", "skel", "skel", "skel", "skel", "skel", "skel", "skel", "redhand"]
-let eArea = [1, 2, 2, 3, 3, 4, 10, 10, 15, 15, 17, 18, 19, 19, 19, 21, 21, 22, 22, 23, 23, 23, 25, 25, 26, 26, 27, 27, 27, 24]
-let eHome = [117, 55, 88, 70, 138, 126, 30, 142, 92, 146, 110, 72, 60, 100, 130, 80, 40, 20, 146, 50, 96, 136, 60, 130, 82, 148, 30, 90, 146, 128]
-let eH = [0, 0, 0, 0, 0, 44, 0, 0, 0, 0, 0, 20, 0, 0, 20, 0, 18, 0, 0, 0, 0, 20, 0, 0, 24, 0, 0, 0, 0, 0]
-let eMaxHP = [40, 40, 40, 70, 30, 30, 120, 120, 120, 120, 120, 70, 120, 120, 70, 120, 70, 120, 70, 120, 120, 70, 40, 40, 40, 40, 40, 40, 40, 400]
-let eSouls = [50, 50, 50, 120, 80, 80, 150, 150, 150, 150, 150, 120, 150, 150, 120, 150, 120, 150, 120, 150, 150, 120, 50, 50, 50, 50, 50, 50, 50, 1500]
-let eRevive = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0]
+// 10-13: the Warren; 14-20: the abandoned camp; 21-27: the crypt (their skeletons get back up - eRevive);
+// 28: the Red Hand, on his throne (area 24). (The hollow, by the bonfire, has no enemy - Charlie's call.)
+let eType = ["skel", "skel", "skel", "knight", "archer", "archer", "bandit", "bandit", "bandit", "bandit", "bandit", "bandit", "bandit", "thrower", "bandit", "thrower", "bandit", "thrower", "bandit", "bandit", "thrower", "skel", "skel", "skel", "skel", "skel", "skel", "skel", "redhand"]
+let eArea = [1, 2, 2, 3, 3, 4, 10, 10, 15, 15, 17, 19, 19, 19, 21, 21, 22, 22, 23, 23, 23, 25, 25, 26, 26, 27, 27, 27, 24]
+let eHome = [117, 55, 88, 70, 138, 126, 30, 142, 92, 146, 110, 60, 100, 130, 80, 40, 20, 146, 50, 96, 136, 60, 130, 82, 148, 30, 90, 146, 128]
+let eH = [0, 0, 0, 0, 0, 44, 0, 0, 0, 0, 0, 0, 0, 20, 0, 18, 0, 0, 0, 0, 20, 0, 0, 24, 0, 0, 0, 0, 0]
+let eMaxHP = [40, 40, 40, 70, 30, 30, 120, 120, 120, 120, 120, 120, 120, 70, 120, 70, 120, 70, 120, 120, 70, 40, 40, 40, 40, 40, 40, 40, 400]
+let eSouls = [50, 50, 50, 120, 80, 80, 150, 150, 150, 150, 150, 150, 150, 120, 150, 120, 150, 120, 150, 150, 120, 50, 50, 50, 50, 50, 50, 50, 1500]
+let eRevive = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0]
 let eAlive: number[] = []
 let eX: number[] = []
 let eHP: number[] = []
@@ -130,7 +130,7 @@ let eKb: number[] = []
 let eMin: number[] = []
 let eMax: number[] = []
 // how long each bandit waits before its next attack (re-rolled after every attack)
-let eWait = [0, 0, 0, 0, 0, 0, 30, 50, 40, 55, 30, 0, 40, 55, 0, 50, 0, 55, 0, 50, 40, 0, 0, 0, 0, 0, 0, 0, 0, 40]
+let eWait = [0, 0, 0, 0, 0, 0, 30, 50, 40, 55, 30, 40, 55, 0, 50, 0, 55, 0, 50, 40, 0, 0, 0, 0, 0, 0, 0, 0, 40]
 // thrown knives: one shared pool for the knife throwers, the Red Hand and the Rusted Dagger's ghost dagger.
 // knOwner: the enemy slot that threw it, -1 = the player's ghost dagger, -2 = free
 let KNIVES = 8

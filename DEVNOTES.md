@@ -3,7 +3,7 @@
 Everything needed to pick this project up again, including in a fresh Claude conversation.
 **If you're a new session: read this whole file before changing anything.**
 
-Current version: **v0.8.1** (shown bottom-left of the title screen; the `VERSION` constant in `main.ts`).
+Current version: **v0.8.2** (shown bottom-left of the title screen; the `VERSION` constant in `main.ts`).
 
 ---
 
@@ -96,6 +96,7 @@ Neither tool can show what the game *looks* like or how it *feels* – Charlie p
   The treehouse is reached like the Whispering Woods: climb ladder slot 2 in area 15; down the hatch at x 120.
   **The Warren** (chunk 3), east of the great tree: 15 → 17 entrance → 18 the hollow (bonfire at x 100) → 19 deeper
   woods → 20 the edge (Folkewood signpost; east is closed, px clamped at 136).
+  The hollow has no enemies (v0.8.2: Charlie removed its knife thrower – fighting it after every respawn was tedious).
   Up from the hollow: ladder slot 3 (x 130) → **the abandoned camp** 21 (walled on the left) → 22 the rope bridge
   (a long pit with two plank platforms at height 0 and a gap to jump) → 23 the approach (the throne gate is barred,
   until you lift the bar – "A: Lift the bar", `campGateOpen`, saved) → **24 the Red Hand's throne room**.
@@ -123,7 +124,7 @@ Neither tool can show what the game *looks* like or how it *feels* – Charlie p
   Bandits also use `eWait` (ticks before their next attack). The roster is generated in `state.ts` (types, areas,
   homes, heights, HP, souls, `eRevive`); the per-enemy working lists are filled by a loop.
   `setRoam()` (world.ts) gives each enemy `eMin/eMax`: its own platform, or its stretch of ground between pits.
-- **Crypt skeletons** (`eRevive` = 1, slots 22–28): when one dies it lies as bones (`bones`, ~170 ticks), then
+- **Crypt skeletons** (`eRevive` = 1, slots 21–27): when one dies it lies as bones (`bones`, ~170 ticks), then
   `rising`, then fights again at full HP. They give souls every time. (A future magic weapon could stop this.)
 - **Thrown knives** are one shared pool (`kn*` lists in `state.ts`, `KNIVES` = 8 sprites): `launchKnife(owner, …)`,
   `knivesOut(owner)`, `updateKnives()`, `dropAllKnives()` (on every area change and respawn). Owner = the enemy slot,
@@ -142,7 +143,7 @@ Neither tool can show what the game *looks* like or how it *feels* – Charlie p
   `parried` for 30 ticks and it ripostes; arrows: batted away), **2** dodges (the hit misses), **3–6** lands.
   Heavies (sword heavy, power shot) skip the roll and stun it. Hits on a stunned/parried bandit skip the roll.
   Tests set `forceRoll` to choose the d6. The first bandit killed drops the Farsight Amulet.
-- **The Red Hand** (`redhand`, slot `RH` = 29, area 24, 400 HP, 1,500 souls, `redhand.ts`). Built to feel like a
+- **The Red Hand** (`redhand`, slot `RH` = 28, area 24, 400 HP, 1,500 souls, `redhand.ts`). Built to feel like a
   bigger, better player, not a monster. Sits on his throne (`throne`) until you pass x 40, then `rise` → `stalk`.
   Moves: a 3-hit chain (`windup`/`cut` with `rhStep` 1–3: 20, 20, 28 dmg), `lungeUp` → `lunge` (26), `throwUp` →
   `throw` (one knife, or a fan of three when you're at range), `roll` (untouchable), `recover` (the opening).
