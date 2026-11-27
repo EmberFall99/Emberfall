@@ -118,13 +118,25 @@ function doOffering() {
         music.play(music.melodyPlayable(music.thump), music.PlaybackMode.InBackground)
     }
 }
-// ---------------------------------------------------------------- the look: dark lacquer and gold
-// (white plate -> dark lacquer, grey -> deep brown, the plume -> gold; the red cape stays)
+// ---------------------------------------------------------------- the look: the General's own armour
+// Every knight frame has a twin drawn in the samurai armour (kabuto with the gold crescent crest, gold-banded
+// lacquer cuirass, plated shoulders and skirt) - the ks* lists in art.ts. These two lists line up frame for frame.
+let samuraiFrom: Image[] = kIdle1.concat(kIdle2).concat(kJump).concat(kDrink).concat(kHurt).concat(kWalk)
+    .concat(kWindup).concat(kSlash).concat(kWindup2).concat(kSlash2).concat(kWindup3).concat(kThrust)
+    .concat([kHeavyUp, kHeavySlash, kBlock, kDraw, kLoose, kIai, kIaiDash, kIaiEnd, kLeapUp, kLeap]).concat(kOffer).concat(kClimb)
+let samuraiTo: Image[] = ksIdle1.concat(ksIdle2).concat(ksJump).concat(ksDrink).concat(ksHurt).concat(ksWalk)
+    .concat(ksWindup).concat(ksSlash).concat(ksWindup2).concat(ksSlash2).concat(ksWindup3).concat(ksThrust)
+    .concat([ksHeavyUp, ksHeavySlash, ksBlock, ksDraw, ksLoose, ksIai, ksIaiDash, ksIaiEnd, ksLeapUp, ksLeap]).concat(ksOffer).concat(ksClimb)
+// anything without a twin (the roll, death) is just recoloured: white plate -> dark lacquer, grey -> brown, plume -> gold
 let armFrom = [1, 11, 4]
 let armTo = [12, 14, 5]
 let armCacheSrc: Image[] = []
 let armCacheDst: Image[] = []
 function armoured(im: Image): Image {
+    let t = samuraiFrom.indexOf(im)
+    if (t >= 0) {
+        return samuraiTo[t]
+    }
     let k = armCacheSrc.indexOf(im)
     if (k >= 0) {
         return armCacheDst[k]

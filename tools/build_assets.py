@@ -147,6 +147,28 @@ anim('breathImgs', 'dragonBreath', F.breath_frames(), 80)
 # ---- the Indentured General's Armour
 single('samuraiImg', 'samuraiKneeling', F.samurai_kneeling())
 array('kOffer', [('knightOffering' + LN[i], f) for i, f in enumerate(F.offering_frames())])
+# ---- the knight in the Indentured General's Armour: a full second set of frames, mirroring the normal ones
+# (armour.ts swaps each normal frame for its samurai twin while the armour is on)
+Q.SAMURAI = True
+LOS = [Q.loadout_frames(w) for w in ('sword', 'shield', 'bow')] + [V.katana_frames(), X.dagger_frames()]
+SOFFER = F.offering_frames()
+Q.SAMURAI = False
+for key, var in [('idle1', 'ksIdle1'), ('idle2', 'ksIdle2'), ('jump', 'ksJump'), ('drink', 'ksDrink'), ('hurt', 'ksHurt')]:
+    array(var, [('samurai' + key.capitalize() + LN[i], LOS[i][key]) for i in range(5)])
+for i in range(5):
+    animations['samuraiWalk' + LN[i]] = ([grid(LOS[i][f'walk{n}']) for n in range(1, 5)], 150)
+code_array['ksWalk'] = 'assets.animation`samuraiWalkSword`' + ''.join('.concat(assets.animation`samuraiWalk%s`)' % LN[i] for i in range(1, 5))
+for key, var in [('windup', 'ksWindup'), ('slash', 'ksSlash'), ('windup2', 'ksWindup2'), ('slash2', 'ksSlash2'), ('windup3', 'ksWindup3'), ('thrust', 'ksThrust')]:
+    nm = 'samurai' + key.capitalize()
+    array(var, [(nm + LN[i], LOS[i][key]) for i in range(2)] + [(nm + 'Sword', LOS[0][key]), (nm + 'Katana', LOS[3][key]), (nm + 'Dagger', LOS[4][key])])
+for var, name, frame in [('ksHeavyUp', 'samuraiHeavyWindup', LOS[0]['heavyup']), ('ksHeavySlash', 'samuraiHeavy', LOS[0]['heavy']),
+                         ('ksBlock', 'samuraiBlock', LOS[1]['block']), ('ksDraw', 'samuraiBowDraw', LOS[2]['draw']), ('ksLoose', 'samuraiBowLoose', LOS[2]['loose']),
+                         ('ksIai', 'samuraiKatanaSheathedCharge', LOS[3]['iai']), ('ksIaiDash', 'samuraiKatanaDash', LOS[3]['iaiDash']),
+                         ('ksIaiEnd', 'samuraiKatanaDashFinish', LOS[3]['iaiEnd']), ('ksLeapUp', 'samuraiDaggerLeapWindup', LOS[4]['leapUp']),
+                         ('ksLeap', 'samuraiDaggerLeap', LOS[4]['leap'])]:
+    single(var, name, frame)
+array('ksOffer', [('samuraiOffering' + LN[i], f) for i, f in enumerate(SOFFER)])
+anim('ksClimb', 'samuraiClimb', [LOS[0]['climb1'], LOS[0]['climb2']], 130)
 anim('sparkImgs', 'smoulderSpark', X.smoulder_sparks(), 120)
 single('kLeapUp', 'knightDaggerLeapWindup', LO[4]['leapUp'])
 single('kLeap', 'knightDaggerLeap', LO[4]['leap'])

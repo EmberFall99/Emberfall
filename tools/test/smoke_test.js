@@ -431,6 +431,7 @@ function inFolke(Gx) {
   for (let k = 0; k < 4 && A2.get('gameState') != 'play'; k++) tap('A');
   check('...half your max health', A2.get('maxHP') == Math.floor((100 + 12 * lvCon) / 2));
   check('...the samurai is left in his bones', A2.get('samurai').flags.inv);
+  check('...you wear the General\'s own armour (every frame has a samurai twin)', A2.get('samuraiFrom').length == A2.get('samuraiTo').length && A2.get('armoured(kIdle1[3])') === A2.get('ksIdle1')[3] && A2.get('armoured(kWalk[17])') === A2.get('ksWalk')[17] && A2.get('armoured(kOffer[0])') === A2.get('ksOffer')[0]);
   check('...Cordials heal half as much', A2.get('cordialHeal()') == 22);
   A2.set('pState', 'idle'); A2.set('px', 20); A2.run(10, ['right']);
   check('...you walk faster', A2.get('px') > 33, 'px ' + A2.get('px'));

@@ -4,6 +4,9 @@ from pixrig import G, P, slash_arc, GROUND, floor, bg_base
 import pixrig as R
 
 # ---------------------------------------------------------------- knight with loadouts
+# SAMURAI = True draws him in the Indentured General's Armour instead (build_assets makes a full second set)
+SAMURAI = False
+
 def knight(weapon='sword', lean=0, legs=((2, 0), (-2, 0)), knees=None, arm=-60, sword=60, crouch=0, fx=None,
            back_arm=-110, block=False, bow_draw=0, flask=False, sheathed=False):
     g = G(30, 24, 15, 23)
@@ -21,24 +24,49 @@ def knight(weapon='sword', lean=0, legs=((2, 0), (-2, 0)), knees=None, arm=-60, 
         g.rect(bhand[0] - 2, bhand[1] - 3, bhand[0] + 1, bhand[1] + 3, 'e')
         g.line((bhand[0] - 2, bhand[1] - 3), (bhand[0] - 2, bhand[1] + 3), 'b')
         g.set(bhand[0], bhand[1], '5')
-    g.rect(sx - 2, hy - 6, sx + 2, hy - 1, 'b')
-    g.line((sx - 2, hy - 6), (sx - 2, hy - 1), 'c')
-    g.line((sx + 1, hy - 6), (sx + 1, hy - 3), '1')
-    g.rect(-2, hy, 2, hy, 'e')
+    if SAMURAI:
+        # the cuirass: dark lacquer, gold lacing in bands down the chest, a red cord at the centre
+        g.rect(sx - 2, hy - 6, sx + 2, hy - 1, 'c')
+        g.line((sx - 2, hy - 5), (sx + 2, hy - 5), '5')
+        g.line((sx - 2, hy - 3), (sx + 2, hy - 3), '5')
+        g.set(sx + 1, hy - 4, '2')
+        g.line((sx - 3, hy - 6), (sx - 3, hy - 4), 'c'); g.set(sx - 3, hy - 4, '5')      # shoulder plate
+        g.line((-3, hy), (3, hy), 'c'); g.set(-2, hy, '5'); g.set(0, hy, '5'); g.set(2, hy, '5')   # skirt plates
+        g.line((-3, hy + 1), (-2, hy + 1), 'c'); g.line((2, hy + 1), (3, hy + 1), 'c')
+    else:
+        g.rect(sx - 2, hy - 6, sx + 2, hy - 1, 'b')
+        g.line((sx - 2, hy - 6), (sx - 2, hy - 1), 'c')
+        g.line((sx + 1, hy - 6), (sx + 1, hy - 3), '1')
+        g.rect(-2, hy, 2, hy, 'e')
+    leg = 'e' if SAMURAI else 'b'
     k1 = knees[0] if knees else ((legs[0][0] + 1) / 2, hy + 3)
-    g.line((1, hy), k1, 'b'); g.line(k1, legs[0], 'b')
-    g.set(legs[0][0] + 1, 0, 'b')
+    g.line((1, hy + (1 if SAMURAI else 0)), k1, leg); g.line(k1, legs[0], leg)
+    g.set(legs[0][0] + 1, 0, leg)
     hx, hyy = sx, hy - 8
     g.set(hx, hy - 7, 'c')
-    g.rect(hx - 2, hyy - 4, hx + 2, hyy, '1')
-    g.line((hx - 2, hyy - 3), (hx - 2, hyy), 'b')
-    g.line((hx, hyy - 2), (hx + 2, hyy - 2), 'f')
-    g.set(hx + 1, hyy - 1, 'f')
-    g.set(hx - 2, hyy - 4, 'c'); g.set(hx - 2, hyy, 'c')
-    g.line((hx - 1, hyy - 5), (hx - 3, hyy - 6), '4'); g.set(hx - 4, hyy - 5, '4'); g.set(hx - 4, hyy - 4, '2')
+    if SAMURAI:
+        # the kabuto: a lacquered dome, a neck guard flaring out behind, a dark face mask,
+        # and the gold crescent crest
+        g.rect(hx - 2, hyy - 4, hx + 2, hyy - 1, 'c')
+        g.line((hx - 2, hyy - 4), (hx + 2, hyy - 4), 'e')
+        g.line((hx - 3, hyy - 1), (hx - 4, hyy + 1), 'c'); g.set(hx - 3, hyy, 'c'); g.set(hx - 3, hyy + 1, '5')
+        g.line((hx, hyy - 1), (hx + 2, hyy - 1), 'f'); g.set(hx + 2, hyy - 2, 'f')
+        g.set(hx + 1, hyy - 2, '1')
+        g.set(hx, hyy - 5, '5')
+        g.set(hx - 1, hyy - 6, '5'); g.set(hx - 2, hyy - 7, '5')
+        g.set(hx + 1, hyy - 6, '5'); g.set(hx + 2, hyy - 7, '5')
+    else:
+        g.rect(hx - 2, hyy - 4, hx + 2, hyy, '1')
+        g.line((hx - 2, hyy - 3), (hx - 2, hyy), 'b')
+        g.line((hx, hyy - 2), (hx + 2, hyy - 2), 'f')
+        g.set(hx + 1, hyy - 1, 'f')
+        g.set(hx - 2, hyy - 4, 'c'); g.set(hx - 2, hyy, 'c')
+        g.line((hx - 1, hyy - 5), (hx - 3, hyy - 6), '4'); g.set(hx - 4, hyy - 5, '4'); g.set(hx - 4, hyy - 4, '2')
     sh = (sx + 1, hy - 5)
     hand = P(sh, arm, 3)
-    g.line(sh, hand, 'b')
+    g.line(sh, hand, 'c' if SAMURAI else 'b')
+    if SAMURAI:
+        g.set(sx + 2, hy - 6, '5')      # the front shoulder plate's gold edge
     if flask:
         g.set(hand[0], hand[1] - 1, '4'); g.set(hand[0], hand[1], '4'); g.set(hand[0] + 1, hand[1] - 1, '5')
     elif weapon in ('sword', 'shield'):
