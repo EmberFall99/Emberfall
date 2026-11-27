@@ -32,6 +32,8 @@ playing; no tutorials. Dark Souls is the reference point throughout.
   dripping water) and `songRedHand` (132 bpm, E minor: war drums, pulsing bass, stabs, a climbing lead). `updateMusic()` in `world.ts` picks one each tick via
   `musicFor()`; the boss fight swaps in `bossTune`; death is silent until you respawn. If Charlie edits a song
   in Arcade's Music editor, that edit lives in `music.ts` – re-running the script would overwrite it.
+- **Never keep a `main.py`.** Opening Arcade's Python tab writes one (a Python copy of the code at that moment) and
+  adds it to `pxt.json`; it then goes stale and can be converted back over the real code. Remove it if it appears.
 - **Use the JavaScript view.** The project is too large and multi-file for Blocks, and the Python view's
   automatic conversion breaks on globals shared across files (it shows "cannot find variables" errors).
   `pxt.json` sets `preferredEditor: tsprj`.
